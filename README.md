@@ -5,111 +5,76 @@
 <hr>
 
 <h4 align="center">
-  <a href="https://lazyvim.github.io/installation">Install</a>
-  ·
-  <a href="https://lazyvim.github.io/configuration">Configure</a>
-  ·
-  <a href="https://lazyvim.github.io">Docs</a>
+  Modular · Fast · Native
 </h4>
 
 <div align="center"><p>
-    <a href="https://github.com/LazyVim/LazyVim/releases/latest">
-      <img alt="Latest release" src="https://img.shields.io/github/v/release/LazyVim/LazyVim?style=for-the-badge&logo=starship&color=C9CBFF&logoColor=D9E0EE&labelColor=302D41&include_prerelease&sort=semver" />
+    <a href="https://github.com/natebass/qdtb/pulse">
+      <img alt="Last commit" src="https://img.shields.io/github/last-commit/natebass/qdtb?style=for-the-badge&logo=starship&color=8bd5ca&logoColor=D9E0EE&labelColor=302D41"/>
     </a>
-    <a href="https://github.com/LazyVim/LazyVim/pulse">
-      <img alt="Last commit" src="https://img.shields.io/github/last-commit/LazyVim/LazyVim?style=for-the-badge&logo=starship&color=8bd5ca&logoColor=D9E0EE&labelColor=302D41"/>
+    <a href="https://github.com/natebass/qdtb/blob/master/LICENSE">
+      <img alt="License" src="https://img.shields.io/github/license/natebass/qdtb?style=for-the-badge&logo=starship&color=ee999f&logoColor=D9E0EE&labelColor=302D41" />
     </a>
-    <a href="https://github.com/LazyVim/LazyVim/blob/main/LICENSE">
-      <img alt="License" src="https://img.shields.io/github/license/LazyVim/LazyVim?style=for-the-badge&logo=starship&color=ee999f&logoColor=D9E0EE&labelColor=302D41" />
+    <a href="https://github.com/natebass/qdtb/stargazers">
+      <img alt="Stars" src="https://img.shields.io/github/stars/natebass/qdtb?style=for-the-badge&logo=starship&color=c69ff5&logoColor=D9E0EE&labelColor=302D41" />
     </a>
-    <a href="https://github.com/LazyVim/LazyVim/stargazers">
-      <img alt="Stars" src="https://img.shields.io/github/stars/LazyVim/LazyVim?style=for-the-badge&logo=starship&color=c69ff5&logoColor=D9E0EE&labelColor=302D41" />
+    <a href="https://natebass.github.io/qdtb-doc/blog">
+      <img src="https://img.shields.io/badge/blog-latest_posts-orange?style=flat-square&logo=rss&logoColor=white" alt="Blog" />
     </a>
-    <a href="https://github.com/LazyVim/LazyVim/issues">
-      <img alt="Issues" src="https://img.shields.io/github/issues/LazyVim/LazyVim?style=for-the-badge&logo=bilibili&color=F5E0DC&logoColor=D9E0EE&labelColor=302D41" />
+    <a href="https://natebass.github.io/qdtb-doc/docs">
+      <img src="https://img.shields.io/badge/docs-qdtb-blue?style=flat-square&logo=docusaurus&logoColor=white" alt="Docs" />
     </a>
-    <a href="https://github.com/LazyVim/LazyVim">
-      <img alt="Repo Size" src="https://img.shields.io/github/repo-size/LazyVim/LazyVim?color=%23DDB6F2&label=SIZE&logo=codesandbox&style=for-the-badge&logoColor=D9E0EE&labelColor=302D41" />
-    </a>
-    <a href="https://twitter.com/intent/follow?screen_name=folke">
-      <img alt="follow on Twitter" src="https://img.shields.io/twitter/follow/folke?style=for-the-badge&logo=twitter&color=8aadf3&logoColor=D9E0EE&labelColor=302D41" />
-    </a>
-</div>
+</p></div>
 
-# QDtb Neovim configuration
+# QDtb Neovim Configuration
 
-Welcome to my personal Neovim configuration. It is partly based on [💤 lazy.nvim](https://github.com/folke/lazy.nvim). It uses mini.nvim plugins extensively.
+Welcome to my personal Neovim configuration. Built for speed and modularity, this setup leverages the native Neovim package system and `mini.nvim` for a lightweight yet powerful experience.
 
 ![image](https://user-images.githubusercontent.com/292349/211285846-0b7bb3bf-0462-4029-b64c-4ee1d037fc1c.png)
 
-![image](https://user-images.githubusercontent.com/292349/213447056-92290767-ea16-430c-8727-ce994c93e9cc.png)
+## ✨ Features
 
+- 🚀 **Native Package Management**: Uses Neovim's built-in `packpath` for plugin loading, avoiding the overhead of external managers.
+- 🎨 **Custom Aesthetics**: Includes handcrafted colorschemes like `MiniAutumn`, `MiniSpring`, and `MiniWinter`.
+- 📖 **Enlightened Dashboard**: Startify-based dashboard featuring random Bible verses and algorithm quotes to keep you inspired.
+- 🛠️ **Utility Suite**: Integrated tools for autosaving, window title management, and a dynamic colorscheme cycler.
+- 📦 **Modular Design**: Configured with a clear separation of concerns between core options, keymaps, and plugin specifications.
 
 ## ⚡️ Requirements
 
 - Neovim >= **0.12**
-- a [Nerd Font](https://www.nerdfonts.com/) **_(optional)_**
+- A [Nerd Font](https://www.nerdfonts.com/) **_(recommended)_**
 
 ## 🚀 Getting Started
 
-1. Find your nvim configuration directory.
-2. Delete all files in that directory.
-3. Clone this repository into that directory.
+1. Backup your existing configuration.
+2. Clone this repository into your Neovim configuration directory (usually `~/.config/nvim`).
+3. Ensure `mini.nvim` is available in your `packpath`.
 
-> [NOTE]
-> This project is meant to completely override the nvim configuration. Please backup your existing configuration. You can also just take what you want from this repository but copy-pasting individual settings or plugins.
+> [!IMPORTANT]
+> This configuration relies on the native Neovim package architecture. Plugins should be placed in `{stdpath('data')}/site/pack/core/start/`.
 
 ## 📂 File Structure
 
-This project uses the [Neovim Plugin Architecture](https://neovim.io/doc/user/lua.html#plugin-architecture) **(Not LazyVim package management)**. Installed plugins are located in `~/.local/share/nvim/site/pack/lazy/start/`.
-
-This project follows the standard Neovim Plugin Architecture. To ensure compatibility across different environments (such as standard terminal Neovim or Flatpak-based Neovide), we reference paths using the internal Neovim data path variable.
-
-Plugin Locations
-
-Instead of a hardcoded path, plugins are organized within the stdpath('data') directory. On your current system, this resolves to the subdirectories within /home/nwb/.var/app/dev.neovide.neovide/data/nvim/.
-
-Type
-
-Path (using Neovim variables)
-
-Start Plugins
-
-{stdpath('data')}/site/pack/core/start/
-
-Optional Plugins
-
-{stdpath('data')}/site/pack/core/opt/
-
-How to verify your path
-
-You can dynamically check where these files are located on your machine by running the following command inside Neovim:
-
-:echo stdpath('data') . '/site/pack/core/'
-
-
-Note on Package Management
-
-This structure specifically targets the native Neovim package loading system rather than third-party managers like LazyVim, allowing for direct control over the site/pack/ directory hierarchy.
+This project follows a modular structure, separating core configuration from plugin-specific logic.
 
 <pre>
 ~/.config/nvim
-├── lua
-│   ├── config
-│   │   ├── autocmds.lua
-│   │   ├── keymaps.lua
-│   │   ├── lazy.lua
-│   │   └── options.lua
-│   └── plugins
-│       ├── spec1.lua
-│       ├── **
-│       └── spec2.lua
-└── init.lua
+├── 📂 <b>colors</b>/              # Custom colorschemes and generators
+│   ├── miniautumn.lua
+│   ├── minispring.lua
+│   └── neovim_colors.lua
+├── 📂 <b>lua</b>/
+│   ├── 📂 <b>config</b>/          # Core configuration
+│   │   ├── autocmds.lua    # Automatic command definitions
+│   │   ├── keymaps.lua     # Global keybindings
+│   │   ├── mini.lua        # mini.nvim initialization
+│   │   └── options.lua     # Vim options and variables
+│   └── 📂 <b>plugins</b>/         # Modular plugin configs
+│       ├── 📂 <b>code_style</b>/  # Formatting and linting
+│       ├── 📂 <b>fold_this</b>/   # Advanced folding logic
+│       ├── 📂 <b>qdtb</b>/        # Custom utility scripts
+│       └── 📂 <b>session_manager</b>/ # Dashboard and sessions
+├── init.lua                # Main entry point
+└── nvim-pack-lock.json     # Plugin lockfile
 </pre>
-
-## ⚙️ Configuration
-
-Refer to the [docs](https://lazyvim.github.io)
-
-
-
