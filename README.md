@@ -1,11 +1,15 @@
 <div align="center">
-  <img src="https://user-images.githubusercontent.com/292349/213446185-2db63fd5-8c84-459c-9f04-e286382d6e80.png">
+  <img src="https://github.com/natebass/qdtb-doc/blob/master/screenshots/qdtb_logo.jpeg">
 </div>
 
 <hr>
 
 <h4 align="center">
-  Modular · Fast · Native
+  <a href="https://natebass.github.io/qdtb-doc/docs">Install</a>
+  ·
+  <a href="https://natebass.github.io/qdtb-doc/docs">Configure</a>
+  ·
+  <a href="https://natebass.github.io/qdtb-doc">Docs</a>
 </h4>
 
 <div align="center"><p>
@@ -30,7 +34,8 @@
 
 Welcome to my personal Neovim configuration. It is partly based on [💤 lazy.nvim](https://github.com/folke/lazy.nvim) and uses mini.nvim plugins.
 
-![image](https://user-images.githubusercontent.com/292349/211285846-0b7bb3bf-0462-4029-b64c-4ee1d037fc1c.png)
+![image](https://raw.githubusercontent.com/natebass/qdtb-doc/refs/heads/master/screenshots/screenshot_01.png)
+![image](https://raw.githubusercontent.com/natebass/qdtb-doc/refs/heads/master/screenshots/screenshot_02.png)
 
 ## ✨ Features
 
