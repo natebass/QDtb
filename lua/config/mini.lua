@@ -1,17 +1,12 @@
 --- Mini.nvim Configuration.
 --- Sets up various mini.* plugins for UI, editing, and utility enhancements.
 --- @module config.mini
-
--- Notifications
+require("mini.icons").setup()
 require("mini.notify").setup({
 	window = { winblend = 25 },
 })
 vim.notify = require("mini.notify").make_notify()
--- Ensure mini.icons is setup early for other modules
-require("mini.icons").setup()
--- Session Management
 require("mini.sessions").setup({ autoread = true, autowrite = true })
--- UI and Editor Enhancement
 require("mini.align").setup()
 require("mini.move").setup({
 	mappings = {
@@ -53,14 +48,12 @@ require("mini.ai").setup({
 	n_lines = 500,
 })
 require("mini.jump").setup()
--- Auto-pairs with custom quote overrides
 require("mini.pairs").setup({
 	mappings = {
 		['"'] = false,
 		["'"] = false,
 	},
 })
--- Keymap Hints (Mini.clue)
 local miniclue = require("mini.clue")
 miniclue.setup({
 	triggers = {
@@ -88,14 +81,12 @@ miniclue.setup({
 		miniclue.gen_clues.z(),
 	},
 })
--- Snippets
 local gen_loader = require("mini.snippets").gen_loader
 require("mini.snippets").setup({
 	snippets = {
 		gen_loader.from_lang(),
 	},
 })
--- Highlighting Patterns
 local hipatterns = require("mini.hipatterns")
 hipatterns.setup({
 	highlighters = {
@@ -106,7 +97,6 @@ hipatterns.setup({
 		hex_color = hipatterns.gen_highlighter.hex_color(),
 	},
 })
--- Surround Actions
 require("mini.surround").setup({
 	mappings = {
 		add = "xa",
@@ -117,7 +107,6 @@ require("mini.surround").setup({
 		replace = "xr",
 	},
 })
--- File Explorer (Mini.files)
 require("mini.files").setup({
 	windows = { preview = true, width_focus = 30, width_preview = 50 },
 	options = { use_as_default_explorer = true },
@@ -144,7 +133,6 @@ require("mini.files").setup({
 		return false
 	end,
 })
--- 2D Jumping
 require("mini.jump2d").setup({
 	mappings = {
 		start_jumping = "A",
@@ -157,4 +145,4 @@ require("mini.jump2d").setup({
 -- require('mini.fuzzy').setup()
 -- require('mini.test').setup()
 -- Footer
--- vim:foldmethod=marker:foldlevel=1
+-- vim:foldmethod=marker:foldlevel=2
