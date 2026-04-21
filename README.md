@@ -19,26 +19,24 @@
       <img alt="Stars" src="https://img.shields.io/github/stars/natebass/qdtb?style=for-the-badge&logo=starship&color=c69ff5&logoColor=D9E0EE&labelColor=302D41" />
     </a>
     <a href="https://natebass.github.io/qdtb-doc/blog">
-      <img src="https://img.shields.io/badge/blog-latest_posts-orange?style=flat-square&logo=rss&logoColor=white" alt="Blog" />
+      <img src="https://img.shields.io/badge/blog-latest_posts-orange?style=for-the-badge&logo=rss&logoColor=white" alt="Blog" />
     </a>
     <a href="https://natebass.github.io/qdtb-doc/docs">
-      <img src="https://img.shields.io/badge/docs-qdtb-blue?style=flat-square&logo=docusaurus&logoColor=white" alt="Docs" />
+      <img src="https://img.shields.io/badge/docs-qdtb-blue?style=for-the-badge&logo=docusaurus&logoColor=white" alt="Docs" />
     </a>
 </p></div>
 
 # QDtb Neovim Configuration
 
-Welcome to my personal Neovim configuration. Built for speed and modularity, this setup leverages the native Neovim package system and `mini.nvim` for a lightweight yet powerful experience.
+Welcome to my personal Neovim configuration. It is partly based on [💤 lazy.nvim](https://github.com/folke/lazy.nvim) and uses mini.nvim plugins.
 
 ![image](https://user-images.githubusercontent.com/292349/211285846-0b7bb3bf-0462-4029-b64c-4ee1d037fc1c.png)
 
 ## ✨ Features
 
-- 🚀 **Native Package Management**: Uses Neovim's built-in `packpath` for plugin loading, avoiding the overhead of external managers.
-- 🎨 **Custom Aesthetics**: Includes handcrafted colorschemes like `MiniAutumn`, `MiniSpring`, and `MiniWinter`.
-- 📖 **Enlightened Dashboard**: Startify-based dashboard featuring random Bible verses and algorithm quotes to keep you inspired.
-- 🛠️ **Utility Suite**: Integrated tools for autosaving, window title management, and a dynamic colorscheme cycler.
-- 📦 **Modular Design**: Configured with a clear separation of concerns between core options, keymaps, and plugin specifications.
+- 💻 Continue where you left off. Save and resume sessions with **Session Manager**. It uses mhinz/startify and mhinz/session. It loads a start screen by default.
+- 🧹 Sane default settings for options, autocmds, and keymaps.
+- 📦 Comes with a wealth of plugins pre-configured and ready to use.
 
 ## ⚡️ Requirements
 
@@ -47,12 +45,12 @@ Welcome to my personal Neovim configuration. Built for speed and modularity, thi
 
 ## 🚀 Getting Started
 
-1. Backup your existing configuration.
-2. Clone this repository into your Neovim configuration directory (usually `~/.config/nvim`).
-3. Ensure `mini.nvim` is available in your `packpath`.
+1. Find your nvim configuration directory.
+2. Delete all files in that directory.
+3. Clone this repository into that directory.
 
 > [!IMPORTANT]
-> This configuration relies on the native Neovim package architecture. Plugins should be placed in `{stdpath('data')}/site/pack/core/start/`.
+> You must manually clone the mini.nvim repository in `{stdpath('data')}/site/pack/core/start/`. Other plugins are automatically installed in {stdpath('data')}/site/pack/core/opt/.
 
 ## 📂 File Structure
 
