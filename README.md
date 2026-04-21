@@ -27,7 +27,7 @@
     </a>
 </p></div>
 
-# QDtb Neovim Configuration
+# QDtb Neovim configuration
 
 Welcome to my personal Neovim configuration. It is partly based on [💤 lazy.nvim](https://github.com/folke/lazy.nvim) and uses mini.nvim plugins.
 
@@ -35,18 +35,15 @@ Welcome to my personal Neovim configuration. It is partly based on [💤 lazy.nv
 ![image](https://raw.githubusercontent.com/natebass/qdtb-doc/refs/heads/master/screenshots/screenshot_02.png)
 
 ## ✨ Features
-
 - 💻 Continue where you left off. Save and resume sessions with **Session Manager**. It uses mhinz/startify and mhinz/session. It loads a start screen by default.
 - 🧹 Sane default settings for options, autocmds, and keymaps.
 - 📦 Comes with a wealth of plugins pre-configured and ready to use.
 
 ## ⚡️ Requirements
-
 - Neovim >= **0.12**
 - A [Nerd Font](https://www.nerdfonts.com/) **_(recommended)_**
 
-## 🚀 Getting Started
-
+## 🚀 Getting started
 1. Find your nvim configuration directory.
 2. Delete all files in that directory.
 3. Clone this repository into that directory.
@@ -54,8 +51,7 @@ Welcome to my personal Neovim configuration. It is partly based on [💤 lazy.nv
 > [!IMPORTANT]
 > You must manually clone the mini.nvim repository in `{stdpath('data')}/site/pack/core/start/`. Other plugins are automatically installed in {stdpath('data')}/site/pack/core/opt/.
 
-## 📂 File Structure
-
+## 📂 File structure
 This project follows a modular structure, separating core configuration from plugin-specific logic.
 
 <pre>
@@ -78,3 +74,6 @@ This project follows a modular structure, separating core configuration from plu
 ├── init.lua                # Main entry point
 └── nvim-pack-lock.json     # Plugin lockfile
 </pre>
+
+## Other resources
+- The QDtb documentation repository https://github.com/natebass/qdtb-doc.
