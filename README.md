@@ -25,9 +25,6 @@
     <a href="https://natebass.github.io/qdtb-doc/blog">
       <img src="https://img.shields.io/badge/blog-latest_posts-orange?style=for-the-badge&logo=rss&logoColor=white" alt="Blog" />
     </a>
-    <a href="https://natebass.github.io/qdtb-doc/docs">
-      <img src="https://img.shields.io/badge/docs-qdtb-blue?style=for-the-badge&logo=docusaurus&logoColor=white" alt="Docs" />
-    </a>
 </p></div>
 
 # QDtb Neovim Configuration
