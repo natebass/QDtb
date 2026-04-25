@@ -1,6 +1,6 @@
 --- Window Title Utility.
 --- Sets the terminal window title based on the active Neovim buffer and project.
---- @module plugins.qdtb.window_title
+--- @module plugins.QDtb.window_title
 
 local M = {}
 --- Sets the terminal window title using xdotool.

@@ -1,6 +1,6 @@
 --- Colorscheme Cycler Utility.
 --- Allows cycling through available colorschemes in Neovim.
---- @module plugins.qdtb.colorscheme_cycler
+--- @module plugins.QDtb.colorscheme_cycler
 
 -- Neovim colorscheme cycler utility
 -- lua/my_utils/colorscheme_cycler.lua

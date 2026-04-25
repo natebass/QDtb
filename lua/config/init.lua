@@ -59,12 +59,12 @@ require("telescope").setup({
 		"out/",
 	},
 })
-require("plugins.qdtb.colorscheme_cycler")
-require("plugins.qdtb.package_json")
-require("plugins.qdtb.autosave")
+require("plugins.QDtb.colorscheme_cycler")
+require("plugins.QDtb.package_json")
+require("plugins.QDtb.autosave")
 require("plugins.session_manager")
 require("plugins.fold_this")
-require("plugins.qdtb.window_title")
+require("plugins.QDtb.window_title")
 require("plugins.fold_this").setup({
 	-- Options routed to fold_this.lua
 	core = {

@@ -1,6 +1,6 @@
 --- Stylua Formatting Integration.
 --- Provides a function to format the current Lua buffer using stylua.
---- @module plugins.qdtb.lua_format
+--- @module plugins.QDtb.lua_format
 
 local M = {}
 

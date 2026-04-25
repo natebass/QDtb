@@ -1,5 +1,5 @@
 --- Autocommands Configuration.
---- Defines Neovim autocommands for filetype settings, formatting, and other automated behaviors.
+--- Automated behaviors for filetype settings, formatting, etc..
 --- @module config.autocmds
 
 vim.api.nvim_create_autocmd("FileType", {

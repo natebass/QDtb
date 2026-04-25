@@ -1,20 +1,20 @@
 {
-	"html": {
-		"snippets": {
-			"xironajax": "<iron-ajax\n\tauto\n\turl=\"[[url]]\"\n\tparams=\"[[params]]\"\n\thandle-as=\"json\"\n\ton-response=\"handleResponse\"/>"
-		}
-	},
-	"javascript": {
-		"snippets": {
-			"for": "for (var ${class} = 0; i < ${id}.length; ${class}++) {\n\t|}",
-			"req": "var ${1} = require('${1}');",
-			"f": "function(${1}){${2}}",
-			"od": ".on('data', (d) => {\n${1}});"
-		}
-	},
-	"css": {
-		"snippets": {
-			"me": "@media screen and (min-width:${1}) {\n\t|\n}"
-		}
-	}
+  "html": {
+    "snippets": {
+      "xironajax": "<iron-ajax\n\tauto\n\turl=\"[[url]]\"\n\tparams=\"[[params]]\"\n\thandle-as=\"json\"\n\ton-response=\"handleResponse\"/>"
+    }
+  },
+  "javascript": {
+    "snippets": {
+      "for": "for (var ${class} = 0; i < ${id}.length; ${class}++) {\n\t|}",
+      "req": "var ${1} = require('${1}');",
+      "f": "function(${1}){${2}}",
+      "od": ".on('data', (d) => {\n${1}});"
+    }
+  },
+  "css": {
+    "snippets": {
+      "me": "@media screen and (min-width:${1}) {\n\t|\n}"
+    }
+  }
 }

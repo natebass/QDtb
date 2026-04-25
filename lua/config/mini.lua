@@ -1,11 +1,11 @@
 --- Mini.nvim Configuration.
 --- Sets up various mini.* plugins for UI, editing, and utility enhancements.
+--- Ensure mini.icons is setup early for other modules.
 --- @module config.mini
-require("mini.icons").setup()
-require("mini.notify").setup({
-	window = { winblend = 25 },
-})
+
+require("mini.notify").setup()
 vim.notify = require("mini.notify").make_notify()
+require("mini.icons").setup()
 require("mini.sessions").setup({ autoread = true, autowrite = true })
 require("mini.align").setup()
 require("mini.move").setup({

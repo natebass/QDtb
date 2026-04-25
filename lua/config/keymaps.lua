@@ -9,10 +9,10 @@ vim.g.maplocalleader = "\\"
 -- Package JSON Check
 local package_json_path = "C:\\Users\\nateb\\Source\\Repos\\be-gccpilot03-py\\frontend\\package.json"
 local package_json_dir = vim.fn.fnamemodify(package_json_path, ":h")
-local pj = require("../plugins.qdtb.package_json")
+local pj = require("../plugins.QDtb.package_json")
 map("n", "<leader>z", pj.check_npm_project, { desc = "Check if NPM project." })
 -- Colorscheme
-local colorscheme_cycler = require("../plugins.qdtb.colorscheme_cycler")
+local colorscheme_cycler = require("../plugins.QDtb.colorscheme_cycler")
 vim.cmd.colorscheme("default")
 if type(colorscheme_cycler) == "table" and colorscheme_cycler.init_colorschemes then
 	colorscheme_cycler.init_colorschemes()
@@ -64,7 +64,7 @@ map("n", "<leader>s", ":%s//<left>")
 map("n", "<leader>t", '<cmd>lua MiniSessions.read("0")<CR>')
 map("n", "<leader>u", "<cmd>lua MiniPick.builtin.buffers()<CR>")
 map("n", "<leader>v", "<cmd>TZNarrow<CR>")
-map("n", "<leader>w", require("plugins.qdtb.lua_format").format, { desc = "Run Formatting" })
+map("n", "<leader>w", require("plugins.QDtb.lua_format").format, { desc = "Run Formatting" })
 map("n", "<leader>x", "<cmd>Telescope find_files<CR>", { silent = true })
 map("n", "<leader>y", "<cmd>Telescope live_grep<CR>", { silent = true })
 map("n", "<leader>.", ":cd %:p:h<CR>", { silent = true })
