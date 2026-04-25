@@ -1,0 +1,48 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node-terminal",
+      "name": "Launch via NPM",
+      "request": "launch",
+      "command": "npm run dev",
+      "cwd": "${workspaceRoot}",
+      "presentation": {
+        "hidden": true
+      }
+    },
+    {
+      "type": "msedge",
+      "name": "Launch Microsoft Edge",
+      "request": "launch",
+      "runtimeArgs": ["--remote-debugging-port=9222"],
+      "url": "http://localhost:5173",
+      "presentation": {
+        "hidden": true
+      }
+    },
+    {
+      "type": "vscode-edge-devtools.debug",
+      "name": "Open Edge DevTools",
+      "request": "attach",
+      "url": "http://localhost:5173",
+      "presentation": {
+        "hidden": true
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Regular",
+      "configurations": ["Launch via NPM", "Launch Microsoft Edge"]
+    },
+    {
+      "name": "DevTools",
+      "configurations": [
+        "Launch via NPM",
+        "Launch Microsoft Edge",
+        "Open Edge DevTools"
+      ]
+    }
+  ]
+}
