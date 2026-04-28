@@ -35,7 +35,7 @@ Welcome to my personal Neovim configuration. It is partly based on [💤 lazy.nv
 ![image](https://raw.githubusercontent.com/natebass/qdtb-doc/refs/heads/master/screenshots/screenshot_02.png)
 
 ## ✨ Features
-- 💻 Continue where you left off. Save and resume sessions with **Session Manager**. It uses mhinz/startify and mhinz/session. It loads a start screen by default.
+- 💻 Continue where you left off. Save and resume sessions with **Session Manager**. It uses mhinz/startify and mhinz/session.
 - 🧹 Sane default settings for options, autocmds, and keymaps.
 - 📦 Comes with a wealth of plugins pre-configured and ready to use.
 
