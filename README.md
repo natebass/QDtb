@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://github.com/natebass/qdtb-doc/blob/master/screenshots/qdtb_logo.jpeg">
+  <img src="https://github.com/natebass/qdtb-doc/blob/master/documentation/static/img/logo.jpeg">
 </div>
 
 <hr>
