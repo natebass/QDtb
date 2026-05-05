@@ -3,8 +3,6 @@
 --- @module config.keymaps
 
 local map = vim.keymap.set
-vim.g.mapleader = " "
-vim.g.maplocalleader = "\\"
 -- Special {{{
 -- Package JSON Check
 local package_json_path = "C:\\Users\\nateb\\Source\\Repos\\be-gccpilot03-py\\frontend\\package.json"

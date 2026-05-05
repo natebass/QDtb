@@ -1,7 +1,6 @@
 --- Editor Options.
 --- Configures Neovim UI, editing behavior, search, and other core options.
 --- @module config.options
-
 -- UI {{{
 -- vim.opt.guifont = "CaskaydiaCove NF:h12"
 vim.opt.guifont = "ComicShannsMono Nerd Font:h12"
@@ -27,6 +26,7 @@ vim.opt.fillchars = {
 	diff = "╱",
 	eob = " ",
 }
+vim.g.neovide_hide_mouse_when_typing = true
 -- }}}
 -- Editing {{{
 vim.opt.tabstop = 4
@@ -87,9 +87,6 @@ vim.opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "
 vim.opt.shortmess:append({ W = true, I = true, c = true, C = true })
 vim.opt.termguicolors = true
 -- }}}
-
-vim.g.neovide_hide_mouse_when_typing = true
-
 -- LazyVim {{{
 vim.g.autoformat = true
 vim.g.snacks_animate = true

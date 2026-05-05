@@ -105,4 +105,4 @@ vim.g.startify_bookmarks = {
 }
 -- }}}
 -- Footer
--- vim:foldmethod=marker:foldlevel=1:ft=vim
+-- vim:foldmethod=marker:foldlevel=1

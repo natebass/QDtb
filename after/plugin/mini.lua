@@ -138,6 +138,16 @@ require("mini.jump2d").setup({
 		start_jumping = "A",
 	},
 })
+vim.api.nvim_create_autocmd("User", {
+	pattern = "MiniFilesBufferCreate",
+	callback = function(args)
+		local map_buf = function(lhs, rhs)
+			vim.keymap.set("n", lhs, rhs, { buffer = args.data.buf_id })
+		end
+		map_buf("<Esc>", MiniFiles.close)
+	end,
+	desc = "Escape key closes the MiniFiles buffer.",
+})
 -- ── Other ─────────────────────────────────────────────────────────────
 -- mini.doc, mini.fuzzy, mini.test are dev/authoring tools
 -- only enable if you're building plugins

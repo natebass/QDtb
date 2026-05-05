@@ -1,0 +1,18 @@
+{
+  "xbg": {
+    "prefix": "xbg",
+    "body": "background-color: hotpink;",
+    "description": "background-color: hotpink;"
+  },
+  "xbr": {
+    "prefix": "xbr",
+    "body": "border: 1px solid hotpink;",
+    "description": "border: 1px solid hotpink;"
+  },
+  "xc": {
+    "prefix": "xc",
+    "body": "color: hotpink;",
+    "description": "color: hotpink;"
+  }
+}
+

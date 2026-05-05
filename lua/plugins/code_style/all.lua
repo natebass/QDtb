@@ -8,6 +8,14 @@ vim.api.nvim_create_autocmd("FileType", {
 		vim.treesitter.start()
 	end,
 })
+-- Format javascript on save.
+-- vim.api.nvim_create_autocmd('BufWritePost', {
+--     pattern = { '*.ts', '*.tsx', '*.js', '*.jsx', '*.mjs', '*.mts' }, -- Add more patterns as needed
+--     callback = function()
+--         vim.cmd([[silent !deno fmt ]] .. vim.fn.expand('%'))
+--     end
+-- })
+
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "*",
 	callback = function()
@@ -25,16 +33,6 @@ vim.api.nvim_create_autocmd("User", {
 	end,
 	desc = "Escape key closes the MiniFiles buffer.",
 })
-local main_config_path = vim.fn.stdpath("config") .. "/init.lua"
-vim.api.nvim_create_autocmd("BufWritePost", {
-	group = vim.api.nvim_create_augroup("MyConfigReload", { clear = true }), -- Create or clear the augroup
-	pattern = { "lua" },
-	callback = function()
-		print("Sourcing main init.lua...")
-		vim.cmd("source " .. main_config_path)
-	end,
-	desc = "Source main init.lua on save",
-})
 -- vim.api.nvim_create_autocmd("FileType", {
 -- 	pattern = { "html", "json" },
 -- 	callback = function()
@@ -47,5 +45,14 @@ vim.api.nvim_create_user_command("H", function(opts)
 	vim.cmd("help " .. opts.args)
 	vim.cmd("only")
 end, { nargs = 1, complete = "help" })
+
+-- -- Autocmds are automatically loaded on the VeryLazy event
+-- -- Default autocmds that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/autocmds.lua
+-- --
+-- -- Add any additional autocmds here
+-- -- with `vim.api.nvim_create_autocmd`
+-- --
+-- -- Or remove existing autocmds by their group name (which is prefixed with `lazyvim_` for the defaults)
+-- -- e.g. vim.api.nvim_del_augroup_by_name("lazyvim_wrap_spell")
 -- Footer
--- vim:foldmethod=marker:foldlevel=1:ft=vim
+-- vim:foldmethod=marker:foldlevel=1

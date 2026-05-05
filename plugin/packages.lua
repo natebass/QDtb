@@ -1,0 +1,25 @@
+--- Add packages with the native Neovim package manager.
+-- Packages {{{
+vim.pack.add({
+	"https://github.com/mhinz/vim-startify",
+	"https://github.com/vague2k/vague.nvim",
+	"https://github.com/nvim-lua/plenary.nvim",
+	"https://github.com/nvim-telescope/telescope.nvim",
+	{ src = "https://codeberg.org/andyg/leap.nvim", name = "leap.nvim" },
+	"https://github.com/preservim/nerdtree",
+	"https://github.com/junegunn/goyo.vim",
+	"https://github.com/junegunn/limelight.vim",
+	"https://github.com/Mofiqul/vscode.nvim",
+	"https://github.com/neovim/nvim-lspconfig",
+	"https://github.com/nvim-focus/focus.nvim",
+	"https://github.com/folke/zen-mode.nvim",
+	"https://github.com/pocco81/true-zen.nvim",
+	"https://github.com/github/copilot.vim",
+	"https://github.com/wakatime/vim-wakatime",
+	"https://github.com/folke/lazydev.nvim",
+	"https://github.com/Bilal2453/luvit-meta",
+	"https://github.com/folke/snacks.nvim",
+})
+-- }}}
+-- Footer
+-- vim:foldmethod=marker:foldlevel=1
