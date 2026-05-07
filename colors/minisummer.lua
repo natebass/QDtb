@@ -1,7 +1,4 @@
---- colors.minisummer module.
---- @module colors.minisummer
-
--- 'Hot summer'
+--- Hot summer colorscheme.
 -- Dark  (OKLch): bg=15-1-45 and fg=85-2-70
 -- Light (OKLch): bg=90-1-45 and fg=20-2-70
 -- Foreground hues are picked to maximize palette's bg colors visibility

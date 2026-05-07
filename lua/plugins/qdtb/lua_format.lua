@@ -1,9 +1,7 @@
---- Stylua Formatting Integration.
---- Provides a function to format the current Lua buffer using stylua.
---- @module plugins.QDtb.lua_format
-
+--- Format Lua with Stylua.
+--- - Format the current buffer.
+--- @module "plugins.QDtb.lua_format"
 local M = {}
-
 --- Formats the current buffer using stylua-bin via npx.
 --- Saves the file before running formatting.
 --- @function format
@@ -14,7 +12,6 @@ M.format = function()
 	else
 		vim.notify("Running Formatting...", vim.log.levels.INFO)
 	end
-
 	vim.system({ "npx", "@johnnymorganz/stylua-bin", vim.fn.expand("%:p") }, { text = true }, function(result)
 		vim.schedule(function()
 			if result.code ~= 0 then

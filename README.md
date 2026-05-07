@@ -35,19 +35,23 @@ Welcome to my personal Neovim configuration. It is partly based on [💤 lazy.nv
 ![image](https://raw.githubusercontent.com/natebass/qdtb-doc/refs/heads/master/screenshots/screenshot_02.png)
 
 ## ✨ Features
+
 - 💻 Continue where you left off. Save and resume sessions with **Session Manager**. It uses mhinz/startify and mhinz/session.
 
 ## ⚡️ Requirements
+
 - Neovim >= **0.12**
 - A [Nerd Font](https://www.nerdfonts.com/) **_(recommended)_**
 
 ## 🚀 Install
-Clone into `stdpath('config')`.
+
+Clone into `stdpath("config")`.
 
 > [!IMPORTANT]
-> You must also clone the mini.nvim repository in `{stdpath('data')}/site/pack/core/start/`.
+> You must also clone the mini.nvim repository in `{stdpath("data")}/site/pack/core/start/`.
 
 ## 📂 File structure
+
 Here is a breakdown of the Lua folder. For other directories, see their respective READMEs.
 
 <pre>
@@ -70,4 +74,5 @@ Here is a breakdown of the Lua folder. For other directories, see their respecti
 </pre>
 
 ## Resources
+
 - The QDtb documentation repository https://github.com/natebass/qdtb-doc.

@@ -1,6 +1,5 @@
---- Algorithm Quotes.
---- Provides a randomly selected quote about algorithms for the Startify custom footer.
---- @module plugins.session_manager.algorithm_quote
+--- Algorithm Quotes. Randomly select quote about algorithms for the Startify custom footer.
+--- @module "plugins.session_manager.algorithm_quote"
 
 local M = {}
 

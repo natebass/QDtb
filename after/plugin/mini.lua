@@ -151,8 +151,8 @@ vim.api.nvim_create_autocmd("User", {
 -- ── Other ─────────────────────────────────────────────────────────────
 -- mini.doc, mini.fuzzy, mini.test are dev/authoring tools
 -- only enable if you're building plugins
--- require('mini.doc').setup()
--- require('mini.fuzzy').setup()
--- require('mini.test').setup()
+-- require("mini.doc").setup()
+-- require("mini.fuzzy").setup()
+-- require("mini.test").setup()
 -- Footer
 -- vim:foldmethod=marker:foldlevel=2

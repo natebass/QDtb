@@ -1,7 +1,6 @@
 --- Autosave Configuration.
 --- Automatically saves files when focus is lost or before exiting Vim.
---- @module plugins.QDtb.autosave
-
+--- @module "plugins.QDtb.autosave"
 local augroup = vim.api.nvim_create_augroup("QdtbAutosave", { clear = true })
 -- This list covers common web development files and general programming files.
 local filetypes_to_save = {

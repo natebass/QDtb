@@ -1,10 +1,7 @@
 --- Fold Navigation Utilities.
 --- Provides functions to navigate between closed folds.
---- @module plugins.fold_this.fold_navigation
-
--- lua/fold_navigation.lua
+--- @module "plugins.fold_this.fold_navigation"
 local M = {}
-
 --- Moves the cursor to the next or previous closed fold.
 --- @function next_closed_fold
 --- @param dir string Direction to search ('j' for down, 'k' for up).
@@ -14,20 +11,16 @@ function M.next_closed_fold(dir)
 	local l0 = 0
 	local l = view.lnum
 	local open = true
-
 	while l ~= l0 and open do
 		vim.api.nvim_feedkeys(cmd, "n", true)
 		l0 = l
 		l = vim.api.nvim_win_get_cursor(0)[1]
 		open = vim.fn.foldclosed(l) < 0
 	end
-
 	if open then
 		vim.fn.winrestview(view)
 	end
 end
-
-return M
 
 -- vim.cmd [[
 --   function! NextClosedFold(dir)
@@ -44,3 +37,4 @@ return M
 --     endif
 --   endfunction
 -- ]]
+return M

@@ -1,9 +1,7 @@
 --- Fold_This Core Configuration.
 --- Sets up custom folding text, fillchars, and buffer-local folding logic.
---- @module plugins.fold_this.fold_this
-
+--- @module "plugins.fold_this.fold_this"
 local M = {}
-
 -- Default configuration allows users to override settings
 local default_opts = {
 	default_level = 99,

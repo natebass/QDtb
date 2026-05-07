@@ -1,3 +1,6 @@
+--- Lua LSP configuration
+--- @module "plugins.code_style.lua"
+local M = {}
 vim.lsp.config("lua_ls", {
 	settings = {
 		Lua = {
@@ -10,3 +13,4 @@ vim.lsp.config("lua_ls", {
 	},
 })
 vim.lsp.enable("lua_ls")
+return M

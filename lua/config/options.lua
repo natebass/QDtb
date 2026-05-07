@@ -1,6 +1,6 @@
---- Editor Options.
---- Configures Neovim UI, editing behavior, search, and other core options.
---- @module config.options
+--- Editor Options. Configures Neovim UI, editing behavior, search, and other core options.
+--- @module "config.options"
+local M = {}
 -- UI {{{
 -- vim.opt.guifont = "CaskaydiaCove NF:h12"
 vim.opt.guifont = "ComicShannsMono Nerd Font:h12"
@@ -97,5 +97,7 @@ vim.g.root_spec = { "lsp", { ".git", "lua" }, "cwd" }
 vim.g.root_lsp_ignore = { "copilot" }
 vim.g.deprecation_warnings = false
 vim.g.trouble_lualine = true -- Show document symbol location in lualine
+-- }}}
+return M
 -- Footer
 -- vim:foldmethod=marker:foldlevel=1

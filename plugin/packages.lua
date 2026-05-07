@@ -1,5 +1,4 @@
 --- Add packages with the native Neovim package manager.
--- Packages {{{
 vim.pack.add({
 	"https://github.com/mhinz/vim-startify",
 	"https://github.com/vague2k/vague.nvim",
@@ -20,6 +19,3 @@ vim.pack.add({
 	"https://github.com/Bilal2453/luvit-meta",
 	"https://github.com/folke/snacks.nvim",
 })
--- }}}
--- Footer
--- vim:foldmethod=marker:foldlevel=1

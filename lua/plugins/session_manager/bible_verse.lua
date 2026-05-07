@@ -1,5 +1,4 @@
---- Bible Verse Quotes.
---- Provides a randomly selected Bible verse for the Startify custom header.
+--- Bible Verses. Randomly selected Bible verses for the Startify custom header.
 --- @module plugins.session_manager.bible_verse
 
 local M = {}

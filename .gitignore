@@ -16,7 +16,7 @@ shada/
 
 # Lua
 luac.out
-.luarc.json
+# .luarc.json
 
 # LSP and formatters
 .null-ls*

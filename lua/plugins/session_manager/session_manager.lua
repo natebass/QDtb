@@ -1,7 +1,5 @@
---- Session Manager Configuration.
---- Configures Startify for session management, custom headers, and bookmarks.
---- @module plugins.session_manager.session_manager
-
+--- Configure Startify for session management, custom headers, and bookmarks.
+--- @module "plugins.session_manager.session_manager"
 local g = vim.g
 -- General Settings {{{
 g.startify_enable_special = 0 -- Disable the default special buffers (help, intro, etc.).

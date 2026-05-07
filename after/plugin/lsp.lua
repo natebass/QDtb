@@ -1,5 +1,5 @@
 -- Create a user command :HelloPlugin
--- vim.api.nvim_create_user_command('HelloPlugin', function()
+-- vim.api.nvim_create_user_command("HelloPlugin", function()
 --     require("plugins/my_plugin").say_hello()
 -- end, {})
 
@@ -11,4 +11,3 @@ require("lazydev").setup({
 		{ path = "snacks.nvim", words = { "Snacks" } },
 	},
 })
-

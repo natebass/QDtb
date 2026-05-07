@@ -1,5 +1,4 @@
---- colors.minigrey module.
---- @module colors.minigrey
+--- Grey colorscheme.
 
 -- 'Less colors' vibe
 -- Lightness levels are 15+85 for 'dark' and 90+20 for 'light'. Picked by hand.
