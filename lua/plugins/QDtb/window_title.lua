@@ -1,5 +1,7 @@
---- Set the terminal window title based on the active Neovim buffer and project.
+--- Window Title Utility.
+--- Sets the terminal window title based on the active Neovim buffer and project.
 --- @module plugins.QDtb.window_title
+
 local M = {}
 --- Sets the terminal window title using xdotool.
 --- Note: This assumes nvim is running in a terminal.
@@ -24,7 +26,6 @@ function M.set_terminal_title(title)
 		-- stderr_callback = function(chan, data, event) print(table.concat(data)) end,
 	})
 end
-
 --- Sets the title based on the current buffer/project.
 --- Extracts the current buffer name and working directory name.
 --- @function set_nvim_window_title
@@ -44,5 +45,4 @@ function M.set_nvim_window_title()
 	end
 	M.set_terminal_title(title)
 end
-
 return M
