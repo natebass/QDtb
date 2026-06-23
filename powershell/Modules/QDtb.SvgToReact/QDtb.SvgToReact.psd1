@@ -1,8 +1,6 @@
-
-# VariablesToExport = @()
 @{
     # Script module or binary module file associated with this manifest.
-    RootModule           = 'Qdtb.Utility.psm1'
+    RootModule           = 'QDtb.SvgToReact.psm1'
 
     # Version number of this module.
     ModuleVersion        = '0.0.1'
@@ -20,7 +18,7 @@
     Copyright            = 'MIT'
 
     # Description of the functionality provided by this module
-    Description          = 'Contains general utility functions.'
+    Description          = 'Convert SVGs into react components.'
 
     # Minimum version of the Windows PowerShell engine required by this module
     # PowerShellVersion      = '5.1'
@@ -49,9 +47,9 @@
     # )
 
     # Script files (.ps1) that are run in the caller's environment prior to importing this module.
-    # ScriptsToProcess     = @(
-    #     '.\Classes\Classes.ps1'
-    # )
+    ScriptsToProcess     = @(
+        '.\Classes\Classes.ps1'
+    )
 
     # Type files (.ps1xml) to be loaded when importing this module
     # TypesToProcess = @()
@@ -64,15 +62,9 @@
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
     FunctionsToExport    = @(
-        "Write-RainbowPrompt"
-        "Start-MyProject"
-        "Sync-Fork"
-        "Get-MyProjectGitStatus"
-        "ConvertTo-Icon"
-        "New-RandomColorGridImage"
-        "Update-WingetPackage"
-        "Update-GitRepositories"
-        "Invoke-GitStatusCheck"
+        "Convert-ComponentContent"
+        "Convert-SvgAttributesReact"
+        "Convert-FolderSvgToReact"
     )
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
@@ -97,7 +89,7 @@
     PrivateData          = @{
         PSData = @{
             # Tags applied to this module. These help with module discovery in online galleries.
-            Tags         = 'Linux', 'PowerShell'
+            Tags         = 'Linux', 'PowerShell', 'SVG', 'React'
 
             # A URL to the license for this module.
             LicenseUri   = ''

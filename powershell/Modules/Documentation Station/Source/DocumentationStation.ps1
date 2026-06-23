@@ -1,13 +1,19 @@
-
+﻿
 
 function Start-DocStation {
-    if (Read-LineC468A) {
-        Write-Host "Project documentation generated in the $PSScript/docstation folder." -ForegroundColor Green
-        return $true
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    [OutputType([bool])]
+    param()
+    if ($PSCmdlet.ShouldProcess('documentation', 'Generate project documentation')) {
+        if (Read-LineC468A) {
+            Write-Information "Project documentation generated in the $PSScript/docstation folder." -ForegroundColor Green
+            return $true
+        }
+        else {
+            Write-Information "You chose no." -ForegroundColor Red
+            return $false
+        }
     }
-    else {
-        Write-Host "You chose no." -ForegroundColor Red
-        return $false
-    }
-    return Read-LineC468A
+    return $false
 }
+

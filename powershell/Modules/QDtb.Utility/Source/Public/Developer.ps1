@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
 Syncs a forked Git repository with its upstream, handling merge conflicts.
 .EXAMPLE
@@ -7,6 +7,7 @@ Example usage (run in a PowerShell console with verbose output enabled):
 `Sync-Fork -ForkPath "C:\path\to\your\fork" -Verbose`
 #>
 function Sync-Fork {
+    [CmdletBinding(SupportsShouldProcess = $true)]
     param (
         [string]$ForkPath = "." # Default to current directory
     )
@@ -25,10 +26,14 @@ function Sync-Fork {
 
         Write-Verbose "Merging upstream changes into local branch." -Verbose
         $currentBranch = git -C $ForkPath rev-parse --abbrev-ref HEAD
-        git -C $ForkPath merge upstream/$currentBranch --ff-only
+        if ($PSCmdlet.ShouldProcess($ForkPath, "Merge upstream/$currentBranch branch")) {
+            git -C $ForkPath merge upstream/$currentBranch --ff-only
+        }
 
         Write-Verbose "Pushing changes to origin." -Verbose
-        git -C $ForkPath push origin $currentBranch
+        if ($PSCmdlet.ShouldProcess($ForkPath, "Push to origin/$currentBranch")) {
+            git -C $ForkPath push origin $currentBranch
+        }
 
         Write-Verbose "Fork synced successfully." -Verbose
 
@@ -42,6 +47,7 @@ function Sync-Fork {
     Sets the repository path based on the operating system, fetches the latest changes, checks the status, pulls if no changes, and starts development jobs.
 #>
 function Start-MyProject {
+    [CmdletBinding(SupportsShouldProcess = $true)]
     param (
         [switch]$RunInBackground
     )
@@ -49,28 +55,34 @@ function Start-MyProject {
     Push-Location $repo
     git fetch
     $s = git status --porcelain
-    if ($s) { $s } else { 
-        write-host "pulling"
-        git pull
+    if ($s) { $s } else {
+        if ($PSCmdlet.ShouldProcess($repo, "Pull latest changes")) {
+            Write-Output "pulling"
+            git pull
+        }
     }
     Pop-Location
     if ($RunInBackground) {
-        write-host a
-        Push-Location "$repo\frontend"
-        Start-Job { npm run dev 2>&1 }
-        Pop-Location
-        Push-Location "$repo\backend"
-        Start-Job { uv run fastapi dev 2>&1 }
-        Pop-Location
+        if ($PSCmdlet.ShouldProcess($repo, "Start background jobs")) {
+            Write-Output "a"
+            Push-Location "$repo\frontend"
+            Start-Job { npm run dev 2>&1 }
+            Pop-Location
+            Push-Location "$repo\backend"
+            Start-Job { uv run fastapi dev 2>&1 }
+            Pop-Location
+        }
     }
     else {
-        write-host b
-        Push-Location "$repo\frontend"
-        Start-Job { npm run dev }  | Receive-Job
-        Pop-Location
-        Push-Location "$repo\backend"
-        Start-Job { uv run fastapi dev } | Receive-Job
-        Pop-Location
+        if ($PSCmdlet.ShouldProcess($repo, "Start foreground jobs")) {
+            Write-Output "b"
+            Push-Location "$repo\frontend"
+            Start-Job { npm run dev }  | Receive-Job
+            Pop-Location
+            Push-Location "$repo\backend"
+            Start-Job { uv run fastapi dev } | Receive-Job
+            Pop-Location
+        }
     }
     push-location $repo
     Read-Host "Press Enter to exit"
@@ -99,8 +111,8 @@ function Get-MyProjectGitStatus {
             [string]$repoPath
         )
         if (-not (Test-Path $repoPath)) {
-            Write-Host $repoPath -ForegroundColor Cyan
-            Write-Host "Repository path does not exist!" -ForegroundColor Red
+            Write-Information $repoPath -ForegroundColor Cyan
+            Write-Information "Repository path does not exist!" -ForegroundColor Red
             return
         }
 
@@ -108,29 +120,29 @@ function Get-MyProjectGitStatus {
             Push-Location $repoPath
             $isGitRepo = git rev-parse --is-inside-work-tree 2>$null
             if (-not $isGitRepo) {
-                Write-Host "Not a git repository!" -ForegroundColor Red
+                Write-Information "Not a git repository!" -ForegroundColor Red
                 return
             }
             $gitStatus = git --no-pager status
             if ($gitStatus -eq "Your branch is up to date with 'origin/main'.") {
-                Write-Host $repoPath "GOOD" -ForegroundColor Gray
+                Write-Information $repoPath "GOOD" -ForegroundColor Gray
                 return
             }
             $gitStatus | ForEach-Object {
                 switch -Regex ($_) {
-                    '^On branch' { Write-Host $_ -ForegroundColor Green }
-                    'Changes not staged for commit' { Write-Host $_ -ForegroundColor Yellow }
-                    'Changes to be committed' { Write-Host $_ -ForegroundColor Blue }
-                    'Untracked files' { Write-Host $_ -ForegroundColor Red }
-                    'Your branch is ahead of' { Write-Host $_ -ForegroundColor Magenta }
-                    'Your branch is behind' { Write-Host $_ -ForegroundColor Magenta }
-                    'nothing to commit' { Write-Host $_ -ForegroundColor Green }
-                    default { Write-Host $_ }
+                    '^On branch' { Write-Information $_ -ForegroundColor Green }
+                    'Changes not staged for commit' { Write-Information $_ -ForegroundColor Yellow }
+                    'Changes to be committed' { Write-Information $_ -ForegroundColor Blue }
+                    'Untracked files' { Write-Information $_ -ForegroundColor Red }
+                    'Your branch is ahead of' { Write-Information $_ -ForegroundColor Magenta }
+                    'Your branch is behind' { Write-Information $_ -ForegroundColor Magenta }
+                    'nothing to commit' { Write-Information $_ -ForegroundColor Green }
+                    default { Write-Information $_ }
                 }
             }
         }
         catch {
-            Write-Host "Error checking git status: $($_.Exception.Message)" -ForegroundColor Red
+            Write-Information "Error checking git status: $($_.Exception.Message)" -ForegroundColor Red
         }
         finally {
             Pop-Location
@@ -144,7 +156,7 @@ function Get-MyProjectGitStatus {
     Read-Host "Press Enter to exit"
 }
 
-function Update-GitRepositories {
+function Update-GitRepository {
     <#
     .SYNOPSIS
         Recursively updates all Git repositories within a specified root folder.
@@ -172,7 +184,7 @@ function Update-GitRepositories {
         Requires Git to be installed and available in the system's PATH. This is an advanced function
         (cmdlet) and can be saved as a `.psm1` module file or executed after being loaded into a session.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $true)]
     param (
         [string]$RootFolder = (Get-Location).Path
     )
@@ -191,7 +203,7 @@ function Update-GitRepositories {
         Write-Error "The specified root folder '$RootFolder' does not exist."
         return
     }
-    Write-Host "Starting Git update and pull for repositories in: $resolvedRootFolder" -ForegroundColor Cyan
+    Write-Information "Starting Git update and pull for repositories in: $resolvedRootFolder" -ForegroundColor Cyan
     $gitRepos = Get-ChildItem -Path $resolvedRootFolder -Directory -Recurse -ErrorAction SilentlyContinue | Where-Object {
         Test-Path "$($_.FullName)\.git"
     }
@@ -200,7 +212,7 @@ function Update-GitRepositories {
         return
     }
     foreach ($repo in $gitRepos) {
-        Write-Host "`nProcessing repository: $($repo.FullName)" -ForegroundColor Green
+        Write-Information "`nProcessing repository: $($repo.FullName)" -ForegroundColor Green
         try {
             Set-Location -Path $repo.FullName
             $status = git status --porcelain
@@ -209,15 +221,17 @@ function Update-GitRepositories {
                 Write-Warning "Please commit or stash your changes in '$($repo.FullName)' manually."
                 continue
             }
-            Write-Host "  Fetching latest changes and pruning stale branches..."
-            git fetch --all --prune | Out-Null
-            Write-Host "  Pulling changes..."
-            git pull
-            if ($LASTEXITCODE -eq 0) {
-                Write-Host "  Successfully pulled changes for '$($repo.Name)'." -ForegroundColor Green
-            }
-            else {
-                Write-Warning "  Pull for '$($repo.Name)' encountered issues. Check the output above."
+            Write-Information "  Fetching latest changes and pruning stale branches..."
+            if ($PSCmdlet.ShouldProcess($repo.FullName, 'Fetch latest changes and pull')) {
+                git fetch --all --prune | Out-Null
+                Write-Information "  Pulling changes..."
+                git pull
+                if ($LASTEXITCODE -eq 0) {
+                    Write-Information "  Successfully pulled changes for '$($repo.Name)'." -ForegroundColor Green
+                }
+                else {
+                    Write-Warning "  Pull for '$($repo.Name)' encountered issues. Check the output above."
+                }
             }
         }
         catch {
@@ -227,7 +241,7 @@ function Update-GitRepositories {
             Set-Location -Path $initialLocation
         }
     }
-    Write-Host "`nGit update and pull process completed." -ForegroundColor Cyan
+    Write-Information "`nGit update and pull process completed." -ForegroundColor Cyan
 }
 
 function Invoke-GitStatusCheck {
@@ -263,6 +277,7 @@ function Invoke-GitStatusCheck {
         Invoke-GitStatusCheck -Depth 3 -SkipFetch
     #>
     [CmdletBinding()]
+    [OutputType([System.Collections.Generic.List[PSCustomObject]])]
     param(
         [Parameter(Position = 0)]
         [ValidateScript({ Test-Path $_ -PathType Container })]
@@ -279,7 +294,7 @@ function Invoke-GitStatusCheck {
 
     # ── Helpers ────────────────────────────────────────────────────────────────
 
-    function Find-GitRepos {
+    function Find-GitRepo {
         param([string]$Root, [int]$MaxDepth)
 
         # Depth 1 → only root; Depth 2 → root + children; Depth 3 → +grandchildren
@@ -305,11 +320,10 @@ function Invoke-GitStatusCheck {
     }
 
     function Invoke-GitFetch {
-        param([string]$RepoPath)
+        param([string]$RepoPath, [int]$FetchTimeout)
         try {
             $job = Start-Job -ScriptBlock {
-                param($p)
-                Set-Location $p
+                Set-Location $using:RepoPath
                 git fetch --quiet 2>&1
             } -ArgumentList $RepoPath
 
@@ -321,7 +335,6 @@ function Invoke-GitStatusCheck {
             }
 
             $output = Receive-Job $job
-            $exitCode = $job.ChildJobs[0].JobStateInfo.State
             Remove-Job $job -Force
             return @{ Success = $true; Output = ($output -join ' ').Trim() }
         }
@@ -419,7 +432,7 @@ function Invoke-GitStatusCheck {
     # ── Main ───────────────────────────────────────────────────────────────────
 
     $rootResolved = (Resolve-Path $Path).Path
-    Write-Host "`n🔍 Scanning: $rootResolved  (depth $Depth)" -ForegroundColor Cyan
+    Write-Information "`n🔍 Scanning: $rootResolved  (depth $Depth)" -ForegroundColor Cyan
 
     $repos = Find-GitRepos -Root $rootResolved -MaxDepth $Depth
 
@@ -428,7 +441,7 @@ function Invoke-GitStatusCheck {
         return
     }
 
-    Write-Host "   Found $($repos.Count) repo(s)`n" -ForegroundColor Cyan
+    Write-Information "   Found $($repos.Count) repo(s)`n" -ForegroundColor Cyan
 
     $results = [System.Collections.Generic.List[PSCustomObject]]::new()
     $counter = 0
@@ -438,17 +451,17 @@ function Invoke-GitStatusCheck {
         $relPath = $repo.Replace($rootResolved, '').TrimStart([IO.Path]::DirectorySeparatorChar)
         if ($relPath -eq '') { $relPath = '.' }
 
-        Write-Host "  [$counter/$($repos.Count)] $relPath" -NoNewline
+        Write-Information "  [$counter/$($repos.Count)] $relPath" -NoNewline
 
         # --- fetch ---
         $fetchStatus = 'Skipped'
         if (-not $SkipFetch) {
-            Write-Host ' → fetching...' -NoNewline
-            $fetchResult = Invoke-GitFetch -RepoPath $repo
+            Write-Information ' → fetching...' -NoNewline
+            $fetchResult = Invoke-GitFetch -RepoPath $repo -FetchTimeout $FetchTimeout
             $fetchStatus = if ($fetchResult.Success) { 'OK' } else { "FAIL: $($fetchResult.Output)" }
         }
 
-        Write-Host ''  # newline
+        Write-Information ''  # newline
 
         # --- status ---
         $info = Get-GitStatusInfo -RepoPath $repo
@@ -475,9 +488,9 @@ function Invoke-GitStatusCheck {
     # ── Summary table ──────────────────────────────────────────────────────────
 
     $divider = '─' * 100
-    Write-Host "`n$divider" -ForegroundColor DarkGray
-    Write-Host ' GIT STATUS SUMMARY' -ForegroundColor White
-    Write-Host "$divider`n" -ForegroundColor DarkGray
+    Write-Information "`n$divider" -ForegroundColor DarkGray
+    Write-Information ' GIT STATUS SUMMARY' -ForegroundColor White
+    Write-Information "$divider`n" -ForegroundColor DarkGray
 
     foreach ($r in $results) {
         # Pick row colour
@@ -487,14 +500,14 @@ function Invoke-GitStatusCheck {
 
         $fetchColor = if ($r.Fetch -like 'FAIL*') { 'Red' } elseif ($r.Fetch -eq 'OK') { 'Green' } else { 'DarkGray' }
 
-        Write-Host ('  {0,-40} ' -f $r.Repo)         -NoNewline -ForegroundColor $rowColor
-        Write-Host ('{0,-18} ' -f $r.Branch)        -NoNewline -ForegroundColor Cyan
-        Write-Host ('Fetch:{0,-10} ' -f $r.Fetch)     -NoNewline -ForegroundColor $fetchColor
-        Write-Host ('Local:{0,-30} ' -f $r.Local)     -NoNewline -ForegroundColor $rowColor
-        Write-Host ('Sync:{0}' -f $r.Sync)                    -ForegroundColor $rowColor
+        Write-Information ('  {0,-40} ' -f $r.Repo)         -NoNewline -ForegroundColor $rowColor
+        Write-Information ('{0,-18} ' -f $r.Branch)        -NoNewline -ForegroundColor Cyan
+        Write-Information ('Fetch:{0,-10} ' -f $r.Fetch)     -NoNewline -ForegroundColor $fetchColor
+        Write-Information ('Local:{0,-30} ' -f $r.Local)     -NoNewline -ForegroundColor $rowColor
+        Write-Information ('Sync:{0}' -f $r.Sync)                    -ForegroundColor $rowColor
     }
 
-    Write-Host "`n$divider" -ForegroundColor DarkGray
+    Write-Information "`n$divider" -ForegroundColor DarkGray
 
     # Aggregate stats
     $clean = ($results | Where-Object { $_.Local -eq 'Clean' -and $_.Sync -in @('In sync', 'No upstream') }).Count
@@ -502,12 +515,12 @@ function Invoke-GitStatusCheck {
     $outOfSync = ($results | Where-Object { $_.Sync -notin @('In sync', 'No upstream', 'Skipped') }).Count
     $fetchFailed = ($results | Where-Object { $_.Fetch -like 'FAIL*' }).Count
 
-    Write-Host ("`n  Repos scanned : {0}" -f $results.Count)   -ForegroundColor White
-    Write-Host ("  ✔  Clean       : {0}" -f $clean)             -ForegroundColor Green
-    Write-Host ("  ⚠  Dirty       : {0}" -f $dirty)             -ForegroundColor Yellow
-    Write-Host ("  ↕  Out of sync : {0}" -f $outOfSync)         -ForegroundColor Yellow
-    Write-Host ("  ✘  Fetch errors: {0}" -f $fetchFailed)       -ForegroundColor $(if ($fetchFailed -gt 0) { 'Red' } else { 'DarkGray' })
-    Write-Host ''
+    Write-Information ("`n  Repos scanned : {0}" -f $results.Count)   -ForegroundColor White
+    Write-Information ("  ✔  Clean       : {0}" -f $clean)             -ForegroundColor Green
+    Write-Information ("  ⚠  Dirty       : {0}" -f $dirty)             -ForegroundColor Yellow
+    Write-Information ("  ↕  Out of sync : {0}" -f $outOfSync)         -ForegroundColor Yellow
+    Write-Information ("  ✘  Fetch errors: {0}" -f $fetchFailed)       -ForegroundColor $(if ($fetchFailed -gt 0) { 'Red' } else { 'DarkGray' })
+    Write-Information ''
 
     # Return the data for piping
     return $results

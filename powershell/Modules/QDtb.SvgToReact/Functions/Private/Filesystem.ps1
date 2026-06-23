@@ -4,12 +4,17 @@
     Sets up the icon directory if it does not exist.
 #>
 function New-IconDirectory {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    [OutputType([string])]
     param (
         [string]$IconDir = "icon"
     )
-    if (-not (Test-Path -Path $IconDir)) { New-Item -ItemType Directory -Path $iconDir | Out-Null }
-    return $iconDir
+    if (-not (Test-Path -Path $IconDir)) {
+        if ($PSCmdlet.ShouldProcess($IconDir, 'Create icon directory')) {
+            New-Item -ItemType Directory -Path $IconDir -Force | Out-Null
+        }
+    }
+    return $IconDir
 }
 <#
     .SYNOPSIS
@@ -28,6 +33,11 @@ function CreateIndexFile {
     param ([string]$iconDir, [System.Collections.Generic.HashSet[string]]$componentNames)
     $indexContent = $componentNames | Sort-Object | ForEach-Object { "export * from './$_';" } -join "`n"
     $indexPath = Join-Path -Path $iconDir -ChildPath "index.ts"
-    try { Set-Content -Path $indexPath -Value $indexContent; Write-Log -level "INFO" -message "Created index file at $indexPath" }
-    catch { Write-Log -level "ERROR" -message "Error creating index file: $_" }
+    try {
+        Set-Content -Path $indexPath -Value $indexContent
+        Write-ModuleLog -Level "INFO" -Message "Created index file at $indexPath"
+    }
+    catch {
+        Write-ModuleLog -Level "ERROR" -Message "Error creating index file: $_"
+    }
 }

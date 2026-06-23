@@ -1,10 +1,10 @@
-#!/usr/bin/env pwsh
+﻿#!/usr/bin/env pwsh
 
 [CmdletBinding()]
 param(
-    [Parameter(Position=0)]
-    [ValidateScript({ Test-Path $_ })]
-    [string]$GitDirectory = (Get-Location)
+    [Parameter(Position = 0)]
+    [ValidateScript({ Test-Path $_ -PathType Container })]
+    [string]$GitDirectory = (Get-Location).Path
 )
 
 <#
@@ -21,83 +21,73 @@ param(
 .EXAMPLE
     gnome-terminal --geometry=80x56+2200 -- bash -c "pwsh -Command '& ~/.local/share/powershell/Scripts/Get-GitStatusAllBranches.ps1 ~/Source/Repos/fe-innovcal-web'; exec fish"
 #>
-function Get-GitStatusAllBranches {
+function Get-GitStatusAllBranch {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
-        [ValidateScript({ Test-Path $_ })]
+        [ValidateScript({ Test-Path $_ -PathType Container })]
         [string]$RepoPath
     )
-    
-    # Use try-finally to ensure we return to original location
+
     $originalLocation = Get-Location
     try {
-        # Validate and change to the specified directory
         Set-Location $RepoPath -ErrorAction Stop
-        
-        # Check if it's a git repository
-        if (-not (Test-Path ".git") -and -not (git rev-parse --git-dir 2>$null)) {
+
+        $gitDir = git rev-parse --git-dir 2>$null
+        if (-not (Test-Path ".git") -and -not $gitDir) {
             throw "Not a git repository: $RepoPath"
         }
-        
-        Write-Host "=== Working in repository: $RepoPath ===" -ForegroundColor Magenta
-        Write-Host ""
-        
-        # Fetch all remote branches
-        Write-Host "=== Fetching all remote branches ===" -ForegroundColor Green
+
+        Write-Information "=== Working in repository: $RepoPath ===" -ForegroundColor Magenta
+        Write-Information ""
+
+        Write-Information "=== Fetching all remote branches ===" -ForegroundColor Green
         $null = git fetch --all
         if ($LASTEXITCODE -ne 0) {
             throw "Failed to fetch remote branches"
         }
-        
-        # Get and pull current branch
-        Write-Host "`n=== Getting current branch ===" -ForegroundColor Green
+
+        Write-Information "`n=== Getting current branch ===" -ForegroundColor Green
         $currentBranch = git branch --show-current
         if ($LASTEXITCODE -ne 0) {
             throw "Failed to get current branch"
         }
-        
-        Write-Host "Current branch: $currentBranch" -ForegroundColor Yellow
-        
-        Write-Host "`n=== Pulling current branch ===" -ForegroundColor Green
+
+        Write-Information "Current branch: $currentBranch" -ForegroundColor Yellow
+
+        Write-Information "`n=== Pulling current branch ===" -ForegroundColor Green
         $null = git pull origin $currentBranch
         if ($LASTEXITCODE -ne 0) {
             Write-Warning "Failed to pull current branch $currentBranch"
         }
-        
-        # Get all unique branch names
-        Write-Host "`n=== Getting all branches (local and remote) ===" -ForegroundColor Green
-        $allBranches = git branch -a | 
+
+        Write-Information "`n=== Getting all branches (local and remote) ===" -ForegroundColor Green
+        $allBranches = git branch -a |
             Where-Object { $_ -notmatch 'HEAD' } |
             ForEach-Object { $_.Trim() -replace '^\*\s*', '' -replace '^remotes/origin/', '' } |
             Sort-Object -Unique
-        
-        Write-Host "`n=== Checking status of all branches ===" -ForegroundColor Green
-        
+
+        Write-Information "`n=== Checking status of all branches ===" -ForegroundColor Green
+
         foreach ($branch in $allBranches) {
-            Write-Host "`n--- Branch: $branch ---" -ForegroundColor Cyan
-            
-            # Check if branch exists locally
-            $localBranchExists = git show-ref --verify --quiet "refs/heads/$branch" 2>$null
-            
+            Write-Information "`n--- Branch: $branch ---" -ForegroundColor Cyan
+
+            $null = git show-ref --verify --quiet "refs/heads/$branch" 2>$null
             if ($LASTEXITCODE -eq 0) {
-                # Switch to the branch
                 $null = git checkout $branch *>$null
-                
+
                 if ($LASTEXITCODE -eq 0) {
-                    # Try to pull the branch
                     $null = git pull origin $branch *>$null
-                    
-                    # Show status
-                    Write-Host "Status:" -ForegroundColor White
+
+                    Write-Information "Status:" -ForegroundColor White
                     $status = git status --porcelain
                     if ($status) {
-                        $status | ForEach-Object { Write-Host "  $_" }
-                    } else {
-                        Write-Host "  Clean working directory" -ForegroundColor Green
+                        $status | ForEach-Object { Write-Information "  $_" }
                     }
-                    
-                    # Show commits ahead/behind
+                    else {
+                        Write-Information "  Clean working directory" -ForegroundColor Green
+                    }
+
                     $upstream = git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>$null
                     if ($LASTEXITCODE -eq 0 -and $upstream) {
                         $aheadBehind = git rev-list --left-right --count "HEAD...$upstream" 2>$null
@@ -107,27 +97,28 @@ function Get-GitStatusAllBranches {
                                 $ahead = $counts[0]
                                 $behind = $counts[1]
                                 if ($ahead -gt 0 -or $behind -gt 0) {
-                                    Write-Host "  Commits ahead: $ahead, behind: $behind" -ForegroundColor Yellow
-                                } else {
-                                    Write-Host "  Up to date with remote" -ForegroundColor Green
+                                    Write-Information "  Commits ahead: $ahead, behind: $behind" -ForegroundColor Yellow
+                                }
+                                else {
+                                    Write-Information "  Up to date with remote" -ForegroundColor Green
                                 }
                             }
                         }
                     }
                 }
                 else {
-                    Write-Host "Error: Could not checkout branch $branch" -ForegroundColor Red
+                    Write-Information "Error: Could not checkout branch $branch" -ForegroundColor Red
                 }
             }
             else {
-                Write-Host "Branch exists only on remote - not checked out locally" -ForegroundColor Magenta
+                Write-Information "Branch exists only on remote - not checked out locally" -ForegroundColor Magenta
             }
         }
-        
-        Write-Host "`n=== Returning to original branch ===" -ForegroundColor Green
+
+        Write-Information "`n=== Returning to original branch ===" -ForegroundColor Green
         $null = git checkout $currentBranch *>$null
-        
-        Write-Host "`n=== Summary completed ===" -ForegroundColor Green
+
+        Write-Information "`n=== Summary completed ===" -ForegroundColor Green
     }
     catch {
         Write-Error $_.Exception.Message
@@ -137,12 +128,10 @@ function Get-GitStatusAllBranches {
     }
 }
 
-# Run the function if script is executed directly
 if ($MyInvocation.InvocationName -ne '.') {
-    # Expand tilde to home directory if present
     if ($GitDirectory.StartsWith('~')) {
         $GitDirectory = $GitDirectory -replace '^~', $env:HOME
     }
-    
+
     Get-GitStatusAllBranches -RepoPath $GitDirectory
 }

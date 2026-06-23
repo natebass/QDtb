@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Script to individually update all installed winget packages.
 
@@ -14,40 +14,46 @@
 
 # Function to update a single package with error handling
 function Update-WingetPackage {
+    [CmdletBinding(SupportsShouldProcess = $true)]
     param (
         [string]$PackageId,
         [string]$PackageName
     )
-    
-    Write-Host "Attempting to update $PackageName ($PackageId)..." -ForegroundColor Cyan
-    
+
+    Write-Information "Attempting to update $PackageName ($PackageId)..." -ForegroundColor Cyan
+
     try {
-        # Run winget upgrade with the package ID
-        winget upgrade --id $PackageId --exact
-        
-        # Check if the update was successful
-        if ($LASTEXITCODE -eq 0) {
-            Write-Host "Successfully updated $PackageName" -ForegroundColor Green
-        }
-        elseif ($LASTEXITCODE -eq -1978335189) {
-            Write-Host "No applicable update found for $PackageName" -ForegroundColor Yellow
+        if ($PSCmdlet.ShouldProcess($PackageId, 'Upgrade winget package')) {
+            # Run winget upgrade with the package ID
+            winget upgrade --id $PackageId --exact
+
+            # Check if the update was successful
+            if ($LASTEXITCODE -eq 0) {
+                Write-Information "Successfully updated $PackageName" -ForegroundColor Green
+            }
+            elseif ($LASTEXITCODE -eq -1978335189) {
+                Write-Information "No applicable update found for $PackageName" -ForegroundColor Yellow
+            }
+            else {
+                Write-Information "Update failed for $PackageName with exit code: $LASTEXITCODE" -ForegroundColor Red
+            }
         }
         else {
-            Write-Host "Update failed for $PackageName with exit code: $LASTEXITCODE" -ForegroundColor Red
+            Write-Information "Skipped update for $PackageName ($PackageId)." -ForegroundColor DarkGray
         }
     }
     catch {
-        Write-Host "Error updating $PackageName: $_" -ForegroundColor Red
+        Write-Information "Error updating ${PackageName}: $_" -ForegroundColor Red
     }
-    
+
     # Add a separator line for readability
-    Write-Host "-----------------------------------------" -ForegroundColor DarkGray
+    Write-Information "-----------------------------------------" -ForegroundColor DarkGray
 }
 
 # Display start message
-Write-Host "Starting individual package updates..." -ForegroundColor Magenta
-Write-Host "This might take some time depending on the number of packages and their sizes." -ForegroundColor White
-Write-Host "-----------------------------------------" -ForegroundColor DarkGray
+Write-Information "Starting individual package updates..." -ForegroundColor Magenta
+Write-Information "This might take some time depending on the number of packages and their sizes." -ForegroundColor White
+Write-Information "-----------------------------------------" -ForegroundColor DarkGray
 
 # Update each package individually
 Update-WingetPackage -PackageId "AgileBits.1Password" -PackageName "1Password"
@@ -78,6 +84,6 @@ Update-WingetPackage -PackageId "Python.Python.3.12" -PackageName "Python 3.12"
 Update-WingetPackage -PackageId "JanDeDobbeleer.OhMyPosh" -PackageName "Oh My Posh"
 
 # Display completion message
-Write-Host "Package update process completed!" -ForegroundColor Green
-Write-Host "Note: AWS-related packages were skipped as requested." -ForegroundColor Yellow
+Write-Information "Package update process completed!" -ForegroundColor Green
+Write-Information "Note: AWS-related packages were skipped as requested." -ForegroundColor Yellow
 

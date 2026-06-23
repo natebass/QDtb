@@ -1,45 +1,38 @@
-function Update-WingetPackage {
-    <#
-    .SYNOPSIS
-        Script to individually update all installed winget packages.
-
-    .DESCRIPTION
-        This PowerShell script updates each winget package individually.
-        AWS-related packages are commented out as requested.
-        Error handling is included to ensure the script continues even if a package update fails.
-
-    .NOTES
-        Author: Nate
-        Date: Created based on current winget package list
-    #>
+﻿function Update-WingetPackage {
+    [CmdletBinding(SupportsShouldProcess = $true)]
     param (
         [string]$PackageId,
         [string]$PackageName
     )
-    
-    Write-Host "Attempting to update $PackageName ($PackageId)..." -ForegroundColor Cyan
-    
+
+    Write-Information "Attempting to update $PackageName ($PackageId)..." -ForegroundColor Cyan
+
     try {
-        # Run winget upgrade with the package ID
-        winget upgrade --id $PackageId --exact
-        
-        # Check if the update was successful
-        if ($LASTEXITCODE -eq 0) {
-            Write-Host "Successfully updated $PackageName" -ForegroundColor Green
-        }
-        elseif ($LASTEXITCODE -eq -1978335189) {
-            Write-Host "No applicable update found for $PackageName" -ForegroundColor Yellow
+        if ($PSCmdlet.ShouldProcess($PackageId, "Upgrade winget package")) {
+            # Run winget upgrade with the package ID
+            winget upgrade --id $PackageId --exact
+
+            # Check if the update was successful
+            if ($LASTEXITCODE -eq 0) {
+                Write-Information "Successfully updated $PackageName" -ForegroundColor Green
+            }
+            elseif ($LASTEXITCODE -eq -1978335189) {
+                Write-Information "No applicable update found for $PackageName" -ForegroundColor Yellow
+            }
+            else {
+                Write-Information "Update failed for $PackageName with exit code: $LASTEXITCODE" -ForegroundColor Red
+            }
         }
         else {
-            Write-Host "Update failed for $PackageName with exit code: $LASTEXITCODE" -ForegroundColor Red
+            Write-Information "Skipped update for $PackageName ($PackageId)." -ForegroundColor DarkGray
         }
     }
     catch {
-        Write-Host "Error updating $PackageName $_" -ForegroundColor Red
+        Write-Information "Error updating $PackageName $_" -ForegroundColor Red
     }
-    
+
     # Add a separator line for readability
-    Write-Host "-----------------------------------------" -ForegroundColor DarkGray
+    Write-Information "-----------------------------------------" -ForegroundColor DarkGray
 }
 
 <#
@@ -66,7 +59,7 @@ function Update-WingetPackage {
     Updated: August 1, 2025 (Converted to module)
 #>
 function New-RandomColorGridImage {
-    [CmdletBinding(DefaultParameterSetName = 'Default')]
+    [CmdletBinding(DefaultParameterSetName = 'Default', SupportsShouldProcess = $true)]
     param(
         [Parameter(Mandatory = $false)]
         [int]$Width = 254,
@@ -95,7 +88,7 @@ function New-RandomColorGridImage {
         # Create a random number generator
         $random = New-Object System.Random
 
-        Write-Host "Generating random color grid ($Width x $Height)..."
+        Write-Information "Generating random color grid ($Width x $Height)..."
 
         for ($x = 0; $x -lt $Width; $x++) {
             # Show progress every 25 rows
@@ -137,11 +130,13 @@ function New-RandomColorGridImage {
             }
         }
 
-        Write-Host "Saving image to $finalOutputPath..."
-        $bitmap.Save($finalOutputPath, [System.Drawing.Imaging.ImageFormat]::Png)
+        Write-Information "Saving image to $finalOutputPath..."
+        if ($PSCmdlet.ShouldProcess($finalOutputPath, 'Save random color grid image')) {
+            $bitmap.Save($finalOutputPath, [System.Drawing.Imaging.ImageFormat]::Png)
+        }
 
-        Write-Host "Image created successfully!" -ForegroundColor Green
-        Write-Host "Image saved to: $finalOutputPath"
+        Write-Information "Image created successfully!" -ForegroundColor Green
+        Write-Information "Image saved to: $finalOutputPath"
         return $finalOutputPath # Return the path for potential further use
     }
     catch {
@@ -149,7 +144,7 @@ function New-RandomColorGridImage {
     }
     finally {
         # Clean up resources
-        if ($bitmap -ne $null) {
+        if ($null -ne $bitmap) {
             $bitmap.Dispose()
             $bitmap = $null
         }
@@ -197,14 +192,14 @@ function ConvertTo-Icon {
     $ErrorActionPreference = 'Stop'
 
     # --- DEBUGGING START ---
-    Write-Host "DEBUG: Function started."
+    Write-Information "DEBUG: Function started."
     Write-Verbose "Starting conversion process for file: '$File' to '$OutputFile'."
     # --- DEBUGGING END ---
 
     # Validate input file existence
     if (-not (Test-Path $File -PathType Leaf)) {
         Write-Error "Error: Input file '$File' not found."
-        Write-Host "DEBUG: Input file check failed. Returning."
+        Write-Information "DEBUG: Input file check failed. Returning."
         return
     }
     Write-Verbose "Input file '$File' found."
@@ -219,7 +214,7 @@ function ConvertTo-Icon {
         }
         catch {
             Write-Error "Error: Could not create output directory '$outputDir'. $($_.Exception.Message)"
-            Write-Host "DEBUG: Output directory creation failed. Returning."
+            Write-Information "DEBUG: Output directory creation failed. Returning."
             return
         }
     }
@@ -235,7 +230,7 @@ function ConvertTo-Icon {
 
     try {
         # --- DEBUGGING START ---
-        Write-Host "DEBUG: Entering main try block."
+        Write-Information "DEBUG: Entering main try block."
         # --- DEBUGGING END ---
 
         # Get file extension and convert SVG if necessary
@@ -246,7 +241,7 @@ function ConvertTo-Icon {
             $inkscapeCmd = Get-Command inkscape -ErrorAction SilentlyContinue
             if (-not $inkscapeCmd) {
                 Write-Error "Error: Inkscape is required for SVG conversion but was not found in your system's PATH. Please install Inkscape or add it to your PATH."
-                Write-Host "DEBUG: Inkscape not found. Returning."
+                Write-Information "DEBUG: Inkscape not found. Returning."
                 return
             }
             Write-Verbose "Inkscape command found at: $($inkscapeCmd.Source)"
@@ -269,19 +264,19 @@ function ConvertTo-Icon {
 
             # --- CRITICAL DEBUGGING POINT: Check temporary PNG existence and size immediately after Inkscape ---
             if (-not (Test-Path $tmpPng -PathType Leaf)) {
-                # Changed to Write-Host for guaranteed immediate visibility
-                Write-Host "CRITICAL ERROR: SVG to PNG conversion failed. Temporary PNG file '$tmpPng' was NOT created by Inkscape." -ForegroundColor Red
-                Write-Host "Inkscape output (if any): $inkscapeResult" -ForegroundColor Yellow
-                Write-Host "DEBUG: SVG to PNG conversion failed: Temporary PNG not found. Returning."
+                # Changed to Write-Information for guaranteed immediate visibility
+                Write-Information "CRITICAL ERROR: SVG to PNG conversion failed. Temporary PNG file '$tmpPng' was NOT created by Inkscape." -ForegroundColor Red
+                Write-Information "Inkscape output (if any): $inkscapeResult" -ForegroundColor Yellow
+                Write-Information "DEBUG: SVG to PNG conversion failed: Temporary PNG not found. Returning."
                 return # Exit here if file wasn't created
             }
 
             $tmpPngInfo = Get-Item $tmpPng
             if ($tmpPngInfo.Length -eq 0) {
-                # Changed to Write-Host for guaranteed immediate visibility
-                Write-Host "CRITICAL ERROR: Temporary PNG file '$tmpPng' was created but is empty (0 bytes). Inkscape may have failed silently or encountered an issue." -ForegroundColor Red
-                Write-Host "Inkscape output (if any): $inkscapeResult" -ForegroundColor Yellow
-                Write-Host "DEBUG: Temporary PNG is empty. Returning."
+                # Changed to Write-Information for guaranteed immediate visibility
+                Write-Information "CRITICAL ERROR: Temporary PNG file '$tmpPng' was created but is empty (0 bytes). Inkscape may have failed silently or encountered an issue." -ForegroundColor Red
+                Write-Information "Inkscape output (if any): $inkscapeResult" -ForegroundColor Yellow
+                Write-Information "DEBUG: Temporary PNG is empty. Returning."
                 return # Exit here if file is empty
             }
             # --- END CRITICAL DEBUGGING POINT ---
@@ -296,10 +291,10 @@ function ConvertTo-Icon {
         }
 
         # --- CRITICAL DEBUGGING POINT: Loading System.Drawing ---
-        Write-Host "DEBUG: Attempting to load System.Drawing assembly."
+        Write-Information "DEBUG: Attempting to load System.Drawing assembly."
         try {
             Add-Type -AssemblyName System.Drawing -ErrorAction Stop
-            Write-Host "DEBUG: System.Drawing assembly loaded successfully."
+            Write-Information "DEBUG: System.Drawing assembly loaded successfully."
         }
         catch {
             Write-Error "CRITICAL ERROR: Failed to load System.Drawing assembly. This is required for image processing."
@@ -308,13 +303,13 @@ function ConvertTo-Icon {
             if ($_.Exception.InnerException) {
                 Write-Error "Inner Exception: $($_.Exception.InnerException.Message)"
             }
-            Write-Host "DEBUG: System.Drawing load failed. Exiting."
+            Write-Information "DEBUG: System.Drawing load failed. Exiting."
             return # Exit immediately if this critical assembly can't be loaded
         }
         # --- END CRITICAL DEBUGGING POINT ---
 
         # --- DEBUGGING POINT: Before Image.FromFile ---
-        Write-Host "DEBUG: About to call System.Drawing.Image.FromFile('$pngPath')."
+        Write-Information "DEBUG: About to call System.Drawing.Image.FromFile('$pngPath')."
         # --- END DEBUGGING POINT ---
 
         # Load the image using System.Drawing
@@ -354,7 +349,7 @@ function ConvertTo-Icon {
         if (Test-Path $OutputFile -PathType Leaf) {
             $fileInfo = Get-Item $OutputFile
             if ($fileInfo.Length -gt 0) {
-                Write-Host "Success: Icon '$OutputFile' created successfully with size $($fileInfo.Length) bytes."
+                Write-Information "Success: Icon '$OutputFile' created successfully with size $($fileInfo.Length) bytes."
             }
             else {
                 Write-Error "Error: Icon '$OutputFile' was created but appears to be empty (0 bytes)."
@@ -372,7 +367,7 @@ function ConvertTo-Icon {
         if ($_.Exception.InnerException) {
             Write-Error "Inner Exception: $($_.Exception.InnerException.Message)"
         }
-        Write-Host "DEBUG: Error caught in main catch block."
+        Write-Information "DEBUG: Error caught in main catch block."
     }
     finally {
         # Ensure all disposable objects are cleaned up
@@ -394,6 +389,6 @@ function ConvertTo-Icon {
             }
         }
         Write-Verbose "Conversion process finished."
-        Write-Host "DEBUG: Function finished (finally block)."
+        Write-Information "DEBUG: Function finished (finally block)."
     }
 }

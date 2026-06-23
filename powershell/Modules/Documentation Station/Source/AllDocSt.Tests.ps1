@@ -7,7 +7,7 @@ BeforeAll {
 Describe "a Tests" {
     It "Should return a" {
         $result = Start-DocStation
-        write-host $result
+        Write-Output $result
         $result | Should -Contain 'a'
     }
 }
@@ -33,6 +33,6 @@ Describe "a Tests" {
 # # Get-PSReadLineKeyHandler
 # # Read-LineC468A
 
-# write-host $PSScriptRoot
+# Write-Host $PSScriptRoot
 
 # Start-DocStation
