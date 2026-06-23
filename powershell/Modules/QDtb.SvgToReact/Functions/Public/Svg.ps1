@@ -1,4 +1,4 @@
-<#
+﻿<#
     .SYNOPSIS
     Generates the content for a React component from SVG content.
 #>
@@ -8,14 +8,14 @@ function Convert-ComponentContent {
     $svgAttrs = [regex]::Match($svgContent, '<svg([^>]*)>').Groups[1].Value.Trim()
     $width = [regex]::Match($svgAttrs, 'width="(\d+)"').Groups[1].Value
     $height = [regex]::Match($svgAttrs, 'height="(\d+)"').Groups[1].Value
-    if ($width -eq "") { 
-        $width = 24 
+    if ($width -eq "") {
+        $width = 24
     }
-    else { 
+    else {
         $svgAttrs = $svgAttrs -replace 'width="(\d+)"', ''
     }
-    if ($height -eq "") { 
-        $height = 24 
+    if ($height -eq "") {
+        $height = 24
     }
     else {
         $svgAttrs = $svgAttrs -replace 'height="(\d+)"', ''
@@ -78,14 +78,14 @@ function Convert-SvgAttributesReact {
     Converts SVG files to React components helper script.
     This script will convert all SVG files in a folder to React components.
 
-    .PARAMETER path 
+    .PARAMETER path
 #>
 function Convert-FolderSvgToReact {
     param ([string]$path = ".")
-    Write-Host "Conversion started." -ForegroundColor Green
+    Write-Information "Conversion started." -ForegroundColor Green
     $svgFiles = Get-ChildItem -Path $path -Filter *.svg
     if ($svgFiles.Count -eq 0) {
-        Write-Host "No SVG files found." -ForegroundColor Yellow
+        Write-Information "No SVG files found." -ForegroundColor Yellow
         return
     }
     $iconDir = New-IconDirectory
@@ -97,11 +97,11 @@ function Convert-FolderSvgToReact {
             $componentContent = Convert-ComponentContent -svgContent $convertedContent -componentName $componentName
             $outputPath = Join-Path -Path $iconDir -ChildPath "$componentName.tsx"
             Set-Content -Path $outputPath -Value $componentContent
-            Write-Host "Successfully converted $($file.Name)" -ForegroundColor Green
+            Write-Information "Successfully converted $($file.Name)" -ForegroundColor Green
         }
         catch {
-            Write-Host "Failed to convert $($file.Name): $_" -ForegroundColor Red
+            Write-Information "Failed to convert $($file.Name): $_" -ForegroundColor Red
         }
     }
-    Write-Host "Conversion ended." -ForegroundColor Green
+    Write-Information "Conversion ended." -ForegroundColor Green
 }

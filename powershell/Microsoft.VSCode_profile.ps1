@@ -1,7 +1,3 @@
-
-Import-Module "/home/nwb/.local/share/powershell/Modules/Qdtb.SvgToReact/SvgToReact.psd1"
-Import-Module "/home/nwb/.local/share/powershell/Modules/Qdtb.Utility/DiosTeB.psd1"
-
 <#
 Also check C:\Users\nateb\OneDrive\Documents\WindowsPowerShell\Microsoft.VSCode_profile.ps1
 #>

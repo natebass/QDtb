@@ -1,14 +1,18 @@
 
-function Save-RSSEpisode {
-    # aaaa
-    <#
+<#
 .SYNOPSIS
     Retrieves and downloads episodes from an RSS XML file.
 
-.SYNOPSIS
-    The Save-RSSEpisode function loads an RSS XML file, retrieves a specified number of episodes, 
-    and downloads the associated audio files into a target folder. If the target folder does 
-    not exist, it will create it.
+.EXAMPLE
+    $SourceFile = "C:\Users\nateb\Source\Temp\a.xml"
+    $TargetFolder = "C:\Users\nateb\Source\Temp"
+    $EpisodeNumber = 2
+
+    Save-RSSEpisode -RSSFile $SourceFile -TargetFolder $TargetFolder -EpisodeNumber $EpisodeNumber
+
+    Description
+    -----------
+    This command parses the local 'a.xml' file and downloads the first 2 podcast episodes found inside it to the target directory.
 
 .PARAMETER RSSFile
     The path to the RSS XML file. Defaults to "C:\Users\nateb\Source\Temp\a.xml".
@@ -19,6 +23,7 @@ function Save-RSSEpisode {
 .PARAMETER EpisodeNumber
     The number of episodes to retrieve from the RSS feed. Defaults to 2.
 #>
+function Save-RSSEpisode {
     [CmdletBinding()]
     param (
         [string]$RSSFile,

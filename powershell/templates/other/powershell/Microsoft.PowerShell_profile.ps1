@@ -1,11 +1,11 @@
-
+﻿
 Import-Module "/home/nwb/.local/share/powershell/Modules/Qdtb.SvgToReact/SvgToReact.psd1"
 Import-Module "/home/nwb/.local/share/powershell/Modules/Qdtb.Utility/DiosTeB.psd1"
 
 <#
 Also check C:\Users\nateb\OneDrive\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1
 #>
-oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\gruvbox.omp.json" | Invoke-Expression
+& ([scriptblock]::Create((oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\gruvbox.omp.json")))
 # fnm env --use-on-cd | Out-String | Invoke-Expression
 # Import the Chocolatey Profile that contains the necessary code to enable
 # tab-completions to function for `choco`.
@@ -18,9 +18,9 @@ if (Test-Path($ChocolateyProfile)) {
 }
 <#
      '-.
-        '-. _____    
- .-._      |     '.  
-:  ..      |      :  
+        '-. _____
+ .-._      |     '.
+:  ..      |      :
 '-._+      |    .-'
  /  \     .'i--i
 /    \ .-'_/____\___

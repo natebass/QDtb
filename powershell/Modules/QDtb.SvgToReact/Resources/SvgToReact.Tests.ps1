@@ -29,10 +29,10 @@ Describe 'General SVG to React tests' {
         $convertedContent | Should -Match 'clipRule="evenodd"'
         $convertedContent | Should -Match 'clipPath="url\(#clip\)"'
     }
-    It 'Write-Log should log messages correctly' {
+    It 'Write-ModuleLog should log messages correctly' {
         $logFile = "script.log"
         Remove-Item -Path $logFile -ErrorAction Ignore
-        Write-Log -level "INFO" -message "Test message"
+        Write-ModuleLog -Level "INFO" -Message "Test message"
         $logContent = Get-Content -Path $logFile
         $logContent | Should -Match "INFO - Test message"
     }

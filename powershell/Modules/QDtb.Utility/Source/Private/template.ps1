@@ -1,7 +1,7 @@
-
+﻿
 <#
 React component file using template.
-.PARAMETER FileName 
+.PARAMETER FileName
     The name of the component file to be created. Default is "f".
 #>
 function Save-Sample {
@@ -20,9 +20,9 @@ function Save-Sample {
         $content = $content -replace "export default function f", "export default function $FileName"
         $content = $content -replace "export interface fProps", "export interface ${FileName}Props"
         $content | Set-Content -Path $destinationPath -Force
-        Write-Output "File created at $destinationPath using template from $templatePath"
+        Write-Information "File created at $destinationPath using template from $templatePath"
     }
     else {
-        Write-Output "Template file not found at $templatePath"
+        Write-Information "Template file not found at $templatePath"
     }
 }
