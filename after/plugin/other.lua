@@ -1,5 +1,7 @@
 -- Local plugins and configuration {{{
 -- neovim
+vim.cmd.packadd("plenary.nvim")
+vim.cmd.packadd("telescope.nvim")
 require("plugins.QDtb.colorscheme_cycler")
 require("plugins.QDtb.package_json")
 require("plugins.QDtb.autosave")
