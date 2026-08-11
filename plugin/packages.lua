@@ -18,4 +18,39 @@ vim.pack.add({
 	"https://github.com/folke/lazydev.nvim",
 	"https://github.com/Bilal2453/luvit-meta",
 	"https://github.com/folke/snacks.nvim",
+}, { load = false })
+
+local command_packages = {
+	Goyo = "goyo.vim",
+	Limelight = "limelight.vim",
+	NERDTree = "nerdtree",
+	NERDTreeToggle = "nerdtree",
+	Startify = "vim-startify",
+	TZNarrow = "true-zen.nvim",
+}
+
+vim.api.nvim_create_autocmd("CmdUndefined", {
+	pattern = vim.tbl_keys(command_packages),
+	callback = function(args)
+		vim.cmd.packadd(command_packages[args.match])
+	end,
+	desc = "Load optional native packages when one of their commands is used",
+})
+
+vim.api.nvim_create_autocmd("InsertEnter", {
+	once = true,
+	callback = function()
+		vim.cmd.packadd("copilot.vim")
+	end,
+	desc = "Load Copilot when entering Insert mode",
+})
+
+vim.api.nvim_create_autocmd("VimEnter", {
+	once = true,
+	callback = function()
+		vim.schedule(function()
+			vim.cmd.packadd("vim-wakatime")
+		end)
+	end,
+	desc = "Start WakaTime after the first UI frame",
 })

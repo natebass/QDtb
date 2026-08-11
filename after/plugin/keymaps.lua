@@ -3,6 +3,9 @@
 --- @module config.keymaps
 
 local map = vim.keymap.set
+vim.cmd.packadd("vague.nvim")
+vim.cmd.packadd("leap.nvim")
+vim.cmd.packadd("focus.nvim")
 -- Special {{{
 -- Package JSON Check
 local package_json_path = "C:\\Users\\nateb\\Source\\Repos\\be-gccpilot03-py\\frontend\\package.json"

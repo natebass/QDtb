@@ -10,11 +10,9 @@
 -- path_addition = vim.fn.expand(";/home/nwb/Documents/QDtb/lua/?.lua;/home/nwb/Documents/QDtb/lua/?/init.lua")
 -- package.path = package.path .. path_addition
 -- ↑ ----------------------- ↑ }}}
-vim.cmd("colorscheme nordstone")
--- The leader key needs to be set before lazy.nvim.
+-- Load leaders before any plugins or custom filetype scripts.
 vim.g.mapleader = vim.keycode("<space>")
 vim.g.maplocalleader = "\\"
--- vim.g.maplocalleader = vim.keycode(",")
 require("config")
 -- Footer
 -- vim:foldmethod=marker:foldlevel=1
