@@ -1,0 +1,13 @@
+FROM --platform=linux/amd64 warpdotdev/dev-base:latest-agents
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        fish \
+        lua5.4 \
+        luarocks \
+        neovim \
+    && rm -rf /var/lib/apt/lists/*
+
+SHELL ["/usr/bin/fish", "-c"]
