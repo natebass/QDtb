@@ -1,0 +1,5 @@
+complete -c lazynpm -s h -l help -d 'Display help'
+complete -c lazynpm -s p -l path -r -F -d 'Path of package'
+complete -c lazynpm -s v -l version -d 'Print the current version'
+complete -c lazynpm -s d -l debug -d 'Run in debug mode with logging'
+complete -c lazynpm -s c -l config -d 'Print the current default config'

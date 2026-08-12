@@ -1,0 +1,8 @@
+complete -c luajit -s e -r -d 'Execute a Lua chunk'
+complete -c luajit -s l -r -d 'Require a library'
+complete -c luajit -s b -r -d 'Save or list bytecode'
+complete -c luajit -s j -r -d 'Perform a LuaJIT control command'
+complete -c luajit -s O -r -d 'Control LuaJIT optimizations'
+complete -c luajit -s i -d 'Enter interactive mode'
+complete -c luajit -s v -d 'Show version information'
+complete -c luajit -s E -d 'Ignore environment variables'
