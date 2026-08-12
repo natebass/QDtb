@@ -1,3 +1,4 @@
+
 #                  ___
 #   ___======____=---=)
 # /T            \_--===)
@@ -46,6 +47,14 @@ abbr -a 2 --function second_to_last_history_item
 abbr -a 3 --function third_to_last_history_item
 abbr -a !! --position anywhere --function last_history_item
 
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv fish)"
+if test -d (brew --prefix)"/share/fish/completions"
+    set -p fish_complete_path (brew --prefix)/share/fish/completions
+end
+
+if test -d (brew --prefix)"/share/fish/vendor_completions.d"
+    set -p fish_complete_path (brew --prefix)/share/fish/vendor_completions.d
+end
 
 # Must be at the end due to source command.
 zoxide init fish --cmd j | source
