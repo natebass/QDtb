@@ -2,7 +2,7 @@
 --- Automatically saves files when focus is lost or before exiting Vim.
 --- @module plugins.QDtb.autosave
 
-local augroup = vim.api.nvim_create_augroup("QdtbAutosave", { clear = true })
+local augroup = vim.api.nvim_create_augroup("QDtbAutosave", { clear = true })
 -- This list covers common web development files and general programming files.
 local filetypes_to_save = {
 	"html",
@@ -158,13 +158,13 @@ vim.api.nvim_create_autocmd({ "FocusLost", "VimLeavePre" }, {
 		else
 			vim.notify(
 				"Not saving "
-					.. (bufname == "" and "[No Name]" or bufname)
-					.. " (modified: "
-					.. tostring(modified)
-					.. ", filetype: "
-					.. filetype
-					.. ") on "
-					.. event_name,
+				.. (bufname == "" and "[No Name]" or bufname)
+				.. " (modified: "
+				.. tostring(modified)
+				.. ", filetype: "
+				.. filetype
+				.. ") on "
+				.. event_name,
 				vim.log.levels.DEBUG
 			)
 		end
@@ -178,4 +178,4 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 -- Optional: Add a message when the autosave module is loaded
--- vim.notify('Qdtb autosave module loaded.', vim.log.levels.INFO)
+-- vim.notify('QDtb autosave module loaded.', vim.log.levels.INFO)
