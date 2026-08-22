@@ -31,9 +31,6 @@
 
 Welcome to my personal Neovim configuration. It is partly based on [💤 lazy.nvim](https://github.com/folke/lazy.nvim) and uses many [mini.nvim](https://github.com/nvim-mini/mini.nvim) plugins.
 
-> [!WARNING]
-> Install with caution. This effects your Neovim configuration.
-
 ![image](https://raw.githubusercontent.com/natebass/qdtb-doc/refs/heads/master/screenshots/screenshot_01.png)
 ![image](https://raw.githubusercontent.com/natebass/qdtb-doc/refs/heads/master/screenshots/screenshot_02.png)
 
@@ -45,6 +42,9 @@ Welcome to my personal Neovim configuration. It is partly based on [💤 lazy.nv
 
 - Neovim >= **0.12**
 - A [Nerd Font](https://www.nerdfonts.com/) **_(recommended)_**
+
+> [!WARNING]
+> Install with caution. This effects your Neovim configuration.
 
 ## Install
 
