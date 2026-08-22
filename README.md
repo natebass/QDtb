@@ -38,12 +38,12 @@ Welcome to my personal Neovim configuration. It is partly based on [💤 lazy.nv
 
 - 💻 Continue where you left off. Save and resume sessions with **Session Manager**. It uses mhinz/startify and mhinz/session.
 
-## ⚡️ Requirements
+## Requirements
 
 - Neovim >= **0.12**
 - A [Nerd Font](https://www.nerdfonts.com/) **_(recommended)_**
 
-## 🚀 Install
+## Install
 
 Clone into `stdpath("config")`.
 
@@ -52,11 +52,11 @@ Clone into `stdpath("config")`.
 
 ## 📂 File structure
 
-Here is a breakdown of the Lua folder. For other directories, see their respective READMEs.
+Here is a breakdown of the Lua folder.
 
 <pre>
 ~/.config/nvim
-├── 📂 <b>colors</b>/              # Custom colorschemes and generators
+├── 📂 <b>colors</b>/
 │   ├── miniautumn.lua
 ├── 📂 <b>lua</b>/
 │   ├── 📂 <b>config</b>/          # Core configuration
@@ -64,20 +64,22 @@ Here is a breakdown of the Lua folder. For other directories, see their respecti
 │   │   ├── keymaps.lua     # Global keybindings
 │   │   ├── mini.lua        # mini.nvim initialization
 │   │   └── options.lua     # Vim options and variables
-│   └── 📂 <b>plugins</b>/         # Modular plugin configs
-│       ├── 📂 <b>code_style</b>/  # Formatting and linting
-│       ├── 📂 <b>fold_this</b>/   # Advanced folding logic
-│       ├── 📂 <b>qdtb</b>/        # Custom utility scripts
-│       └── 📂 <b>session_manager</b>/ # Dashboard and sessions
-├── init.lua                # Main entry point
-└── nvim-pack-lock.json     # Plugin lockfile
+│   └── 📂 <b>plugins</b>/         # My custom plugins
+│       ├── 📂 <b>code_style</b>/
+│       ├── 📂 <b>qdtb</b>/        # General utility scripts
+├── init.lua
+└── nvim-pack-lock.json            # Plugin lockfile, using the native NVIM package manager.
 </pre>
 
 ## Local data directory
 
-The Neovide Flatpak resolves `stdpath("data")` to its sandbox data directory.
-On this machine that is `./data/nvim/`, but another installation or Flatpak
-application ID will use a different path. Do not commit this directory.
+This project uses the native NVIM package manager. Here is the reccommeded folder sturcture
+**that must be created manually**.
+
+> [!NOTE]
+> Neovide Flatpak resolves `stdpath("data")` to its sandbox data directory.
+> On this machine that is `./data/nvim/`, but another installation or Flatpak
+> application ID will use a different path. Do not commit this directory.
 
 <pre>
 {stdpath("data")}
