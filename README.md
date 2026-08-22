@@ -31,6 +31,9 @@
 
 Welcome to my personal Neovim configuration. It is partly based on [💤 lazy.nvim](https://github.com/folke/lazy.nvim) and uses many [mini.nvim](https://github.com/nvim-mini/mini.nvim) plugins.
 
+> [!WARNING]
+> Install with caution. This effects your Neovim configuration.
+
 ![image](https://raw.githubusercontent.com/natebass/qdtb-doc/refs/heads/master/screenshots/screenshot_01.png)
 ![image](https://raw.githubusercontent.com/natebass/qdtb-doc/refs/heads/master/screenshots/screenshot_02.png)
 
@@ -46,9 +49,6 @@ Welcome to my personal Neovim configuration. It is partly based on [💤 lazy.nv
 ## Install
 
 Clone into `stdpath("config")`.
-
-> [!IMPORTANT]
-> This repository contains only configuration. Neovim state, parsers, sessions, and installed plugins live in `stdpath("data")`; that directory is intentionally local to each computer and is not tracked by Git.
 
 ## 📂 File structure
 
@@ -68,7 +68,7 @@ Here is a breakdown of the Lua folder.
 │       ├── 📂 <b>code_style</b>/
 │       ├── 📂 <b>qdtb</b>/        # General utility scripts
 ├── init.lua
-└── nvim-pack-lock.json            # Plugin lockfile, using the native NVIM package manager.
+└── nvim-pack-lock.json     # Plugin lockfile, using the native NVIM package manager.
 </pre>
 
 ## Local data directory
