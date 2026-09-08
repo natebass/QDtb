@@ -23,3 +23,5 @@ luac.out
 
 # macOS
 .DS_Store
+
+fish_variables
