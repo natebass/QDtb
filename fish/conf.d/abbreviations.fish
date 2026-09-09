@@ -18,7 +18,8 @@ abbr --add r  'uv run ruff format; uv run ruff check --fix; uv run ty check'
 # abbr --add t  'uv sync'
 abbr --add t  'vp run test'
 
-abbr --add a  'eza --color=always -l --git --hyperlink --header -T Documents/ | less -R'
+abbr --add A  'eza --color=always -l --git --hyperlink --header -T Documents/ | less -R'
+abbr --add a  'eza'
 abbr --add s  'pnpm i;'
 abbr --add d  'git status'
 # abbr --add F  'uv run ruff check --fix; uv run ruff format;'
@@ -82,7 +83,7 @@ abbr --add W  'fdfind -a'            # list all, absolute paths
 abbr --add E  'fdfind -tf -H'        # all files including hidden
 abbr --add R  'fdfind -td'           # list all directories
 abbr --add T  'fdfind -l'            # list with details (like ls -l)
-abbr --add A  'fdfind -tf -X rm'     # delete matched files (type pattern after... careful!)
+# abbr --add A  'fdfind -tf -X rm -i'     # delete matched files (type pattern after... careful!)
 abbr --add S  'fdfind -0 -tf | xargs -0 wc -l'   # count lines in all files
 abbr --add D  'fdfind | tree --fromfile'          # show as tree
 
