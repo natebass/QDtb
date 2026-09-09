@@ -1,0 +1,337 @@
+
+"                     .
+"                    / V\
+"                  / `  /
+"                 <<   |
+"                 /    |
+"               /      |
+"             /        |
+"           /    \  \ /
+"          (      ) | |
+"  ________|   _/_  | |
+"<__________\______)\__)
+" Learn: {{{
+" Make sure c-cr, s-cr, etc. works for new lines. Might have to default to IDE.
+" Map Q to close all windows and panels.
+" }}}
+" Base {{{
+
+" nmap <TAB> <ACTION>(Back)
+nmap <s-TAB> <ACTION>(Forward)
+imap <s-TAB> <ACTION>(EditorUnindentSelection)
+map <s-CR> <ACTION>(EditorDuplicate)k
+" map <c-s-CR> <ACTION>(EditorStartNewLine)<INSERT>
+" imap <c-s-CR> <ACTION>(EditorStartNewLine)
+map <CR> <ACTION>(EditorDuplicate)
+map <s-ESC> <ACTION>()
+" map <s-BS> <ACTION>(HippieCompletion)
+" imap <s-BS> <ACTION>(HippieCompletion)
+" Make sure shift backspace deletes. I'm not sure if it is default.
+" map <s-BS> <ACTION>(HippieCompletion)
+" imap <s-BS> <ACTION>(HippieCompletion)
+map ` ~<LEFT>
+noremap + qq
+noremap = q
+map , <ACTION>(ShowBookmarks)
+map ? <ACTION>(popup@ExpandableBookmarkContextMenu)
+map / <ACTION>(GotoFile)
+" map \ <ACTION>(LocalHistory.ShowHistory)
+map \w :set wrap!<CR>
+map [ <ACTION>(GotoPreviousError)
+map ] <ACTION>(GotoNextError)
+map ' <ACTION>(SaveAll)
+map " <ACTION>(SaveAs)
+map <c-_> <ACTION>($Undo)
+map <BS> <LEFT><DEL>
+noremap A v
+noremap a V
+vmap A <ACTION>(EditorUpWithSelection)
+vmap a <ACTION>(EditorDownWithSelection)
+map I <INSERT><RIGHT>
+map K <ACTION>(MethodUp)
+
+map M <ACTION>(GotoPreviousError)
+map m <ACTION>(GotoNextError)
+map N <ACTION>(ExpandAllRegions)
+map n <ACTION>(CollapseRegion)
+map Q <ACTION>(PinActiveTab)
+map q <ACTION>(CloseAllUnpinnedEditors)
+map R <ACTION>(ReplaceInPath)
+vmap R <ACTION>(ReplaceInPath)
+map r <ACTION>(Replace)
+vmap r <ACTION>(Replace)
+" map u <ACTION>(ExpandAllToLevel)
+map u u
+noremap X <DEL>
+map x <ACTION>(ReplaceInPath)
+map - <ACTION>(EditorSelectWord)
+vmap - <ACTION>(EditorSelectWord)
+" }}}
+" Modifier Key Mappings {{{
+" <ACTION>(ExtractMethod)
+" map v diw<ACTION>($Paste)
+map <c-/> <ACTION>(CommentByLineComment)
+imap <c-/> <ACTION>(CommentByLineComment)
+nmap <m-a> <ACTION>($SelectAll)
+vmap <m-a> <ACTION>($Copy)
+imap <m-a> <ACTION>($SelectAll)
+map <c-s-a> <ACTION>(EditorLineStart)
+imap <c-s-a> <ACTION>(EditorLineStart)
+map <c-a> <ACTION>(EditorLineStart)
+imap <c-a> <ACTION>(EditorLineStart)
+map <c-s-b> <ACTION>()
+imap <c-s-b> <ACTION>()
+imap <c-b> <LEFT>
+map <c-s-c> <ACTION>($Copy)
+imap <c-s-c> <ACTION>($Copy)
+map <c-c> <ACTION>($Copy)<ESC><RIGHT>
+imap <c-c> <ACTION>($Copy)<ESC><RIGHT>
+vmap <c-c> <ACTION>($Copy)<ESC>
+map <a-d> dw
+imap <a-d> <ACTION>(EditorDeleteToWordEnd)
+map <a-s-d> <ACTION>()
+imap <a-s-d> <ACTION>()
+map <c-s-d> <ACTION>(EditorStartNewLine)<ACTION>($Paste)
+imap <c-s-d> <ACTION>(EditorStartNewLine)<ACTION>($Paste)
+imap <c-d> <DEL>
+map <c-s-e> <ACTION>(EditorLineEnd)
+imap <c-s-e> <ACTION>(EditorLineEnd)
+imap <c-e> <ACTION>(EditorLineEnd)
+map <c-s-f> <ACTION>()
+imap <c-s-f> <ACTION>()
+imap <c-f> <RIGHT>
+map <c-s-g> <ACTION>(EditorLineEnd)<INSERT><SPACE><ACTION>($Paste)<ESC>
+imap <c-s-g> <ACTION>(EditorLineEnd)<ACTION>($Paste)
+map <c-g> <ACTION>(EditorLineEnd)<ACTION>($Paste)
+imap <c-g> <ACTION>(EditorLineEnd)<ACTION>($Paste)
+map <c-s-h> <ACTION>(ParameterInfo)
+imap <c-s-h> <ACTION>(ParameterInfo)
+map <c-h> <ACTION>(ActivateTerminalToolWindow)
+imap <c-h> <ACTION>(ActivateTerminalToolWindow)
+imap <c-i> <ESC><c-i>
+map <c-s-j> <ACTION>(EditorStartNewLineBefore)<ACTION>($Paste)<ACTION>(EditorDeleteLine)
+imap <c-s-j> <ACTION>(EditorStartNewLineBefore)<ACTION>($Paste)<ACTION>(EditorDeleteLine)
+map <c-j> <ACTION>(EditorCompleteStatement)
+imap <c-j> <ACTION>(EditorCompleteStatement)
+map <c-s-k> <ACTION>()
+imap <c-s-k> <ACTION>()
+imap <c-k> <ACTION>(EditorDeleteToLineEnd)
+map <c-k> <ACTION>(AIAssistant.Editor.AskAiAssistantInEditor)
+vmap <c-k> <ACTION>(Terminal.GenerateCommandFromText)
+map <c-s-l> <ACTION>()
+imap <c-s-l> <ACTION>()
+map <c-l> <ACTION>(EditorJoinLines)
+imap <c-l> <ACTION>(EditorJoinLines)
+map <c-s-m> <ACTION>()
+imap <c-s-m> <ACTION>()
+map <c-m> <ACTION>(InsertLiveTemplate)
+imap <c-m> <ACTION>(InsertLiveTemplate)
+map <c-s-n> <ACTION>(GotoFile)
+imap <c-s-n> <ACTION>(GotoFile)
+map <c-n> <DOWN>
+imap <c-n> <DOWN>
+map <c-s-p> <UP>
+imap <c-s-p> <UP>
+map <c-p> <UP>
+imap <c-p> <UP>
+map <a-q> <ACTION>(ActivateDebugToolWindow)
+imap <a-q> <ACTION>(ActivateDebugToolWindow)
+map <c-s-q> <ACTION>()
+imap <c-s-q> <ACTION>()
+map <c-q> <ACTION>(ToggleDistractionFreeMode)
+imap <c-q> <ACTION>(ToggleDistractionFreeMode)
+map <c-s-r> <ACTION>()
+imap <c-s-r> <ACTION>()
+map <c-r> <ACTION>($Redo)
+imap <c-r> <ACTION>($Redo)
+map <a-s> <ACTION>(RestoreDefaultLayout)
+imap <a-s> <ACTION>(RestoreDefaultLayout)
+map <c-s> <ACTION>(SaveFile)<ACTION>(ReformatCode)
+imap <c-s> <ESC><RIGHT><ACTION>(SaveDocument)
+map <c-s-t> <ACTION>()
+imap <c-s-t> <ACTION>()
+map <c-t> <INSERT><ACTION>(EmojiPicker.Open)
+map <c-s-u> <ACTION>()
+imap <c-s-u> <ACTION>()
+map <c-u> <ACTION>(ExtractMethod)
+map <c-v> <ACTION>($Paste)
+imap <c-v> <ACTION>($Paste)
+map <a-w> w
+imap <a-w> <ESC><RIGHT>w<INSERT>
+map <c-s-w> <c-w>
+imap <c-s-w> <c-w>
+map <c-s-x> <ACTION>($Cut)
+imap <c-s-x> <ACTION>($Cut)
+map <c-x> <ACTION>($Cut)
+imap <c-x> <ACTION>($Cut)
+map <c-s-y> <ACTION>()
+imap <c-s-y> <ACTION>()
+map <c-s-z> <ACTION>($Redo)
+imap <c-s-z> <ACTION>($Redo)
+map <c-z> <ACTION>($Undo)
+imap <c-z> <ACTION>($Undo)
+"" }}}
+" Leader Mappings {{{
+
+map <SPACE>A <ACTION>(editormarginShowBreadcrumbs)
+map <SPACE>a <ACTION>(Vcs.UpdateProject)
+map <SPACE>B <ACTION>(EditormarginShowGutterIcons)
+map <SPACE>b <ACTION>(CloseAllUnpinnedEditors)
+map <SPACE>C <ACTION>(StoreDefaultLayout)
+map <SPACE>c <ACTION>(RestoreDefaultLayout)
+map <SPACE>D <ACTION>(GotoNextBookmark)
+map <SPACE>d <ACTION>(editRunConfigurations)
+map <SPACE>E <ACTION>(ActivateStructureToolWindow)
+map <SPACE>e <ACTION>(CloseAllEditorsButActive)<ACTION>(Unsplit)
+map <SPACE>F <ACTION>(BookmarkGoto)
+map <SPACE>f <ACTION>(ShowBookmarks)
+map <SPACE>G <ACTION>(ActivateTerminalToolWindow)
+map <SPACE>g <ACTION>(ChooseRunConfiguration)
+map <SPACE>H <ACTION>(ActivateTODOToolWindow)
+map <SPACE>h <ACTION>(EditormarginShowIndentLines)
+map <SPACE>I <ACTION>(ActivateToolWindowAction)
+map <SPACE>i <ACTION>(InvertBoolean)
+map <SPACE>J <ACTION>(ActivateTypeScriptToolWindow)
+map <SPACE>j <ACTION>(EditormarginShowLineNumbers)
+map <SPACE>K <ACTION>(OpenFileEditorInBlankDiffWindow)
+map <SPACE>k <ACTION>(IntroduceParameter)
+map <SPACE>L <ACTION>(ActiveToolwindowGroup)
+map <SPACE>l <ACTION>(ExpandToLevel3)
+map <SPACE>M <ACTION>(SurroundWith)
+map <SPACE>m <ACTION>(ActivateTODOToolWindow)
+map <SPACE>N <ACTION>(NewScratchFile)
+map <SPACE>n <ACTION>(EditormarginUseSoftWraps)
+map <SPACE>O <ACTION>(marginPresentationMode)<ACTION>(EditormarginShowLineNumbers)
+map <SPACE>o <ACTION>(OpenFile)
+map <SPACE>P <ACTION>(Vcs.Force.Push)
+map <SPACE>p <ACTION>(IntroduceVariable)
+map <SPACE>Q }<INSERT><ACTION>(EditorStartNewLine)<UP>
+map <SPACE>q <c-w>o
+map <SPACE>R <ACTION>(ActivateProblemsViewToolWindow)
+map <SPACE>r <ACTION>(ActivateCommitToolWindow)
+map <SPACE>S <ACTION>(ChangeColorScheme)
+map <SPACE>s <ACTION>(SaveFile)<ACTION>(ReformatCode)
+map <SPACE>T <ACTION>(ConvertIndentsToSpaces)
+map <SPACE>t <ACTION>(ToggleZenMode)
+map <SPACE>U <ACTION>(ActivatePullRequestsToolWindow)
+map <SPACE>u <ACTION>(ActivateServicesToolWindow)
+map <SPACE>V <ACTION>(Git.CreateNewBranch)
+map <SPACE>v <ACTION>(Git.Branches)
+" map <SPACE>W <ACTION>(Bookmarks)
+" map <SPACE>w <ACTION>(SaveFile)<ACTION>(ReformatCode)
+map <SPACE>X<ACTION>(EditormarginUseSoftWrapsInPreview)
+map <SPACE>x <ACTION>(Debug)
+map <SPACE>Y <ACTION>(EditormarginStickySelection)
+map <SPACE>y <ACTION>(EditormarginShowWhitespaces)
+map <SPACE>Z <ACTION>(EditormarginShowLineNumbers)
+map <SPACE>z <ACTION>(Run)
+" }}}
+" General {{{
+set guicursor+=n:hor15-Cursor/lCursor
+" set visualbell
+set ideavimsupport=
+set ideastatusicon=disabled
+set ideajoin
+" }}}
+" Plugins {{{
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-commentary'
+Plug 'machakann/vim-highlightedyank'
+Plug 'justinmk/vim-sneak'
+let g:sneak#streak = 1
+" Plug 'tommcdo/vim-exchange'
+" Plug 'dbakker/vim-paragraph-motion'
+" Plug 'michaeljsmith/vim-indent-object'
+" Plug 'adelarsq/vim-matchit'
+" }}}
+" Set Handler {{{
+sethandler <c-1> a:ide
+sethandler <c-2> a:ide
+sethandler <c-3> a:ide
+sethandler <c-4> a:ide
+sethandler <c-5> a:ide
+sethandler <c-6> a:ide
+sethandler <c-7> a:ide
+sethandler <c-8> a:ide
+sethandler <c-9> a:ide
+sethandler <f1> a:ide
+sethandler <f2> a:ide
+sethandler <f3> a:ide
+sethandler <f4> a:ide
+sethandler <f5> a:ide
+sethandler <f6> a:ide
+sethandler <f7> a:ide
+sethandler <f8> a:ide
+sethandler <f9> a:ide
+sethandler <f10> a:ide
+sethandler <f11> a:ide
+sethandler <f12> a:ide
+sethandler <s-BS> a:vim
+sethandler <c-s-CR> a:vim
+sethandler <c-/> a:ide
+sethandler <c-[> a:vim
+sethandler <c-\> a:ide
+sethandler <c-]> a:vim
+sethandler <c-_> a:vim
+sethandler <c-s-a> a:vim
+sethandler <c-a> a:vim
+sethandler <c-s-b> a:vim
+sethandler <c-b> a:vim
+sethandler <c-s-c> a:vim
+sethandler <a-c> a:ide
+sethandler <c-c> a:vim
+sethandler <c-s-d> a:vim
+sethandler <c-d> a:vim
+sethandler <c-s-e> a:vim
+sethandler <c-e> a:vim
+sethandler <c-s-f> a:vim
+sethandler <c-f> a:vim
+sethandler <c-s-g> a:vim
+sethandler <c-g> a:vim
+sethandler <c-s-h> a:vim
+sethandler <c-h> a:vim
+sethandler <c-s-i> a:vim
+sethandler <c-i> a:vim
+sethandler <c-s-j> a:vim
+sethandler <c-j> a:vim
+sethandler <c-s-k> a:vim
+sethandler <c-k> a:vim
+sethandler <c-s-l> a:vim
+sethandler <c-l> a:vim
+sethandler <c-s-m> a:vim
+sethandler <c-m> a:vim
+sethandler <c-s-n> a:vim
+sethandler <c-n> a:vim
+sethandler <c-s-o> a:vim
+sethandler <c-o> a:vim
+sethandler <c-s-p> a:vim
+sethandler <c-p> a:vim
+sethandler <c-s-q> a:vim
+sethandler <c-q> a:vim
+sethandler <c-s-r> a:vim
+sethandler <c-r> a:vim
+sethandler <c-s-s> a:ide
+sethandler <c-s> a:vim
+sethandler <c-s-t> a:vim
+sethandler <c-t> a:vim
+sethandler <c-s-u> a:vim
+sethandler <c-u> a:vim
+sethandler <c-s-v> a:ide
+sethandler <a-v> a:ide
+sethandler <c-v> a:vim
+sethandler <c-s-w> a:vim
+" sethandler <c-w> a:ide
+sethandler <c-w> a:vim
+sethandler <c-s-x> a:vim
+sethandler <a-x> a:ide
+sethandler <c-x> a:vim
+sethandler <c-s-y> a:vim
+sethandler <c-y> a:vim
+sethandler <a-z> a:ide
+sethandler <c-s-z> a:vim
+sethandler <c-z> a:vim
+" }}}
+" Footer {{{
+" vim:foldmethod=marker:foldlevel=1:ft=vim
+" }}}
+

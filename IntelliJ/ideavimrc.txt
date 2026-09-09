@@ -1,0 +1,3 @@
+
+source /home/nwb/.var/app/dev.neovide.neovide/config/nvim/IntelliJ/base.txt
+source /home/nwb/.var/app/dev.neovide.neovide/config/nvim/IntelliJ/unix.txt

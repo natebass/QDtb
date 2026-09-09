@@ -1,0 +1,15 @@
+
+" Overrides {{{
+map E <ACTION>(SaveAll):source ~/.ideavimrc<CR>
+
+" }}}
+" General {{{
+autocmd! bufwritepost .vimrc,Mac.txt,Mobile.txt,Terminal.txt,Windows.txt,*imrc.txt,Base.txt,*nippets.json,*.vim source ~/.ideavimrc
+" }}}
+" Remaps {{{
+nn <SPACE>q :source ~/.ideavimrc<CR>
+" }}}
+" Footer {{{
+" vim:foldmethod=marker:foldlevel=1:ft=vim
+" }}}
+

@@ -1,0 +1,12 @@
+
+" Overrides {{{
+" }}}
+" General {{{
+autocmd! bufwritepost .vimrc,IntelliJ.txt,Mac.txt,Mobile.txt,Terminal.txt,Windows.txt,*imrc.txt,Base.txt,*nippets.json,*.vim source C:\Users\nateb\.ideavimrc
+" }}}
+" Remaps {{{
+map E <ACTION>(SaveAll):exe 'source' "C:\\\\Users\\\\nateb\\\\OneDrive\\\\Documents\\\\Adtb\\\\Past\\\\IntelliJ.txt"
+" }}}
+" Footer {{{
+" vim:foldmethod=marker:foldlevel=1:ft=vim
+" }}}
