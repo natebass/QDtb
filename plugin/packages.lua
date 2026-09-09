@@ -1,4 +1,8 @@
 --- Add packages with the native Neovim package manager.
+
+vim.pack.add({
+	"https://github.com/echasnovski/mini.nvim"
+}, { load = true })
 vim.pack.add({
 	"https://github.com/mhinz/vim-startify",
 	"https://github.com/vague2k/vague.nvim",
@@ -17,7 +21,7 @@ vim.pack.add({
 	"https://github.com/wakatime/vim-wakatime",
 	"https://github.com/folke/lazydev.nvim",
 	"https://github.com/Bilal2453/luvit-meta",
-	"https://github.com/folke/snacks.nvim",
+	"https://github.com/folke/snacks.nvim"
 }, { load = false })
 
 local command_packages = {

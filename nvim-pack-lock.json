@@ -28,6 +28,10 @@
       "rev": "cc9b2d412d2fbd30b94a70cfc214c2a3be27a0a2",
       "src": "https://github.com/Bilal2453/luvit-meta"
     },
+    "mini.nvim": {
+      "rev": "25f25d3e6661d942323e56711096de1850d814ec",
+      "src": "https://github.com/echasnovski/mini.nvim"
+    },
     "nerdtree": {
       "rev": "690d061b591525890f1471c6675bcb5bdc8cdff9",
       "src": "https://github.com/preservim/nerdtree"
