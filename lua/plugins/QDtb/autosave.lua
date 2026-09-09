@@ -1,181 +1,99 @@
 --- Autosave Configuration.
---- Automatically saves files when focus is lost or before exiting Vim.
+--- Writes modified file buffers when Neovim loses focus or is about to exit.
 --- @module plugins.QDtb.autosave
 
-local augroup = vim.api.nvim_create_augroup("QDtbAutosave", { clear = true })
--- This list covers common web development files and general programming files.
-local filetypes_to_save = {
-	"html",
-	"htm",
-	"css",
-	"scss",
-	"less",
-	"js",
-	"jsx",
-	"ts",
-	"tsx",
-	"json",
-	"jsonc",
-	"vue",
-	"svelte",
-	"astro",
-	"php",
-	"py",
-	"rb",
-	"go",
-	"java",
-	"c",
-	"cpp",
-	"h",
-	"hpp",
-	"cs",
-	"rs",
-	"toml",
-	"yaml",
-	"yml",
-	"xml",
-	"md",
-	"txt",
-	"sh",
-	"bash",
-	"zsh",
-	"fish",
-	"conf",
-	"ini",
-	"log",
-	"sql",
-	"dockerfile",
-	"gitignore",
-	"gitconfig",
-	"editorconfig",
-	"prettierrc",
-	"eslintrc",
-	"webmanifest",
-	"svg",
-	"csv",
-	"tsv",
-	"diff",
-	"patch",
-	"graphql",
-	"proto",
-	"zig",
-	"rust",
-	"swift",
-	"kt",
-	"dart",
-	"elm",
-	"erlang",
-	"fsharp",
-	"haskell",
-	"nim",
-	"ocaml",
-	"perl",
-	"r",
-	"scala",
-	"solidity",
-	"stylus",
-	"twig",
-	"liquid",
-	"pug",
-	"haml",
-	"slim",
-	"markdown",
-	"asciidoc",
-	"rst",
-	"org",
-	"nix",
-	"cmake",
-	"make",
-	"glsl",
-	"wgsl",
-	"wgsl",
-	"hlsl",
-	"metal",
-	"cuda",
-	"ps1",
-	"bat",
-	"cmd",
-	"vbs",
-	"psd1",
-	"psm1",
-	"clj",
-	"cljs",
-	"edn",
-	"lisp",
-	"scm",
-	"ss",
-	"d",
-	"pas",
-	"ada",
-	"cobol",
-	"fortran",
-	"matlab",
-	"rkt",
-	"sml",
-	"tcl",
-	"vhdl",
-	"verilog",
-	"systemverilog",
-	"awk",
-	"sed",
-	"expect",
-	"tcl",
-	"awk",
-	"sed",
-	"jsp",
-	"asp",
-	"aspx",
-	"ejs",
-	"hbs",
-	"handlebars",
-	"typescriptreact",
+local M = {}
+
+--- Buffer types that never hold a file worth writing.
+local skipped_buftypes = {
+	acwrite = true,
+	help = true,
+	nofile = true,
+	nowrite = true,
+	prompt = true,
+	quickfix = true,
+	terminal = true,
 }
--- Create the autocmd for FocusLost and VimLeavePre events
+
+--- Filetypes whose buffer is owned by another tool and must not be written behind its back.
+local skipped_filetypes = {
+	gitcommit = true,
+	gitrebase = true,
+	hgcommit = true,
+	minifiles = true,
+	oil = true,
+	startify = true,
+}
+
+--- Decides whether a buffer is an ordinary file with unsaved changes.
+--- Buffer properties are checked instead of a filetype allowlist: any real file is
+--- worth saving, and the buffer itself already knows whether it can be written.
+--- @param bufnr integer The buffer to inspect.
+--- @return boolean True when the buffer should be written.
+function M.should_save(bufnr)
+	if not vim.api.nvim_buf_is_valid(bufnr) or not vim.api.nvim_buf_is_loaded(bufnr) then
+		return false
+	end
+
+	local buffer = vim.bo[bufnr]
+	if not buffer.modified or not buffer.modifiable or buffer.readonly then
+		return false
+	end
+	if skipped_buftypes[buffer.buftype] or skipped_filetypes[buffer.filetype] then
+		return false
+	end
+
+	local name = vim.api.nvim_buf_get_name(bufnr)
+	if name == "" then
+		return false
+	end
+	-- A buffer behind a URL scheme (fugitive://, oil://, ...) is not an ordinary file.
+	if name:find("^%a[%w+.-]*://") then
+		return false
+	end
+
+	return true
+end
+
+--- Writes every buffer that M.should_save accepts.
+--- Unlike `:wa` this touches only the buffers that were checked, and a buffer that
+--- refuses to write is reported instead of being swallowed by `silent!`.
+--- @return integer saved The number of buffers written.
+function M.save_all()
+	local saved = 0
+	for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+		if M.should_save(bufnr) then
+			local ok, err = pcall(vim.api.nvim_buf_call, bufnr, function()
+				vim.cmd("silent write")
+			end)
+			if ok then
+				saved = saved + 1
+			else
+				vim.notify(
+					("Autosave failed for %s: %s"):format(
+						vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":~:."),
+						err
+					),
+					vim.log.levels.WARN
+				)
+			end
+		end
+	end
+	return saved
+end
+
+local augroup = vim.api.nvim_create_augroup("QDtbAutosave", { clear = true })
+
 vim.api.nvim_create_autocmd({ "FocusLost", "VimLeavePre" }, {
 	group = augroup,
-	callback = function(args) -- The callback receives an 'args' table
-		local bufnr = vim.api.nvim_get_current_buf()
-		local filetype = vim.bo[bufnr].filetype
-		local modified = vim.bo[bufnr].modified
-		local bufname = vim.api.nvim_buf_get_name(bufnr)
-		-- Determine which event triggered the autocmd
-		local event_name = args.event or "UnknownEvent"
-		-- vim.notify(
-		-- 	'Autocmd triggered: ' .. event_name .. ' for ' .. (bufname == '' and '[No Name]' or bufname),
-		-- 	vim.log.levels.INFO
-		-- )
-		-- Check if the buffer is modified and its filetype is in our list
-
-		if modified and vim.tbl_contains(filetypes_to_save, filetype) then
-			-- Check if the buffer has a name (i.e., it's a file, not a scratch buffer)
-			if bufname and bufname ~= "" then
-				-- Save the buffer
-				vim.cmd("silent! wa")
-				-- vim.notify('Autosaved: ' .. bufname, vim.log.levels.INFO)
-			else
-				vim.notify("Not saving untitled buffer on " .. event_name, vim.log.levels.DEBUG)
-			end
-		else
-			vim.notify(
-				"Not saving "
-				.. (bufname == "" and "[No Name]" or bufname)
-				.. " (modified: "
-				.. tostring(modified)
-				.. ", filetype: "
-				.. filetype
-				.. ") on "
-				.. event_name,
-				vim.log.levels.DEBUG
-			)
-		end
-	end,
-})
-
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = { "lua", "typescript", "tsx", "ts", "tsx", "javascript", "js" },
 	callback = function()
-		vim.treesitter.start()
+		-- Set vim.g.qdtb_autosave to false to turn autosaving off for the session.
+		if vim.g.qdtb_autosave == false then
+			return
+		end
+		M.save_all()
 	end,
+	desc = "Write modified file buffers on focus loss and before exiting",
 })
--- Optional: Add a message when the autosave module is loaded
--- vim.notify('QDtb autosave module loaded.', vim.log.levels.INFO)
+
+return M
