@@ -1,5 +1,7 @@
 {
     "recommendations": [
-        "sumneko.lua"
+        "sumneko.lua",
+        "ms-vscode.powershell",
+        "ms-dotnettools.csdevkit"
     ]
 }

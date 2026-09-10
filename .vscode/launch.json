@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "PowerShell Run Pester Tests",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "Invoke-Pester -Path '${workspaceFolder}/powershell'",
+            "cwd": "${workspaceFolder}/powershell",
+            "createTemporaryIntegratedConsole": true,
+            "attachDotnetDebugger": true
+        },
+        {
+            "name": "Test Documentation Station",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "Invoke-Pester -Path '${workspaceFolder}/powershell/Modules/Documentation Station/Source/AllDocSt.Tests.ps1'",
+            "cwd": "${workspaceFolder}/powershell"
+        },
+        {
+            "name": "PowerShell: Launch Current File",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${file}",
+            "cwd": "${fileDirname}",
+            "args": []
+        }
+    ]
+}

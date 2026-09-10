@@ -1,0 +1,25 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"aliases":[],"name":"csharp"}]}}
+
+#!markdown
+
+# PowerShell modules
+
+#!markdown
+
+## Que Dios te bendiga
+
+This module is for Nate Bass' personal PowerShell scripts.
+
+#!pwsh
+
+$a = "abc aa     "
+
+#!pwsh
+
+$a.Trim()
+
+#!pwsh
+
+$a
