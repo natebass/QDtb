@@ -152,7 +152,7 @@ see the crontab or unit file that would be written before writing it.
 | `ClaudeCommand` | `claude` | Set this to an absolute path for scheduled runs |
 | `DefaultClaudeArgs` | `--print --permission-mode auto` | What makes an unattended run possible |
 | `DefaultModel` | *(empty)* | Passed as `--model` when set |
-| `DefaultWorkingDirectory` | `$HOME` | Per-job `-WorkingDirectory` overrides it |
+| `DefaultWorkingDirectory` | `~/Desktop` | Per-job `-WorkingDirectory` overrides it |
 | `PollSeconds` | `300` | How often `Start-ClaudeCronWorker` drains |
 | `QuotaResetHours` | `5` | Fallback pause when the CLI reports no reset time |
 | `MaxAttempts` | `3` | Retries before a job is marked `Failed` |

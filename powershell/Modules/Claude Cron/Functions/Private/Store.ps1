@@ -86,7 +86,11 @@ function Get-ClaudeCronDefaultConfig {
         ClaudeCommand           = 'claude'
         DefaultClaudeArgs       = @('--print', '--permission-mode', 'auto')
         DefaultModel            = ''
-        DefaultWorkingDirectory = $HOME
+        # ~/Desktop rather than $HOME: an unattended run can rewrite anything under
+        # whichever directory it starts in, so the default is somewhere narrower than the
+        # whole home directory. A machine with no Desktop folder needs
+        # Set-ClaudeCronConfig -DefaultWorkingDirectory before the first job is queued.
+        DefaultWorkingDirectory = (Join-Path $HOME 'Desktop')
         PollSeconds             = 300
         QuotaResetHours         = 5
         MaxAttempts             = 3
