@@ -1,6 +1,11 @@
 --- Algorithm Quotes. Randomly select quote about algorithms for the Startify custom footer.
 --- @module "plugins.session_manager.algorithm_quote"
 
+local utility = require("lib.utility")
+
+-- Seed once at load so each session picks a different quote.
+math.randomseed(os.time())
+
 local M = {}
 
 -- Table of quotes about computer algorithms
@@ -48,35 +53,10 @@ local algorithm_quotes = {
 	},
 }
 
-local function wrap_text(text, limit)
-	local lines = {}
-	local current_line = ""
-	for word in text:gmatch("%S+") do
-		if #current_line + #word + 1 > limit then
-			table.insert(lines, current_line)
-			current_line = word
-		else
-			if current_line == "" then
-				current_line = word
-			else
-				current_line = current_line .. " " .. word
-			end
-		end
-	end
-	if current_line ~= "" then
-		table.insert(lines, current_line)
-	end
-	return lines
-end
-
 --- Returns a randomly selected quote formatted for Startify's custom footer.
 --- @function quotes
 --- @return table A table of strings, each representing a line for the footer.
 function M.quotes()
-	-- Seed the random number generator if not already seeded
-	-- This is important to get different quotes each time Neovim starts
-	math.randomseed(os.time())
-
 	-- Get a random index
 	local index = math.random(1, #algorithm_quotes)
 
@@ -86,12 +66,13 @@ function M.quotes()
 	-- Format the quote as required by Startify's custom footer
 	local limit = math.max(20, vim.o.columns - 2)
 	local text_with_quotes = '"' .. selected_quote.text .. '"'
-	local wrapped_lines = wrap_text(text_with_quotes, limit)
+	local wrapped_lines = utility.wrap_text(text_with_quotes, limit)
 
 	local lines = { "" }
 	for _, line in ipairs(wrapped_lines) do
-		table.insert(lines, " " .. line .. " - " .. selected_quote.source)
+		table.insert(lines, " " .. line)
 	end
+	table.insert(lines, " - " .. selected_quote.source)
 	table.insert(lines, "")
 
 	return lines

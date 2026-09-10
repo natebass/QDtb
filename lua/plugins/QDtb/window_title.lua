@@ -10,7 +10,7 @@ local M = {}
 function M.set_terminal_title(title)
 	-- Escape single quotes for shell command safety
 	local escaped_title = title:gsub("'", "'\\''")
-	local cmd = string.format("xdotool selectwindow getactivewindow set_window_title '%s'", escaped_title)
+	local cmd = string.format("xdotool getactivewindow set_window_title '%s'", escaped_title)
 	-- Or using wmctrl:
 	-- local cmd = string.format("wmctrl -F -r :ACTIVE: -T '%s'", escaped_title)
 	-- Execute the command asynchronously to avoid blocking Neovim

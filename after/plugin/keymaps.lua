@@ -10,21 +10,12 @@ vim.cmd.packadd("focus.nvim")
 -- Package JSON Check
 local package_json_path = "C:\\Users\\nateb\\Source\\Repos\\be-gccpilot03-py\\frontend\\package.json"
 local package_json_dir = vim.fn.fnamemodify(package_json_path, ":h")
-local pj = require("../plugins.QDtb.package_json")
+local pj = require("plugins.QDtb.package_json")
 map("n", "<leader>z", pj.check_npm_project, { desc = "Check if NPM project." })
 -- Colorscheme
-local colorscheme_cycler = require("../plugins.QDtb.colorscheme_cycler")
-vim.cmd.colorscheme("default")
-if type(colorscheme_cycler) == "table" and colorscheme_cycler.init_colorschemes then
-	colorscheme_cycler.init_colorschemes()
-else
-	print("ERROR: colorscheme_cycler module not loaded correctly")
-end
-map("n", "<leader>b", colorscheme_cycler.next_colorscheme, { desc = "Next Colorscheme", silent = true })
 vim.cmd.colorscheme("vague")
 -- Focus & Leap
 require("focus").setup()
-map({ "n", "x", "o" }, "s", "<plug>(leap-forward)")
 map({ "n", "x", "o" }, "S", "<plug>(leap-backward)")
 map({ "n", "x", "o" }, "gs", "<plug>(leap-from-window)")
 map({ "n", "x", "o" }, "gS", "<plug>(leap)")
@@ -74,14 +65,6 @@ map("n", "<leader>.", ":cd %:p:h<CR>", { silent = true })
 -- map("n", "<leader>ck", "<cmd>norm! K<cr>", { desc = "Keywordprg" })
 -- }}}
 -- User General & Mode Mappings {{{
--- Under development
-local package_json_path = "C:\\Users\\nateb\\Source\\Repos\\be-gccpilot03-py\\frontend\\package.json"
-local package_json_dir = vim.fn.fnamemodify(package_json_path, ":h")
-vim.keymap.set(
-	"n",
-	"h",
-	string.format(":e %s<CR>:cd %s<CR>:NERDTreeToggle<CR><c-w>l", package_json_path, package_json_dir)
-)
 -- Stable
 map("n", "<CR>", "yyp")
 map("n", "<S-CR>", "dd O")
@@ -142,7 +125,6 @@ map("n", "V", "A")
 vim.keymap.set("n", "v", "Vc")
 vim.keymap.set("v", "v", "<ESC>Vc")
 vim.keymap.set("n", "w", "<c-w>")
-vim.keymap.set("n", "X", "x")
 vim.keymap.set("n", "x", "<c-i>")
 vim.keymap.set("n", "z", "<c-o>")
 vim.keymap.set("n", ",", "h")
@@ -229,13 +211,25 @@ map("n", "gcO", "O<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>", { desc = "Add Commen
 map("n", "<leader>fn", "<cmd>enew<cr>", { desc = "New File" })
 -- Location and Quickfix lists
 map("n", "<leader>xl", function()
-	local success, err = pcall(vim.fn.getloclist(0, { winid = 0 }).winid ~= 0 and vim.cmd.lclose or vim.cmd.lopen)
+	local success, err = pcall(function()
+		if vim.fn.getloclist(0, { winid = 0 }).winid ~= 0 then
+			vim.cmd.lclose()
+		else
+			vim.cmd.lopen()
+		end
+	end)
 	if not success and err then
 		vim.notify(err, vim.log.levels.ERROR)
 	end
 end, { desc = "Location List" })
 map("n", "<leader>xq", function()
-	local success, err = pcall(vim.fn.getqflist({ winid = 0 }).winid ~= 0 and vim.cmd.cclose or vim.cmd.copen)
+	local success, err = pcall(function()
+		if vim.fn.getqflist({ winid = 0 }).winid ~= 0 then
+			vim.cmd.cclose()
+		else
+			vim.cmd.copen()
+		end
+	end)
 	if not success and err then
 		vim.notify(err, vim.log.levels.ERROR)
 	end

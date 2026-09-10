@@ -46,29 +46,10 @@ function M.check_npm_project()
 	local current_dir = vim.fn.fnamemodify(file_path, ":h") -- Get directory of the current file
 	local npm_root = find_npm_project_root(current_dir, 10) -- Check up to 10 directories back
 	if npm_root then
-		print(npm_root)
-		print("NPM project detected at: " .. npm_root)
-		-- You can add more actions here, for example:
-		-- vim.g.npm_project_root = npm_root
-		-- vim.cmd("cd" .. npm_root)
-		-- vim.api.nvim_set_current_dir(npm_root)
+		vim.notify("NPM project detected at: " .. npm_root, vim.log.levels.INFO)
 	else
-		print("Not inside an NPM project (or package.json not found within 10 parent dirs).")
+		vim.notify("Not inside an NPM project (or package.json not found within 10 parent dirs).", vim.log.levels.WARN)
 	end
 end
-
--- -- Define an autocommand group to manage our autocommands
--- vim.api.nvim_create_augroup("NpmProjectDetector", { clear = true })
---
--- -- Create an autocommand that runs on BufReadPost for common web file types
--- vim.api.nvim_create_autocmd("BufReadPost", {
---     group = "NpmProjectDetector",
---     pattern = {
---         "*.html", "*.htm", "*.css", "*.js", "*.jsx", "*.ts", "*.tsx", "*.json",
---         "*.vue", "*.svelte", "*.less", "*.scss", "*.sass",
---     },
---     callback = M.check_npm_project,
---     desc = "Check if the opened file is inside an NPM project",
--- })
 
 return M

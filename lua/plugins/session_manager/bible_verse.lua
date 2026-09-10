@@ -1,6 +1,11 @@
 --- Bible Verses. Randomly selected Bible verses for the Startify custom header.
 --- @module plugins.session_manager.bible_verse
 
+local utility = require("lib.utility")
+
+-- Seed once at load so each session picks a different quote.
+math.randomseed(os.time())
+
 local M = {}
 
 -- Table of Bible verses
@@ -48,35 +53,10 @@ local bible_verses = {
 	},
 }
 
-local function wrap_text(text, limit)
-	local lines = {}
-	local current_line = ""
-	for word in text:gmatch("%S+") do
-		if #current_line + #word + 1 > limit then
-			table.insert(lines, current_line)
-			current_line = word
-		else
-			if current_line == "" then
-				current_line = word
-			else
-				current_line = current_line .. " " .. word
-			end
-		end
-	end
-	if current_line ~= "" then
-		table.insert(lines, current_line)
-	end
-	return lines
-end
-
 --- Returns a randomly selected quote formatted for Startify's custom footer.
 --- @function quotes
 --- @return table A table of strings, each representing a line for the footer.
 function M.quotes()
-	-- Seed the random number generator if not already seeded
-	-- This is important to get different quotes each time Neovim starts
-	math.randomseed(os.time())
-
 	-- Get a random index
 	local index = math.random(1, #bible_verses)
 
@@ -84,7 +64,7 @@ function M.quotes()
 	local selected_quote = bible_verses[index]
 
 	-- Format the quote as required by Startify's custom footer
-	local wrapped_lines = wrap_text(selected_quote.text, 78)
+	local wrapped_lines = utility.wrap_text(selected_quote.text, 78)
 	table.insert(wrapped_lines, selected_quote.source)
 
 	-- Center the lines and add side padding

@@ -2,7 +2,7 @@
 --- @module "plugins.code_style.all"
 local M = {}
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = { "lua", "typescript", "ts", "tsx", "javascript", "js" },
+	pattern = { "lua", "typescript", "typescriptreact", "javascript", "javascriptreact" },
 	callback = function()
 		vim.treesitter.start()
 	end,
@@ -21,16 +21,6 @@ vim.api.nvim_create_autocmd("FileType", {
 		vim.opt_local.formatoptions:remove({ "r", "o" })
 	end,
 	desc = "Remove option to automatically add a comment for all files.",
-})
-vim.api.nvim_create_autocmd("User", {
-	pattern = "MiniFilesBufferCreate",
-	callback = function(args)
-		local map_buf = function(lhs, rhs)
-			vim.keymap.set("n", lhs, rhs, { buffer = args.data.buf_id })
-		end
-		map_buf("<Esc>", MiniFiles.close)
-	end,
-	desc = "Escape key closes the MiniFiles buffer.",
 })
 -- vim.api.nvim_create_autocmd("FileType", {
 -- 	pattern = { "html", "json" },
