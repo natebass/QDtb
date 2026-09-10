@@ -28,7 +28,7 @@
         }
     }
     catch {
-        Write-Host "Error updating $PackageName $_" -ForegroundColor Red
+        Write-Host "Error updating ${PackageName}: $_" -ForegroundColor Red
     }
 
     # Add a separator line for readability

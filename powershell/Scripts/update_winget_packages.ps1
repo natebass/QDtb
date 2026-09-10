@@ -12,43 +12,10 @@
     Date: Created based on current winget package list
 #>
 
-# Function to update a single package with error handling
-function Update-WingetPackage {
-    [CmdletBinding(SupportsShouldProcess = $true)]
-    param (
-        [string]$PackageId,
-        [string]$PackageName
-    )
-
-    Write-Host "Attempting to update $PackageName ($PackageId)..." -ForegroundColor Cyan
-
-    try {
-        if ($PSCmdlet.ShouldProcess($PackageId, 'Upgrade winget package')) {
-            # Run winget upgrade with the package ID
-            winget upgrade --id $PackageId --exact
-
-            # Check if the update was successful
-            if ($LASTEXITCODE -eq 0) {
-                Write-Host "Successfully updated $PackageName" -ForegroundColor Green
-            }
-            elseif ($LASTEXITCODE -eq -1978335189) {
-                Write-Host "No applicable update found for $PackageName" -ForegroundColor Yellow
-            }
-            else {
-                Write-Host "Update failed for $PackageName with exit code: $LASTEXITCODE" -ForegroundColor Red
-            }
-        }
-        else {
-            Write-Host "Skipped update for $PackageName ($PackageId)." -ForegroundColor DarkGray
-        }
-    }
-    catch {
-        Write-Host "Error updating ${PackageName}: $_" -ForegroundColor Red
-    }
-
-    # Add a separator line for readability
-    Write-Host "-----------------------------------------" -ForegroundColor DarkGray
-}
+# Update-WingetPackage is exported by QDtb.Utility. It used to be defined here as
+# well, and the two copies had drifted, so whichever loaded last decided the behaviour.
+# Import by path so this script uses the copy in this repository either way.
+Import-Module (Join-Path -Path $PSScriptRoot -ChildPath '../Modules/QDtb.Utility/QDtb.Utility.psd1') -Force
 
 # Display start message
 Write-Host "Starting individual package updates..." -ForegroundColor Magenta
