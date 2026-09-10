@@ -1,6 +1,12 @@
 <#
     .SYNOPSIS
     Resolves the root directory that holds configuration, the queue and the logs.
+
+    .DESCRIPTION
+    CLAUDE_CRON_HOME wins when it is set. Otherwise the XDG config directory is used,
+    which is what an interactive shell resolves to. Note that cron and systemd do not
+    inherit a shell's XDG_CONFIG_HOME: the installers bake the root resolved at install
+    time into the unit they write, so the scheduler always drains the queue you can see.
 #>
 function Get-ClaudeCronRoot {
     [CmdletBinding()]
@@ -37,21 +43,56 @@ function Get-ClaudeCronPath {
 
 <#
     .SYNOPSIS
+    Writes text to a file so a reader never sees a half written one.
+
+    .DESCRIPTION
+    Set-Content truncates before it writes, so a crash or a concurrent read in the middle
+    of one leaves a truncated file behind - for a job file that means the job is silently
+    dropped by Read-ClaudeCronJob. Writing a sibling temp file and renaming it into place
+    is atomic on every filesystem this module runs on.
+#>
+function Set-ClaudeCronFileContent {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',
+        Justification = 'Internal helper; the exported command that calls it declares ShouldProcess.')]
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$Path,
+
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [string]$Value
+    )
+    $temporary = "$Path.$PID.tmp"
+    try {
+        # No BOM, and a trailing newline so the files stay pleasant to read and diff.
+        [System.IO.File]::WriteAllText($temporary, $Value + [System.Environment]::NewLine, [System.Text.UTF8Encoding]::new($false))
+        [System.IO.File]::Move($temporary, $Path, $true)
+    }
+    catch {
+        Remove-Item -LiteralPath $temporary -Force -ErrorAction SilentlyContinue
+        throw
+    }
+}
+
+<#
+    .SYNOPSIS
     The settings applied when no config file exists yet.
 #>
 function Get-ClaudeCronDefaultConfig {
     [CmdletBinding()]
     param ()
     return [ordered]@{
-        ClaudeCommand      = 'claude'
-        DefaultClaudeArgs  = @('--print', '--permission-mode', 'acceptEdits')
-        DefaultModel       = ''
+        ClaudeCommand           = 'claude'
+        DefaultClaudeArgs       = @('--print', '--permission-mode', 'acceptEdits')
+        DefaultModel            = ''
         DefaultWorkingDirectory = $HOME
-        PollSeconds        = 300
-        QuotaResetHours    = 5
-        MaxAttempts        = 3
-        JobTimeoutMinutes  = 60
-        NotifyCommand      = ''
+        PollSeconds             = 300
+        QuotaResetHours         = 5
+        MaxAttempts             = 3
+        JobTimeoutMinutes       = 60
+        NotifyCommand           = ''
+        MaxLogSizeMB            = 5
     }
 }
 
@@ -65,10 +106,16 @@ function Read-ClaudeCronConfig {
     $paths = Get-ClaudeCronPath
     $config = Get-ClaudeCronDefaultConfig
     if (Test-Path -LiteralPath $paths.Config) {
-        $saved = Get-Content -LiteralPath $paths.Config -Raw | ConvertFrom-Json
-        foreach ($key in @($config.Keys)) {
-            $value = $saved.PSObject.Properties[$key]
-            if ($null -ne $value) { $config[$key] = $value.Value }
+        try {
+            $saved = Get-Content -LiteralPath $paths.Config -Raw | ConvertFrom-Json
+            foreach ($key in @($config.Keys)) {
+                $value = $saved.PSObject.Properties[$key]
+                if ($null -ne $value) { $config[$key] = $value.Value }
+            }
+        }
+        catch {
+            # A damaged config must not stop the queue: fall back to the defaults and say so.
+            Write-Warning "config.json could not be read ($($_.Exception.Message)); using defaults."
         }
     }
     return [pscustomobject]$config
@@ -85,7 +132,7 @@ function Write-ClaudeCronConfig {
         [psobject]$Config
     )
     $paths = Get-ClaudeCronPath
-    $Config | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $paths.Config -Encoding utf8
+    Set-ClaudeCronFileContent -Path $paths.Config -Value ($Config | ConvertTo-Json -Depth 6)
     return $Config
 }
 
@@ -128,13 +175,17 @@ function ConvertFrom-ClaudeCronTimestamp {
 <#
     .SYNOPSIS
     Builds a short, sortable and collision resistant job id.
+
+    .DESCRIPTION
+    The stamp is UTC so ids keep sorting in run order across a daylight saving change;
+    Read-ClaudeCronJob relies on that ordering.
 #>
 function New-ClaudeCronId {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',
         Justification = 'Generates a string; changes nothing.')]
     [CmdletBinding()]
     param ()
-    $stamp = (Get-Date).ToString('yyyyMMdd-HHmmss')
+    $stamp = [datetime]::UtcNow.ToString('yyyyMMdd-HHmmss')
     $suffix = ([guid]::NewGuid().ToString('N')).Substring(0, 4)
     return "$stamp-$suffix"
 }
@@ -165,7 +216,7 @@ function Write-ClaudeCronJob {
         [psobject]$Job
     )
     $Job.UpdatedAt = ConvertTo-ClaudeCronTimestamp (Get-Date)
-    $Job | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Get-ClaudeCronJobPath -Id $Job.Id) -Encoding utf8
+    Set-ClaudeCronFileContent -Path (Get-ClaudeCronJobPath -Id $Job.Id) -Value ($Job | ConvertTo-Json -Depth 8)
     return $Job
 }
 
@@ -177,14 +228,15 @@ function Read-ClaudeCronJob {
     [CmdletBinding()]
     param ()
     $queue = (Get-ClaudeCronPath).Queue
-    Get-ChildItem -LiteralPath $queue -Filter '*.json' -File | Sort-Object Name | ForEach-Object {
+    foreach ($file in (Get-ChildItem -LiteralPath $queue -Filter '*.json' -File | Sort-Object Name)) {
         try {
-            $job = Get-Content -LiteralPath $_.FullName -Raw | ConvertFrom-Json
+            $job = Get-Content -LiteralPath $file.FullName -Raw | ConvertFrom-Json
             $job.PSObject.TypeNames.Insert(0, 'ClaudeCron.Job')
             $job
         }
         catch {
-            Write-ClaudeCronLog -Level 'WARN' -Message "Skipping unreadable job file '$($_.Name)': $($_.Exception.Message)"
+            # $_ here is the error record, so the file has to come from the loop variable.
+            Write-ClaudeCronLog -Level 'WARN' -Message "Skipping unreadable job file '$($file.Name)': $($_.Exception.Message)"
         }
     }
 }
@@ -204,10 +256,15 @@ function Read-ClaudeCronState {
         LastRunAt    = $null
     }
     if (Test-Path -LiteralPath $paths.State) {
-        $saved = Get-Content -LiteralPath $paths.State -Raw | ConvertFrom-Json
-        foreach ($key in @($state.Keys)) {
-            $value = $saved.PSObject.Properties[$key]
-            if ($null -ne $value) { $state[$key] = $value.Value }
+        try {
+            $saved = Get-Content -LiteralPath $paths.State -Raw | ConvertFrom-Json
+            foreach ($key in @($state.Keys)) {
+                $value = $saved.PSObject.Properties[$key]
+                if ($null -ne $value) { $state[$key] = $value.Value }
+            }
+        }
+        catch {
+            Write-Warning "state.json could not be read ($($_.Exception.Message)); starting from a clean state."
         }
     }
     return [pscustomobject]$state
@@ -224,13 +281,17 @@ function Write-ClaudeCronState {
         [psobject]$State
     )
     $paths = Get-ClaudeCronPath
-    $State | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $paths.State -Encoding utf8
+    Set-ClaudeCronFileContent -Path $paths.State -Value ($State | ConvertTo-Json -Depth 6)
     return $State
 }
 
 <#
     .SYNOPSIS
     Appends a finished run to history.jsonl so completed work survives job deletion.
+
+    .DESCRIPTION
+    Every finished run is recorded, not only the last one: a repeating job would otherwise
+    leave no trace of the runs it made before it was retired or removed.
 #>
 function Write-ClaudeCronHistory {
     [CmdletBinding()]
@@ -240,14 +301,19 @@ function Write-ClaudeCronHistory {
     )
     $paths = Get-ClaudeCronPath
     $entry = [ordered]@{
-        Id           = $Job.Id
-        Name         = $Job.Name
-        Type         = $Job.Type
-        Status       = $Job.Status
-        FinishedAt   = ConvertTo-ClaudeCronTimestamp (Get-Date)
+        Id              = $Job.Id
+        Name            = $Job.Name
+        Type            = $Job.Type
+        Status          = $Job.Status
+        FinishedAt      = ConvertTo-ClaudeCronTimestamp (Get-Date)
         DurationSeconds = $Job.LastDurationSeconds
-        ExitCode     = $Job.LastExitCode
-        LogFile      = $Job.LogFile
+        ExitCode        = $Job.LastExitCode
+        LogFile         = $Job.LogFile
     }
-    ($entry | ConvertTo-Json -Depth 5 -Compress) | Add-Content -LiteralPath $paths.History -Encoding utf8
+    try {
+        ($entry | ConvertTo-Json -Depth 5 -Compress) | Add-Content -LiteralPath $paths.History -Encoding utf8
+    }
+    catch {
+        Write-ClaudeCronLog -Level 'WARN' -Message "Could not append to history.jsonl: $($_.Exception.Message)"
+    }
 }

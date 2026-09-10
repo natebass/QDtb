@@ -158,9 +158,21 @@ see the crontab or unit file that would be written before writing it.
 | `MaxAttempts` | `3` | Retries before a job is marked `Failed` |
 | `JobTimeoutMinutes` | `60` | Longer runs are killed and recorded as exit 124 |
 | `NotifyCommand` | *(empty)* | e.g. `notify-send "{title}" "{message}"` |
+| `MaxLogSizeMB` | `5` | `claude-cron.log` rotates to `.log.1` past this; `0` disables |
+
+`{title}` and `{message}` are handed to the shell as arguments rather than pasted into
+the command, so a job name or an error message containing `$(...)`, backticks or `&` is
+treated as text and never executed. Pipes and `&&` in your own command still work.
+
+Note that **cron has no session bus**, so `notify-send` from a crontab drain has nothing
+to talk to. Use the systemd timer if you want desktop popups — it runs inside your login
+session.
 
 Set `CLAUDE_CRON_HOME` to move the whole data directory somewhere else — the test suite
-uses this to stay out of your real queue.
+uses this to stay out of your real queue. Both installers resolve the root at install
+time and write it into the crontab block or the unit file, because neither cron nor
+systemd inherits the `XDG_CONFIG_HOME` your shell may have set; without that the
+scheduler would quietly drain a different queue from the one you can see.
 
 A note on `-ClaudeArgs`: `--permission-mode acceptEdits` lets Claude edit files without
 asking, which is the point of an unattended queue. `--dangerously-skip-permissions` goes
@@ -252,7 +264,9 @@ PATH=...
 # <<< claude-cron <<<
 ```
 
-Everything else in your crontab is preserved byte for byte.
+Everything else in your crontab is preserved byte for byte — and if `crontab -l` fails
+for any reason other than "no crontab for <user>", the install is abandoned with an
+error rather than writing a crontab that contains only this block.
 
 **Doing it by hand instead.** `crontab -e` opens your personal crontab (`crontab -l`
 lists it; `crontab -r` deletes the whole thing without asking, so avoid it). If the
@@ -266,8 +280,8 @@ Things that bite people writing crontabs by hand:
   everything, or set `PATH=` at the top of the crontab as the installer does.
 - **`%` is special.** In a crontab, an unescaped `%` becomes a newline and everything
   after the first one is fed to the command as stdin. Write `\%` if you need a literal
-  one. (This module keeps prompts in JSON files, never in the crontab, so it is not a
-  problem here.)
+  one. (This module keeps prompts in JSON files, never in the crontab, and escapes any
+  `%` in the paths it writes, so it is not a problem here.)
 - **Every line must end in a newline**, including the last one.
 - **Nothing is logged by default.** Cron mails output to the local user, which on a
   desktop nobody reads. Always redirect: `>> /path/to/log 2>&1`. Set `MAILTO=""` at the
@@ -403,9 +417,13 @@ Work down this list; it is almost always one of the first three.
 6. **Is the queue paused?** `Get-ClaudeCronStatus` — a quota block makes a perfectly
    healthy drain look like it does nothing.
 7. **Is a stale lock in the way?** The log says "another worker holds the lock" every
-   drain. Check `cat ~/.config/claude-cron/worker.lock` and whether that pid still
-   exists; the module clears locks it can prove are stale on its own.
-8. **Was the machine asleep?** `journalctl -b -u systemd-suspend` or
+   drain. `cat ~/.config/claude-cron/worker.lock` shows the owning pid and the moment
+   that process started; the module compares both — a pid alone is not enough, because
+   pids get reused and a recycled one would make a dead lock look alive forever. It
+   clears locks it can prove are stale on its own.
+8. **Is a job stuck on `Running`?** That means a worker was killed mid-run. The next
+   drain notices, counts an attempt and puts the job back to `Pending` by itself.
+9. **Was the machine asleep?** `journalctl -b -u systemd-suspend` or
    `last -x | head` shows suspends and reboots. If so, the next section is the fix.
 
 ---
@@ -532,11 +550,19 @@ config.json      settings written by Set-ClaudeCronConfig
 state.json       quota block and last drain time
 queue/*.json     one file per job — readable, and safe to delete by hand
 logs/<id>.log    captured output per job, one appended block per run
-logs/claude-cron.log   what the module itself did
+logs/claude-cron.log   what the module itself did (rotated at MaxLogSizeMB)
+logs/claude-cron.log.1 the previous generation of the above
 logs/cron.log    whatever the scheduled command printed
 history.jsonl    one line per finished run, kept after jobs are cleared
-worker.lock      pid of the drain in progress
+worker.lock      JSON: pid, start time and host of the drain in progress
 ```
+
+`config.json`, `state.json` and the job files are written to a temp sibling and renamed
+into place, so a crash or a concurrent read never sees a half-written file.
+
+`logs/cron.log` is written by the shell redirection in the crontab line, not by the
+module, so `MaxLogSizeMB` does not reach it. `logrotate` or an occasional `: >` is the
+answer if it grows.
 
 Job files are plain JSON on purpose: if something goes wrong you can read the queue with
 `cat`, fix a field with an editor, or delete the file.

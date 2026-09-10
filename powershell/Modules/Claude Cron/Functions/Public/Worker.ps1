@@ -60,9 +60,14 @@ function Invoke-ClaudeCronQueue {
             Write-ClaudeCronState -State $state | Out-Null
         }
 
+        # The lock is held, so nothing else is draining: any job still marked Running is
+        # left over from a worker that was killed mid-run. Without this it stays Running
+        # forever, because -Due only ever looks at Pending jobs.
+        Reset-ClaudeCronStaleJob
+
         $jobs = if ($Identity) { @(Resolve-ClaudeCronJob -Identity $Identity) } else { @(Get-ClaudeCronJob -Due) }
         if ($jobs.Count -eq 0) {
-            Write-ClaudeCronLog -Level 'INFO' -Message 'Nothing due.'
+            Write-ClaudeCronLog -Level 'DEBUG' -Message 'Nothing due.'
             return
         }
 
@@ -123,8 +128,12 @@ function Invoke-ClaudeCronJobRun {
     $Job.LastExitCode = $run.ExitCode
     $Job.LastDurationSeconds = $run.DurationSeconds
 
+    # Only stderr and the tail of stdout: see Get-ClaudeCronFailureText for why the body
+    # of the transcript is off limits to the failure detectors.
+    $failureText = Get-ClaudeCronFailureText -Run $run
+
     $quota = if ($Job.Type -eq 'Prompt') {
-        Test-ClaudeCronQuotaFailure -Output $run.Output -ExitCode $run.ExitCode
+        Test-ClaudeCronQuotaFailure -Output $failureText -ExitCode $run.ExitCode
     }
     else {
         [pscustomobject]@{ IsQuota = $false; ResetsAt = $null; MatchedText = $null }
@@ -148,7 +157,7 @@ function Invoke-ClaudeCronJobRun {
     }
 
     if ($Job.Type -eq 'Prompt') {
-        $auth = Test-ClaudeCronAuthFailure -Output $run.Output -ExitCode $run.ExitCode
+        $auth = Test-ClaudeCronAuthFailure -Output $failureText -ExitCode $run.ExitCode
         if ($auth.IsAuth) {
             # Nothing will run until someone signs in, so the job keeps its retry budget.
             $Job.Status = 'Pending'
@@ -174,17 +183,22 @@ function Invoke-ClaudeCronJobRun {
         else {
             $Job.Status = 'Done'
             Write-ClaudeCronLog -Level 'INFO' -Message "Job $($Job.Id) done in $($run.DurationSeconds)s."
-            Write-ClaudeCronHistory -Job $Job
         }
+        # Recorded on every successful run: a repeating job would otherwise leave no trace
+        # of the runs it made before it was retired or removed.
+        Write-ClaudeCronHistory -Job $Job
         Write-ClaudeCronJob -Job $Job | Out-Null
         Send-ClaudeCronNotification -Title 'Claude Cron finished' -Message "$($Job.Name) finished with exit 0."
         return [pscustomobject]@{ Job = $Job; QuotaBlocked = $false; AuthBlocked = $false; Succeeded = $true }
     }
 
     $Job.Attempts = [int]$Job.Attempts + 1
-    $tail = ($run.Output -split "`n" | Select-Object -Last 5) -join ' '
+    $tail = ($failureText -split "`n" | Select-Object -Last 5) -join ' '
     $Job.LastError = "Exit $($run.ExitCode): $tail"
-    if ($Job.Attempts -ge [int]$Job.MaxAttempts) {
+    # A job file with no MaxAttempts would otherwise be Failed on its first hiccup,
+    # because any attempt count is >= 0.
+    $maxAttempts = [math]::Max(1, [int]$Job.MaxAttempts)
+    if ($Job.Attempts -ge $maxAttempts) {
         $Job.Status = 'Failed'
         Write-ClaudeCronLog -Level 'WARN' -Message "Job $($Job.Id) failed after $($Job.Attempts) attempt(s); see $($Job.LogFile)."
         Write-ClaudeCronHistory -Job $Job
@@ -194,7 +208,7 @@ function Invoke-ClaudeCronJobRun {
         # Back off a little so a transient failure is not retried in a tight loop.
         $Job.Status = 'Pending'
         $Job.RunAfter = ConvertTo-ClaudeCronTimestamp (Get-Date).AddMinutes(5 * $Job.Attempts)
-        Write-ClaudeCronLog -Level 'WARN' -Message "Job $($Job.Id) exited $($run.ExitCode); retry $($Job.Attempts)/$($Job.MaxAttempts) queued."
+        Write-ClaudeCronLog -Level 'WARN' -Message "Job $($Job.Id) exited $($run.ExitCode); retry $($Job.Attempts)/$maxAttempts queued."
     }
     Write-ClaudeCronJob -Job $Job | Out-Null
     return [pscustomobject]@{ Job = $Job; QuotaBlocked = $false; AuthBlocked = $false; Succeeded = $false }
@@ -231,7 +245,9 @@ function Start-ClaudeCronWorker {
         [int]$MaxIterations = 0
     )
     $config = Read-ClaudeCronConfig
-    $interval = if ($PollSeconds -gt 0) { $PollSeconds } else { [int]$config.PollSeconds }
+    # Floored at five seconds: a config with PollSeconds 0 would otherwise spin the queue
+    # as fast as the machine can read it.
+    $interval = [math]::Max(5, $(if ($PollSeconds -gt 0) { $PollSeconds } else { [int]$config.PollSeconds }))
     Write-ClaudeCronLog -Level 'INFO' -Message "Worker started (pid $PID, polling every ${interval}s). Ctrl+C to stop."
 
     $iteration = 0
@@ -295,9 +311,59 @@ function Get-ClaudeCronStatus {
         BlockedUntil = $blockedUntil
         NextRunAt    = if ($next.Count -gt 0) { $next[0] } else { $null }
         LastDrainAt  = ConvertFrom-ClaudeCronTimestamp $state.LastRunAt
-        WorkerPid    = if (Test-Path -LiteralPath $paths.Lock) { (Get-Content -LiteralPath $paths.Lock -Raw).Trim() } else { $null }
+        WorkerPid    = Get-ClaudeCronWorkerPid
         Schedule     = (Get-ClaudeCronSchedule)
     }
     $status.PSObject.TypeNames.Insert(0, 'ClaudeCron.Status')
     return $status
+}
+
+<#
+    .SYNOPSIS
+    Returns a Pending job back to the queue after the worker running it was killed.
+
+    .DESCRIPTION
+    Called with the worker lock held, so nothing is running: a job still marked Running
+    at that point belongs to a process that is gone - a reboot, a kill -9, a systemd stop
+    part way through a run. Nothing would ever pick it up again, because -Due only
+    considers Pending jobs, so it would sit there looking busy forever.
+
+    The attempt is counted, so a job that reliably takes the worker down with it still
+    runs out of retries instead of being restarted on every drain.
+#>
+function Reset-ClaudeCronStaleJob {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',
+        Justification = 'Internal recovery step; the exported command that calls it declares ShouldProcess.')]
+    [CmdletBinding()]
+    param ()
+    foreach ($job in @(Read-ClaudeCronJob | Where-Object { $_.Status -eq 'Running' })) {
+        $job.Attempts = [int]$job.Attempts + 1
+        $job.LastError = 'The worker stopped while this job was running.'
+        if ($job.Attempts -ge [math]::Max(1, [int]$job.MaxAttempts)) {
+            $job.Status = 'Failed'
+            Write-ClaudeCronLog -Level 'WARN' -Message "Job $($job.Id) was left Running by a stopped worker and has no attempts left; marked Failed."
+            Write-ClaudeCronHistory -Job $job
+        }
+        else {
+            $job.Status = 'Pending'
+            Write-ClaudeCronLog -Level 'WARN' -Message "Job $($job.Id) was left Running by a stopped worker; returned to the queue (attempt $($job.Attempts))."
+        }
+        Write-ClaudeCronJob -Job $job | Out-Null
+    }
+}
+
+<#
+    .SYNOPSIS
+    The pid of the worker currently holding the lock, or $null if nobody holds it.
+#>
+function Get-ClaudeCronWorkerPid {
+    [CmdletBinding()]
+    param ()
+    $lockFile = (Get-ClaudeCronPath).Lock
+    if (-not (Test-Path -LiteralPath $lockFile)) { return $null }
+    $content = ''
+    try { $content = [System.IO.File]::ReadAllText($lockFile) } catch { return $null }
+    # A lock whose process has gone is about to be taken over, so it is not a worker.
+    if (-not (Test-ClaudeCronLockAlive -Content $content)) { return $null }
+    try { return [int]($content | ConvertFrom-Json).Pid } catch { return $content.Trim() }
 }

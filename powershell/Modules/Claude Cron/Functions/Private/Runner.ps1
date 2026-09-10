@@ -71,9 +71,13 @@ function Get-ClaudeCronPwshPath {
     Runs one process to completion, capturing output to the job log file.
 
     .DESCRIPTION
-    Returns the exit code, the wall clock duration and the captured text. A job that
-    outruns JobTimeoutMinutes is killed and reported with exit code 124, matching the
-    convention used by timeout(1).
+    Returns the exit code, the wall clock duration and the captured text, with stdout and
+    stderr kept apart as well as combined. The failure detectors read the streams
+    separately: an error belongs on stderr, and scanning a whole successful transcript for
+    words like "429" is how a queue ends up paused because the model wrote about HTTP.
+
+    A job that outruns JobTimeoutMinutes is killed and reported with exit code 124,
+    matching the convention used by timeout(1).
 #>
 function Invoke-ClaudeCronProcess {
     [CmdletBinding()]
@@ -118,6 +122,8 @@ function Invoke-ClaudeCronProcess {
         return [pscustomobject]@{
             ExitCode        = 127
             Output          = "Failed to start '$FilePath': $($_.Exception.Message)"
+            StdOut          = ''
+            StdErr          = "Failed to start '$FilePath': $($_.Exception.Message)"
             DurationSeconds = 0
             TimedOut        = $false
         }
@@ -130,11 +136,18 @@ function Invoke-ClaudeCronProcess {
     $stdoutTask = $process.StandardOutput.ReadToEndAsync()
     $stderrTask = $process.StandardError.ReadToEndAsync()
 
-    if (-not $process.WaitForExit($TimeoutMinutes * 60 * 1000)) {
+    # A minute floor keeps a misconfigured 0 from killing every job the instant it starts,
+    # and the millisecond total is computed as a long so a long timeout cannot overflow.
+    $effectiveMinutes = [math]::Max(1, $TimeoutMinutes)
+    $timeoutMs = [math]::Min([long]$effectiveMinutes * 60000L, [long][int]::MaxValue)
+
+    if (-not $process.WaitForExit([int]$timeoutMs)) {
         $timedOut = $true
         try { $process.Kill($true) } catch { Write-Debug "Kill failed: $($_.Exception.Message)" }
         [void]$process.WaitForExit(10000)
     }
+    # The parameterless overload is what flushes the asynchronous readers to completion.
+    try { $process.WaitForExit() } catch { Write-Debug "Final wait failed: $($_.Exception.Message)" }
 
     $stdout = try { $stdoutTask.GetAwaiter().GetResult() } catch { '' }
     $stderr = try { $stderrTask.GetAwaiter().GetResult() } catch { '' }
@@ -152,14 +165,48 @@ function Invoke-ClaudeCronProcess {
         "seconds : $([math]::Round($duration, 1))"
         '=' * 72
     ) -join "`n"
-    Add-Content -LiteralPath $LogFile -Value "$header`n$output`n" -Encoding utf8
+    try {
+        Add-Content -LiteralPath $LogFile -Value "$header`n$output`n" -Encoding utf8
+    }
+    catch {
+        Write-ClaudeCronLog -Level 'WARN' -Message "Could not write the job log '$LogFile': $($_.Exception.Message)"
+    }
 
     return [pscustomobject]@{
         ExitCode        = $exitCode
         Output          = $output
+        StdOut          = $stdout
+        StdErr          = $stderr
         DurationSeconds = [math]::Round($duration, 1)
         TimedOut        = $timedOut
     }
+}
+
+<#
+    .SYNOPSIS
+    Narrows a run's output to the part worth scanning for a failure reason.
+
+    .DESCRIPTION
+    Everything on stderr, plus the last few lines of stdout, which is where a CLI puts
+    the reason it gave up. The body of a successful transcript is deliberately excluded:
+    a prompt about rate limiting should not pause the queue for five hours.
+#>
+function Get-ClaudeCronFailureText {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [psobject]$Run,
+
+        [Parameter(Mandatory = $false)]
+        [int]$TailLines = 20
+    )
+    $tail = if ([string]::IsNullOrEmpty($Run.StdOut)) {
+        ''
+    }
+    else {
+        (($Run.StdOut -split "`r?`n") | Select-Object -Last $TailLines) -join "`n"
+    }
+    return (@($Run.StdErr, $tail) | Where-Object { $_ } | Join-String -Separator "`n")
 }
 
 <#
@@ -171,6 +218,8 @@ function Invoke-ClaudeCronProcess {
     "Claude AI usage limit reached|<unix seconds>". When that is present the exact reset
     time is used; otherwise a wall clock time mentioned in the message is honoured, and
     failing both, the configured QuotaResetHours is added to now.
+
+    Callers pass the text from Get-ClaudeCronFailureText rather than the whole transcript.
 #>
 function Test-ClaudeCronQuotaFailure {
     [CmdletBinding()]
@@ -184,9 +233,9 @@ function Test-ClaudeCronQuotaFailure {
         [int]$ExitCode
     )
     $result = [pscustomobject]@{
-        IsQuota      = $false
-        ResetsAt     = $null
-        MatchedText  = $null
+        IsQuota     = $false
+        ResetsAt    = $null
+        MatchedText = $null
     }
     if ([string]::IsNullOrWhiteSpace($Output)) { return $result }
 
@@ -201,6 +250,8 @@ function Test-ClaudeCronQuotaFailure {
     }
     if ($ExitCode -eq 0) { return $result }
 
+    # A bare "429" is not evidence of anything, so the numeric codes only count when they
+    # sit next to a word that makes them a status rather than a number in a sentence.
     $patterns = @(
         'usage limit reached'
         '\b5-hour limit\b'
@@ -210,7 +261,7 @@ function Test-ClaudeCronQuotaFailure {
         'out of (credits|tokens)'
         'insufficient (credit|quota|balance)'
         'too many requests'
-        '\b429\b'
+        '(?:error|status|code|http)\W{0,12}429\b'
     )
     foreach ($pattern in $patterns) {
         $match = [regex]::Match($Output, $pattern, 'IgnoreCase')
@@ -266,6 +317,8 @@ function Test-ClaudeCronAuthFailure {
     $result = [pscustomobject]@{ IsAuth = $false; MatchedText = $null }
     if ($ExitCode -eq 0 -or [string]::IsNullOrWhiteSpace($Output)) { return $result }
 
+    # As with the quota codes, 401 and "unauthorized" only count in an error-shaped
+    # context; on their own they are ordinary words in an ordinary answer.
     $patterns = @(
         'failed to authenticate'
         'oauth (session|token) expired'
@@ -273,8 +326,8 @@ function Test-ClaudeCronAuthFailure {
         'not logged in'
         'please (run )?[`"'']?claude[`"'']? to log ?in'
         'invalid api key'
-        'unauthorized'
-        '\b401\b'
+        '(?:error|status|code|http)\W{0,12}401\b'
+        '\b401\W{0,3}unauthorized\b'
     )
     foreach ($pattern in $patterns) {
         $match = [regex]::Match($Output, $pattern, 'IgnoreCase')
@@ -289,26 +342,87 @@ function Test-ClaudeCronAuthFailure {
 
 <#
     .SYNOPSIS
+    Reports whether the process that wrote a lock file is still running.
+
+    .DESCRIPTION
+    A pid on its own is not enough: pids are recycled, so after a reboot some unrelated
+    process can inherit the number and make a dead lock look permanently alive, which
+    stops every drain from then on. The start time recorded with the pid settles it.
+#>
+function Test-ClaudeCronLockAlive {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [string]$Content
+    )
+    $owner = $null
+    try { $owner = $Content | ConvertFrom-Json } catch { $owner = $null }
+
+    if ($null -eq $owner) {
+        # A lock written by an older version held a bare pid and nothing else.
+        $legacyPid = 0
+        if (-not [int]::TryParse($Content.Trim(), [ref]$legacyPid)) { return $false }
+        $owner = [pscustomobject]@{ Pid = $legacyPid; StartedAt = $null }
+    }
+    if (-not $owner.Pid -or [int]$owner.Pid -eq $PID) { return $false }
+
+    $process = Get-Process -Id ([int]$owner.Pid) -ErrorAction SilentlyContinue
+    if (-not $process) { return $false }
+    if (-not $owner.StartedAt) { return $true }
+
+    $recorded = ConvertFrom-ClaudeCronTimestamp $owner.StartedAt
+    if (-not $recorded) { return $true }
+    # A second of slack: the recorded value has been through a JSON round trip.
+    return ([math]::Abs(($process.StartTime - $recorded).TotalSeconds) -lt 1)
+}
+
+<#
+    .SYNOPSIS
     Stops a second worker from draining the queue at the same time as this one.
 
     .DESCRIPTION
-    A lock file holding a pid is written on entry. A lock whose process is gone is
+    The lock file is created with CreateNew, which fails if the file already exists, so
+    two workers starting at the same moment cannot both decide the queue is free. The
+    old check-then-write left exactly that window open. A lock whose process is gone is
     treated as stale and taken over, which is what happens after a reboot or a kill -9.
 #>
 function Enter-ClaudeCronLock {
     [CmdletBinding()]
     param ()
     $lockFile = (Get-ClaudeCronPath).Lock
-    if (Test-Path -LiteralPath $lockFile) {
-        $owner = (Get-Content -LiteralPath $lockFile -Raw).Trim()
-        $ownerPid = 0
-        if ([int]::TryParse($owner, [ref]$ownerPid) -and $ownerPid -ne $PID) {
-            if (Get-Process -Id $ownerPid -ErrorAction SilentlyContinue) { return $false }
-            Write-ClaudeCronLog -Level 'WARN' -Message "Removing stale lock from pid $ownerPid."
+    $owner = [ordered]@{
+        Pid       = $PID
+        StartedAt = ConvertTo-ClaudeCronTimestamp ([System.Diagnostics.Process]::GetCurrentProcess().StartTime)
+        Host      = [System.Net.Dns]::GetHostName()
+    } | ConvertTo-Json -Compress
+
+    foreach ($attempt in 1, 2) {
+        try {
+            # CreateNew is the atomic part: the open itself fails if someone got here first.
+            $stream = [System.IO.File]::Open($lockFile, [System.IO.FileMode]::CreateNew,
+                [System.IO.FileAccess]::Write, [System.IO.FileShare]::Read)
+            try {
+                $writer = [System.IO.StreamWriter]::new($stream)
+                $writer.Write($owner)
+                $writer.Flush()
+                $writer.Dispose()
+            }
+            finally {
+                $stream.Dispose()
+            }
+            return $true
+        }
+        catch [System.IO.IOException] {
+            if ($attempt -eq 2) { return $false }
+            $existing = ''
+            try { $existing = [System.IO.File]::ReadAllText($lockFile) } catch { return $false }
+            if (Test-ClaudeCronLockAlive -Content $existing) { return $false }
+            Write-ClaudeCronLog -Level 'WARN' -Message 'Removing a stale worker lock.'
+            Remove-Item -LiteralPath $lockFile -Force -ErrorAction SilentlyContinue
         }
     }
-    Set-Content -LiteralPath $lockFile -Value $PID -Encoding utf8
-    return $true
+    return $false
 }
 
 <#
@@ -320,6 +434,17 @@ function Exit-ClaudeCronLock {
     param ()
     $lockFile = (Get-ClaudeCronPath).Lock
     if (-not (Test-Path -LiteralPath $lockFile)) { return }
-    $owner = (Get-Content -LiteralPath $lockFile -Raw).Trim()
-    if ($owner -eq "$PID") { Remove-Item -LiteralPath $lockFile -Force -ErrorAction SilentlyContinue }
+    $content = ''
+    try { $content = [System.IO.File]::ReadAllText($lockFile) } catch { return }
+
+    $ownerPid = 0
+    try {
+        $parsed = $content | ConvertFrom-Json
+        $ownerPid = [int]$parsed.Pid
+    }
+    catch {
+        [void][int]::TryParse($content.Trim(), [ref]$ownerPid)
+    }
+    # Only ever release a lock this process actually owns.
+    if ($ownerPid -eq $PID) { Remove-Item -LiteralPath $lockFile -Force -ErrorAction SilentlyContinue }
 }

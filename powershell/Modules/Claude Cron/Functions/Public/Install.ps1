@@ -4,11 +4,68 @@ $script:ClaudeCronUnitName = 'claude-cron'
 
 <#
     .SYNOPSIS
+    Reads the current user's crontab, telling an empty crontab apart from a failure.
+
+    .DESCRIPTION
+    This is the difference between editing a crontab and destroying one. 'crontab -l'
+    exits non-zero both when there is no crontab yet and when it could not read the one
+    that exists, and the caller writes back whatever this returns. Treating the second
+    case as "no entries" replaces every job the user has with the claude-cron block, so
+    anything that is not a recognised "no crontab for <user>" is raised instead.
+#>
+function Read-ClaudeCronCrontab {
+    [CmdletBinding()]
+    param ()
+    if (-not (Get-Command -Name 'crontab' -CommandType Application -ErrorAction SilentlyContinue)) {
+        throw "crontab was not found. On Linux Mint install it with: sudo apt install cron"
+    }
+    # 2>&1 rather than a redirect to a temp file: the file redirection operator honours
+    # $WhatIfPreference, so under -WhatIf the stderr would silently go nowhere and an
+    # absent crontab would look like an unreadable one.
+    $captured = @(& crontab -l 2>&1)
+    $exitCode = $LASTEXITCODE
+
+    $errorRecords = @($captured | Where-Object { $_ -is [System.Management.Automation.ErrorRecord] })
+    $lines = @($captured | Where-Object { $_ -isnot [System.Management.Automation.ErrorRecord] } | ForEach-Object { [string]$_ })
+    $details = ($errorRecords | ForEach-Object { [string]$_ }) -join ' '
+
+    if ($exitCode -ne 0) {
+        # An empty crontab and an unreadable one both exit non-zero; only the first is safe
+        # to treat as "no entries", because the caller writes back whatever comes out here.
+        if ($details -match 'no crontab for') { return @() }
+        throw "Refusing to touch the crontab: 'crontab -l' exited $exitCode ($($details.Trim()))."
+    }
+    return $lines
+}
+
+<#
+    .SYNOPSIS
+    Escapes the characters cron reads specially in a command.
+
+    .DESCRIPTION
+    An unescaped % ends the command and starts feeding the rest of the line to it on
+    stdin, so a % anywhere in a path silently truncates the entry.
+#>
+function ConvertTo-ClaudeCronCommandField {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$Command
+    )
+    return $Command.Replace('%', '\%')
+}
+
+<#
+    .SYNOPSIS
     Builds the pwsh command line that a scheduler should run to drain the queue.
 
     .DESCRIPTION
     Cron and systemd both get a non-interactive pwsh that imports this module from the
     path it currently lives at and calls Invoke-ClaudeCronQueue once.
+
+    The store root is resolved now and baked in, because neither cron nor systemd
+    inherits the XDG_CONFIG_HOME an interactive shell may have set; without it the
+    scheduler would quietly drain a different queue from the one you can see.
 #>
 function Get-ClaudeCronDrainCommand {
     [CmdletBinding()]
@@ -19,12 +76,16 @@ function Get-ClaudeCronDrainCommand {
     $modulePath = Join-Path $PSScriptRoot '..' '..' 'ClaudeCron.psd1'
     $modulePath = (Resolve-Path -LiteralPath $modulePath).Path
     $call = if ($Limit -gt 0) { "Invoke-ClaudeCronQueue -Limit $Limit" } else { 'Invoke-ClaudeCronQueue' }
-    $script = "Import-Module '$modulePath' -Force; $call"
+    # A single quote inside the path would end the string, so it is doubled the PowerShell way.
+    $quotedPath = $modulePath.Replace("'", "''")
+    $script = "Import-Module '$quotedPath' -Force; $call"
+    $pwsh = Get-ClaudeCronPwshPath
     return [pscustomobject]@{
-        Pwsh       = Get-ClaudeCronPwshPath
-        ModulePath = $modulePath
-        Arguments  = @('-NoProfile', '-NonInteractive', '-Command', $script)
-        CommandLine = "$(Get-ClaudeCronPwshPath) -NoProfile -NonInteractive -Command `"$($script -replace '"', '\"')`""
+        Pwsh        = $pwsh
+        ModulePath  = $modulePath
+        Root        = Get-ClaudeCronRoot
+        Arguments   = @('-NoProfile', '-NonInteractive', '-Command', $script)
+        CommandLine = "$pwsh -NoProfile -NonInteractive -Command `"$($script -replace '"', '\"')`""
     }
 }
 
@@ -42,7 +103,8 @@ function Get-ClaudeCronSchedule {
     $timerState = $null
 
     if (Get-Command -Name 'crontab' -CommandType Application -ErrorAction SilentlyContinue) {
-        $current = @(& crontab -l 2>$null)
+        # Reporting must not throw just because the crontab is unreadable.
+        $current = try { Read-ClaudeCronCrontab } catch { @() }
         $inBlock = $false
         foreach ($line in $current) {
             if ($line -eq $script:ClaudeCronCronBegin) { $inBlock = $true; continue }
@@ -60,11 +122,11 @@ function Get-ClaudeCronSchedule {
         }
     }
     return [pscustomobject]@{
-        CronInstalled   = [bool]$cronLine
-        CronLine        = $cronLine
-        TimerInstalled  = [bool]$timerState
-        TimerUnitFile   = if ($timerState) { $unitFile } else { $null }
-        TimerEnabled    = $timerState
+        CronInstalled  = [bool]$cronLine
+        CronLine       = $cronLine
+        TimerInstalled = [bool]$timerState
+        TimerUnitFile  = if ($timerState) { $unitFile } else { $null }
+        TimerEnabled   = $timerState
     }
 }
 
@@ -74,11 +136,15 @@ function Get-ClaudeCronSchedule {
 
     .DESCRIPTION
     Writes a managed block into the current user's crontab, replacing any block this
-    module wrote before. Nothing outside the markers is touched. Because cron runs with
-    a minimal environment, the entry uses absolute paths and sets PATH and HOME itself.
+    module wrote before. Nothing outside the markers is touched, and the whole install is
+    abandoned if the existing crontab cannot be read, rather than overwriting it.
 
-    Cron only fires while the machine is awake: see the README section on keeping Linux
-    Mint from suspending if you expect overnight runs.
+    Because cron runs with a minimal environment, the entry uses absolute paths and sets
+    PATH, HOME and CLAUDE_CRON_HOME itself.
+
+    Cron only fires while the machine is awake, and it has no session bus, so
+    notify-send will not reach the desktop from here: see the README, and prefer
+    Install-ClaudeCronTimer if either of those matters.
 
     .PARAMETER Cron
     The cron expression to install. Defaults to every 10 minutes.
@@ -96,7 +162,7 @@ function Get-ClaudeCronSchedule {
     Shows the crontab that would be written without changing anything.
 #>
 function Install-ClaudeCronSchedule {
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     param (
         [Parameter(Mandatory = $false, Position = 0)]
         [string]$Cron = '*/10 * * * *',
@@ -105,16 +171,19 @@ function Install-ClaudeCronSchedule {
         [string]$Path = $env:PATH
     )
     if ($IsWindows) { throw 'Install-ClaudeCronSchedule is for Linux and macOS. On Windows use Register-ScheduledTask with the command from Get-ClaudeCronDrainCommand.' }
-    if (-not (Get-Command -Name 'crontab' -CommandType Application -ErrorAction SilentlyContinue)) {
-        throw "crontab was not found. On Linux Mint install it with: sudo apt install cron"
-    }
     [void](ConvertFrom-ClaudeCronExpression -Expression $Cron)
+
+    # An environment line runs to the end of the line, so a newline in one of these would
+    # turn the rest of the value into its own crontab entry.
+    foreach ($pair in @(@('PATH', $Path), @('HOME', $HOME), @('CLAUDE_CRON_HOME', (Get-ClaudeCronRoot)))) {
+        if ($pair[1] -match '[\r\n]') { throw "$($pair[0]) contains a line break and cannot be written to a crontab." }
+    }
 
     $drain = Get-ClaudeCronDrainCommand
     $cronLog = Join-Path (Get-ClaudeCronPath).Logs 'cron.log'
-    $entry = "$Cron $($drain.CommandLine) >> $cronLog 2>&1"
+    $entry = ConvertTo-ClaudeCronCommandField -Command "$Cron $($drain.CommandLine) >> $cronLog 2>&1"
 
-    $existing = @(& crontab -l 2>$null)
+    $existing = Read-ClaudeCronCrontab
     $kept = [System.Collections.Generic.List[string]]::new()
     $inBlock = $false
     foreach ($line in $existing) {
@@ -122,10 +191,12 @@ function Install-ClaudeCronSchedule {
         if ($line -eq $script:ClaudeCronCronEnd) { $inBlock = $false; continue }
         if (-not $inBlock) { $kept.Add($line) }
     }
+    $preserved = $kept.Count
     $kept.Add($script:ClaudeCronCronBegin)
-    $kept.Add("SHELL=/bin/sh")
+    $kept.Add('SHELL=/bin/sh')
     $kept.Add("HOME=$HOME")
     $kept.Add("PATH=$Path")
+    $kept.Add("CLAUDE_CRON_HOME=$($drain.Root)")
     $kept.Add($entry)
     $kept.Add($script:ClaudeCronCronEnd)
     $content = ($kept -join "`n") + "`n"
@@ -135,8 +206,8 @@ function Install-ClaudeCronSchedule {
         return
     }
     $content | & crontab -
-    if ($LASTEXITCODE -ne 0) { throw "crontab refused the new file (exit $LASTEXITCODE)." }
-    Write-ClaudeCronLog -Level 'INFO' -Message "Installed crontab entry: $Cron"
+    if ($LASTEXITCODE -ne 0) { throw "crontab refused the new file (exit $LASTEXITCODE); your crontab is unchanged." }
+    Write-ClaudeCronLog -Level 'INFO' -Message "Installed crontab entry: $Cron ($preserved existing line(s) preserved)."
     return Get-ClaudeCronSchedule
 }
 
@@ -148,10 +219,10 @@ function Install-ClaudeCronSchedule {
     Uninstall-ClaudeCronSchedule
 #>
 function Uninstall-ClaudeCronSchedule {
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     param ()
     if (-not (Get-Command -Name 'crontab' -CommandType Application -ErrorAction SilentlyContinue)) { return }
-    $existing = @(& crontab -l 2>$null)
+    $existing = Read-ClaudeCronCrontab
     $kept = [System.Collections.Generic.List[string]]::new()
     $inBlock = $false
     $removed = 0
@@ -166,7 +237,8 @@ function Uninstall-ClaudeCronSchedule {
     }
     if (-not $PSCmdlet.ShouldProcess('crontab', 'Remove claude-cron block')) { return }
     (($kept -join "`n") + "`n") | & crontab -
-    Write-ClaudeCronLog -Level 'INFO' -Message 'Removed the crontab entry.'
+    if ($LASTEXITCODE -ne 0) { throw "crontab refused the new file (exit $LASTEXITCODE); your crontab is unchanged." }
+    Write-ClaudeCronLog -Level 'INFO' -Message "Removed the crontab entry ($($kept.Count) other line(s) kept)."
 }
 
 <#
@@ -175,7 +247,8 @@ function Uninstall-ClaudeCronSchedule {
 
     .DESCRIPTION
     A better fit than cron when the machine sleeps: with Persistent=true the timer fires
-    as soon as the machine wakes if the window was missed. Run
+    as soon as the machine wakes if the window was missed. It also runs inside the login
+    session, so notify-send can reach the desktop. Run
     'loginctl enable-linger $env:USER' once if you want it to run without being logged in.
 
     .PARAMETER OnCalendar
@@ -188,7 +261,7 @@ function Uninstall-ClaudeCronSchedule {
     Install-ClaudeCronTimer -OnCalendar '*:0/15'
 #>
 function Install-ClaudeCronTimer {
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     param (
         [Parameter(Mandatory = $false, Position = 0)]
         [string]$OnCalendar = '*:0/10',
@@ -208,15 +281,23 @@ function Install-ClaudeCronTimer {
     $servicePath = Join-Path $unitDir "$name.service"
     $timerPath = Join-Path $unitDir "$name.timer"
 
+    # systemd reads % as the start of a specifier, so a literal one has to be doubled.
+    $unitPath = $env:PATH.Replace('%', '%%')
+    $unitRoot = ([string]$drain.Root).Replace('%', '%%')
+
+    # TimeoutStartSec matters: a Type=oneshot service is killed at DefaultTimeoutStartSec,
+    # 90 seconds, which is far shorter than a Claude run and far shorter than the module's
+    # own JobTimeoutMinutes. The queue enforces its own timeout, so systemd should not.
     $service = @"
 [Unit]
 Description=Drain the ClaudeCron queue
-After=network-online.target
 
 [Service]
 Type=oneshot
 WorkingDirectory=$HOME
-Environment=PATH=$env:PATH
+Environment=PATH=$unitPath
+Environment=CLAUDE_CRON_HOME=$unitRoot
+TimeoutStartSec=infinity
 ExecStart=$($drain.Pwsh) -NoProfile -NonInteractive -Command "Import-Module '$($drain.ModulePath)' -Force; Invoke-ClaudeCronQueue"
 "@
 
@@ -239,8 +320,8 @@ WantedBy=timers.target
         Write-Information $timer -InformationAction Continue
         return
     }
-    Set-Content -LiteralPath $servicePath -Value $service -Encoding utf8
-    Set-Content -LiteralPath $timerPath -Value $timer -Encoding utf8
+    Set-ClaudeCronFileContent -Path $servicePath -Value $service
+    Set-ClaudeCronFileContent -Path $timerPath -Value $timer
     & systemctl --user daemon-reload
     if ($NoStart) {
         & systemctl --user enable "$name.timer"
@@ -248,6 +329,7 @@ WantedBy=timers.target
     else {
         & systemctl --user enable --now "$name.timer"
     }
+    if ($LASTEXITCODE -ne 0) { throw "systemctl could not enable '$name.timer' (exit $LASTEXITCODE)." }
     Write-ClaudeCronLog -Level 'INFO' -Message "Installed systemd user timer '$name.timer' ($OnCalendar)."
     return Get-ClaudeCronSchedule
 }
@@ -260,7 +342,7 @@ WantedBy=timers.target
     Uninstall-ClaudeCronTimer
 #>
 function Uninstall-ClaudeCronTimer {
-    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Medium')]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     param ()
     $name = $script:ClaudeCronUnitName
     $unitDir = Join-Path $HOME '.config/systemd/user'

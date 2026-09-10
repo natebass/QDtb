@@ -486,6 +486,11 @@ function Set-ClaudeCronJob {
     .PARAMETER All
     Remove every job regardless of state.
 
+    .PARAMETER KeepLog
+    Leave the cleared jobs' log files on disk. Without this they go too, the same way
+    Remove-ClaudeCronJob takes them: otherwise every cleared job leaves an orphan in
+    logs/ that nothing will ever refer to or tidy up again.
+
     .EXAMPLE
     Clear-ClaudeCronQueue
 
@@ -499,7 +504,10 @@ function Clear-ClaudeCronQueue {
         [string[]]$Status = @('Done', 'Failed'),
 
         [Parameter(Mandatory = $false)]
-        [switch]$All
+        [switch]$All,
+
+        [Parameter(Mandatory = $false)]
+        [switch]$KeepLog
     )
     $targets = if ($All) { @(Read-ClaudeCronJob) } else { @(Read-ClaudeCronJob | Where-Object { $Status -contains $_.Status }) }
     if ($targets.Count -eq 0) {
@@ -509,6 +517,9 @@ function Clear-ClaudeCronQueue {
     if (-not $PSCmdlet.ShouldProcess("$($targets.Count) job(s)", 'Clear queue')) { return }
     foreach ($job in $targets) {
         Remove-Item -LiteralPath (Get-ClaudeCronJobPath -Id $job.Id) -Force -ErrorAction SilentlyContinue
+        if (-not $KeepLog -and $job.LogFile -and (Test-Path -LiteralPath $job.LogFile)) {
+            Remove-Item -LiteralPath $job.LogFile -Force -ErrorAction SilentlyContinue
+        }
     }
     Write-ClaudeCronLog -Level 'INFO' -Message "Cleared $($targets.Count) job(s)."
 }
