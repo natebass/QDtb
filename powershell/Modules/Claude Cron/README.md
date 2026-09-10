@@ -105,7 +105,7 @@ worker loop) calls `Invoke-ClaudeCronQueue`, and that one call does all the work
    it returns immediately.
 2. Otherwise it collects every job whose `RunAfter` has passed, ordered by `Priority`
    then age, and runs them **one at a time**.
-3. A prompt job runs `claude --print --permission-mode acceptEdits <prompt>` in the
+3. A prompt job runs `claude --print --permission-mode auto <prompt>` in the
    job's working directory. Everything it prints, on both stdout and stderr, is appended
    to that job's log file.
 4. Exit code 0 → the job is `Done`, or rescheduled if it repeats.
@@ -150,7 +150,7 @@ see the crontab or unit file that would be written before writing it.
 | Setting | Default | Notes |
 | --- | --- | --- |
 | `ClaudeCommand` | `claude` | Set this to an absolute path for scheduled runs |
-| `DefaultClaudeArgs` | `--print --permission-mode acceptEdits` | What makes an unattended run possible |
+| `DefaultClaudeArgs` | `--print --permission-mode auto` | What makes an unattended run possible |
 | `DefaultModel` | *(empty)* | Passed as `--model` when set |
 | `DefaultWorkingDirectory` | `$HOME` | Per-job `-WorkingDirectory` overrides it |
 | `PollSeconds` | `300` | How often `Start-ClaudeCronWorker` drains |
@@ -174,10 +174,16 @@ time and write it into the crontab block or the unit file, because neither cron 
 systemd inherits the `XDG_CONFIG_HOME` your shell may have set; without that the
 scheduler would quietly drain a different queue from the one you can see.
 
-A note on `-ClaudeArgs`: `--permission-mode acceptEdits` lets Claude edit files without
-asking, which is the point of an unattended queue. `--dangerously-skip-permissions` goes
-further and also allows shell commands; only reach for it on jobs whose working
-directory you are willing to let a script rewrite unattended.
+A note on `-ClaudeArgs`: there is no terminal behind a queued job, so a mode that stops
+to ask would just hang until `JobTimeoutMinutes` killed it. `--permission-mode auto` lets
+Claude get on with the work unattended, which is the point of the queue. Run
+`claude --help` for the modes your CLI accepts — as of 2.1.x they are `acceptEdits`,
+`auto`, `bypassPermissions`, `manual`, `dontAsk` and `plan`.
+
+Whichever you pick, the job's working directory is the blast radius: everything under
+`DefaultWorkingDirectory` (or a per-job `-WorkingDirectory`) can be rewritten by a run
+nobody is watching. Point it at somewhere you would be comfortable restoring from git or
+a backup rather than at `$HOME`.
 
 ## Quota handling
 

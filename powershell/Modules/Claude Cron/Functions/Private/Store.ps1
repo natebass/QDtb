@@ -84,7 +84,7 @@ function Get-ClaudeCronDefaultConfig {
     param ()
     return [ordered]@{
         ClaudeCommand           = 'claude'
-        DefaultClaudeArgs       = @('--print', '--permission-mode', 'acceptEdits')
+        DefaultClaudeArgs       = @('--print', '--permission-mode', 'auto')
         DefaultModel            = ''
         DefaultWorkingDirectory = $HOME
         PollSeconds             = 300

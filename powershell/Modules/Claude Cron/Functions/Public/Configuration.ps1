@@ -32,7 +32,9 @@ function Get-ClaudeCronConfig {
 
     .PARAMETER DefaultClaudeArgs
     Arguments used for every prompt job that does not override them. The default,
-    --print --permission-mode acceptEdits, is what makes an unattended run possible.
+    --print --permission-mode auto, is what makes an unattended run possible: there is no
+    terminal to answer a permission prompt on, so a mode that asks would simply hang until
+    JobTimeoutMinutes killed the job.
 
     .PARAMETER PollSeconds
     How often Start-ClaudeCronWorker drains the queue.
