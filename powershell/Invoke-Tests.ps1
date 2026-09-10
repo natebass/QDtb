@@ -1,7 +1,7 @@
 <#
     .SYNOPSIS
-    Runs every PowerShell module test suite in this repository and checks that it left
-    nothing behind.
+    Runs every PowerShell module test suite in this repository, checks that it left
+    nothing behind, and lints the whole tree.
 
     .DESCRIPTION
     Pester is pointed at each module's test folder rather than at the tree, because the
@@ -99,7 +99,9 @@ $strays = @(Get-ChildItem -LiteralPath ([System.IO.Path]::GetTempPath()) -Direct
 if ($strays) { "Strays   : $($strays.Count) sandbox(es) left in the temp directory: $($strays.Name -join ', ')" }
 
 if (-not $SkipAnalyzer) {
-    $findings = Invoke-ScriptAnalyzer -Path (Join-Path $root 'Modules') -Recurse -Severity Warning, Error `
+    # The whole tree, not just Modules: Scripts/ had 28 calls passing -ForegroundColor to
+    # Write-Information, which that cmdlet does not accept, and nothing was looking at it.
+    $findings = Invoke-ScriptAnalyzer -Path $root -Recurse -Severity Warning, Error `
         -Settings (Join-Path $root 'PSScriptAnalyzerSettings.psd1')
     "Analyzer : $($findings.Count) finding(s)"
     $findings | Format-Table -AutoSize RuleName, ScriptName, Line, Message | Out-String | Write-Information -InformationAction Continue
