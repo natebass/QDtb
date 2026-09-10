@@ -36,6 +36,6 @@ function Save-RSSEpisode {
     }
     $episodes = $rss.rss.channel.item | Select-Object -First $EpisodeNumber
     foreach ($episode in $episodes) {
-        Save-Mp3File -episode $episode -targetFolder $TargetFolder -outputPath $O
+        Save-Mp3File -episode $episode -targetFolder $TargetFolder
     }
 }

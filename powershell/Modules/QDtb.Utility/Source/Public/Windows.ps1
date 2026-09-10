@@ -5,7 +5,7 @@
         [string]$PackageName
     )
 
-    Write-Information "Attempting to update $PackageName ($PackageId)..." -ForegroundColor Cyan
+    Write-Host "Attempting to update $PackageName ($PackageId)..." -ForegroundColor Cyan
 
     try {
         if ($PSCmdlet.ShouldProcess($PackageId, "Upgrade winget package")) {
@@ -14,25 +14,25 @@
 
             # Check if the update was successful
             if ($LASTEXITCODE -eq 0) {
-                Write-Information "Successfully updated $PackageName" -ForegroundColor Green
+                Write-Host "Successfully updated $PackageName" -ForegroundColor Green
             }
             elseif ($LASTEXITCODE -eq -1978335189) {
-                Write-Information "No applicable update found for $PackageName" -ForegroundColor Yellow
+                Write-Host "No applicable update found for $PackageName" -ForegroundColor Yellow
             }
             else {
-                Write-Information "Update failed for $PackageName with exit code: $LASTEXITCODE" -ForegroundColor Red
+                Write-Host "Update failed for $PackageName with exit code: $LASTEXITCODE" -ForegroundColor Red
             }
         }
         else {
-            Write-Information "Skipped update for $PackageName ($PackageId)." -ForegroundColor DarkGray
+            Write-Host "Skipped update for $PackageName ($PackageId)." -ForegroundColor DarkGray
         }
     }
     catch {
-        Write-Information "Error updating $PackageName $_" -ForegroundColor Red
+        Write-Host "Error updating $PackageName $_" -ForegroundColor Red
     }
 
     # Add a separator line for readability
-    Write-Information "-----------------------------------------" -ForegroundColor DarkGray
+    Write-Host "-----------------------------------------" -ForegroundColor DarkGray
 }
 
 <#
@@ -135,7 +135,7 @@ function New-RandomColorGridImage {
             $bitmap.Save($finalOutputPath, [System.Drawing.Imaging.ImageFormat]::Png)
         }
 
-        Write-Information "Image created successfully!" -ForegroundColor Green
+        Write-Host "Image created successfully!" -ForegroundColor Green
         Write-Information "Image saved to: $finalOutputPath"
         return $finalOutputPath # Return the path for potential further use
     }
@@ -265,8 +265,8 @@ function ConvertTo-Icon {
             # --- CRITICAL DEBUGGING POINT: Check temporary PNG existence and size immediately after Inkscape ---
             if (-not (Test-Path $tmpPng -PathType Leaf)) {
                 # Changed to Write-Information for guaranteed immediate visibility
-                Write-Information "CRITICAL ERROR: SVG to PNG conversion failed. Temporary PNG file '$tmpPng' was NOT created by Inkscape." -ForegroundColor Red
-                Write-Information "Inkscape output (if any): $inkscapeResult" -ForegroundColor Yellow
+                Write-Host "CRITICAL ERROR: SVG to PNG conversion failed. Temporary PNG file '$tmpPng' was NOT created by Inkscape." -ForegroundColor Red
+                Write-Host "Inkscape output (if any): $inkscapeResult" -ForegroundColor Yellow
                 Write-Information "DEBUG: SVG to PNG conversion failed: Temporary PNG not found. Returning."
                 return # Exit here if file wasn't created
             }
@@ -274,8 +274,8 @@ function ConvertTo-Icon {
             $tmpPngInfo = Get-Item $tmpPng
             if ($tmpPngInfo.Length -eq 0) {
                 # Changed to Write-Information for guaranteed immediate visibility
-                Write-Information "CRITICAL ERROR: Temporary PNG file '$tmpPng' was created but is empty (0 bytes). Inkscape may have failed silently or encountered an issue." -ForegroundColor Red
-                Write-Information "Inkscape output (if any): $inkscapeResult" -ForegroundColor Yellow
+                Write-Host "CRITICAL ERROR: Temporary PNG file '$tmpPng' was created but is empty (0 bytes). Inkscape may have failed silently or encountered an issue." -ForegroundColor Red
+                Write-Host "Inkscape output (if any): $inkscapeResult" -ForegroundColor Yellow
                 Write-Information "DEBUG: Temporary PNG is empty. Returning."
                 return # Exit here if file is empty
             }

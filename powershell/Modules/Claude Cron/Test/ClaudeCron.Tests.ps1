@@ -280,12 +280,6 @@ Describe 'Scheduler installation' {
         $drain.CommandLine | Should -Match 'Invoke-ClaudeCronQueue'
     }
 
-    It 'leaves the crontab alone under -WhatIf' -Skip:($IsWindows -or -not (Get-Command crontab -ErrorAction SilentlyContinue)) {
-        $before = (Get-ClaudeCronSchedule).CronLine
-        Install-ClaudeCronSchedule -Cron '*/10 * * * *' -WhatIf -InformationAction SilentlyContinue
-        (Get-ClaudeCronSchedule).CronLine | Should -Be $before
-    }
-
     It 'validates the cron expression before touching the crontab' -Skip:($IsWindows) {
         { Install-ClaudeCronSchedule -Cron 'every ten minutes' -WhatIf } | Should -Throw
     }
@@ -344,20 +338,20 @@ Describe 'Worker lock' {
     }
 
     It 'refuses to start while another live process holds the lock' {
+        # Get-Process is mocked so the test does not depend on which pids happen to exist
+        # on the machine running it.
+        Mock -ModuleName ClaudeCron Get-Process { [pscustomobject]@{ Id = 424242 } }
         $taken = InModuleScope ClaudeCron {
-            $lock = (Get-ClaudeCronPath).Lock
-            # pid 1 is always running and is never this process.
-            Set-Content -LiteralPath $lock -Value '{"Pid":1}' -Encoding utf8
+            Set-Content -LiteralPath (Get-ClaudeCronPath).Lock -Value '{"Pid":424242}' -Encoding utf8
             Enter-ClaudeCronLock
         }
         $taken | Should -BeFalse
     }
 
     It 'takes over a lock whose process is gone' {
+        Mock -ModuleName ClaudeCron Get-Process { $null }
         $taken = InModuleScope ClaudeCron {
-            $lock = (Get-ClaudeCronPath).Lock
-            # A pid above the maximum can never be running.
-            Set-Content -LiteralPath $lock -Value '{"Pid":4194304}' -Encoding utf8
+            Set-Content -LiteralPath (Get-ClaudeCronPath).Lock -Value '{"Pid":424242}' -Encoding utf8
             Enter-ClaudeCronLock
         }
         $taken | Should -BeTrue
@@ -366,7 +360,7 @@ Describe 'Worker lock' {
     It 'does not release a lock owned by someone else' {
         $survived = InModuleScope ClaudeCron {
             $lock = (Get-ClaudeCronPath).Lock
-            Set-Content -LiteralPath $lock -Value '{"Pid":1}' -Encoding utf8
+            Set-Content -LiteralPath $lock -Value '{"Pid":424242}' -Encoding utf8
             Exit-ClaudeCronLock
             Test-Path -LiteralPath $lock
         }
@@ -374,8 +368,9 @@ Describe 'Worker lock' {
     }
 
     It 'reports no worker when the lock is stale' {
+        Mock -ModuleName ClaudeCron Get-Process { $null }
         $reported = InModuleScope ClaudeCron {
-            Set-Content -LiteralPath (Get-ClaudeCronPath).Lock -Value '{"Pid":4194304}' -Encoding utf8
+            Set-Content -LiteralPath (Get-ClaudeCronPath).Lock -Value '{"Pid":424242}' -Encoding utf8
             Get-ClaudeCronWorkerPid
         }
         $reported | Should -BeNullOrEmpty
@@ -462,17 +457,20 @@ Describe 'Housekeeping' {
     }
 }
 
-Describe 'Crontab handling' -Skip:($IsWindows -or -not (Get-Command crontab -ErrorAction SilentlyContinue)) {
-    It 'reads an absent crontab as no entries rather than failing' {
-        # Read-only: this never writes a crontab.
-        { InModuleScope ClaudeCron { Read-ClaudeCronCrontab } } | Should -Not -Throw
+Describe 'Crontab handling' -Skip:$IsWindows {
+    # Nothing in this block runs crontab(1). Both ends of the module's contact with it are
+    # single functions, so they are replaced here and the tests assert on the exact text
+    # that would have been installed. That is the only way to test the preservation
+    # behaviour honestly: the alternative is writing to a real crontab to see what happens
+    # to it, which is precisely what must never occur.
+    BeforeEach {
+        $script:Written = $null
+        Mock -ModuleName ClaudeCron Write-ClaudeCronCrontab { $script:Written = $Content }
     }
 
     It 'escapes the percent sign cron would read as end-of-command' {
-        $escaped = InModuleScope ClaudeCron {
-            ConvertTo-ClaudeCronCommandField -Command 'date +%Y >> /tmp/x'
-        }
-        $escaped | Should -Be 'date +\%Y >> /tmp/x'
+        InModuleScope ClaudeCron { ConvertTo-ClaudeCronCommandField -Command 'date +%Y >> /tmp/x' } |
+            Should -Be 'date +\%Y >> /tmp/x'
     }
 
     It 'refuses a PATH containing a line break' {
@@ -482,5 +480,64 @@ Describe 'Crontab handling' -Skip:($IsWindows -or -not (Get-Command crontab -Err
 
     It 'pins the store root into the drain command' {
         (Get-ClaudeCronDrainCommand).Root | Should -Be $script:TestHome
+    }
+
+    It 'keeps every existing entry when it installs its own block' {
+        Mock -ModuleName ClaudeCron Read-ClaudeCronCrontab {
+            @('MAILTO=""', '0 5 * * * /usr/local/bin/backup.sh', '@reboot /usr/bin/thing')
+        }
+        Install-ClaudeCronSchedule -Cron '*/10 * * * *' -Confirm:$false | Out-Null
+
+        $script:Written | Should -Match ([regex]::Escape('0 5 * * * /usr/local/bin/backup.sh'))
+        $script:Written | Should -Match ([regex]::Escape('@reboot /usr/bin/thing'))
+        $script:Written | Should -Match ([regex]::Escape('MAILTO=""'))
+        $script:Written | Should -Match 'claude-cron'
+    }
+
+    It 'replaces its own previous block instead of stacking a second one' {
+        Mock -ModuleName ClaudeCron Read-ClaudeCronCrontab {
+            @('0 5 * * * /usr/local/bin/backup.sh',
+              '# >>> claude-cron >>>',
+              'PATH=/old',
+              '*/30 * * * * old-drain-command',
+              '# <<< claude-cron <<<')
+        }
+        Install-ClaudeCronSchedule -Cron '*/10 * * * *' -Confirm:$false | Out-Null
+
+        ([regex]::Matches($script:Written, '# >>> claude-cron >>>')).Count | Should -Be 1
+        $script:Written | Should -Not -Match 'old-drain-command'
+        $script:Written | Should -Match ([regex]::Escape('0 5 * * * /usr/local/bin/backup.sh'))
+    }
+
+    It 'writes nothing at all when the existing crontab cannot be read' {
+        # The bug this guards: crontab -l exits non-zero both for an empty crontab and for
+        # a failure, and the caller writes back what it read. Treating a failure as "no
+        # entries" replaced the user's whole crontab with this one block.
+        Mock -ModuleName ClaudeCron Read-ClaudeCronCrontab { throw 'Refusing to touch the crontab: permission denied' }
+        { Install-ClaudeCronSchedule -Cron '*/10 * * * *' -Confirm:$false } | Should -Throw
+        $script:Written | Should -BeNullOrEmpty
+        Should -Invoke -ModuleName ClaudeCron Write-ClaudeCronCrontab -Times 0 -Exactly
+    }
+
+    It 'removes only its own block on uninstall' {
+        Mock -ModuleName ClaudeCron Read-ClaudeCronCrontab {
+            @('0 5 * * * /usr/local/bin/backup.sh',
+              '# >>> claude-cron >>>',
+              '*/10 * * * * drain',
+              '# <<< claude-cron <<<',
+              '30 2 * * 0 /usr/bin/weekly')
+        }
+        Uninstall-ClaudeCronSchedule -Confirm:$false
+
+        $script:Written | Should -Match ([regex]::Escape('0 5 * * * /usr/local/bin/backup.sh'))
+        $script:Written | Should -Match ([regex]::Escape('30 2 * * 0 /usr/bin/weekly'))
+        $script:Written | Should -Not -Match 'claude-cron'
+        $script:Written | Should -Not -Match 'drain'
+    }
+
+    It 'leaves the crontab untouched when there is no block to remove' {
+        Mock -ModuleName ClaudeCron Read-ClaudeCronCrontab { @('0 5 * * * /usr/local/bin/backup.sh') }
+        Uninstall-ClaudeCronSchedule -Confirm:$false
+        Should -Invoke -ModuleName ClaudeCron Write-ClaudeCronCrontab -Times 0 -Exactly
     }
 }

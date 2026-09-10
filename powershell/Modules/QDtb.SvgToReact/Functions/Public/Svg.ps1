@@ -82,10 +82,10 @@ function Convert-SvgAttributesReact {
 #>
 function Convert-FolderSvgToReact {
     param ([string]$path = ".")
-    Write-Information "Conversion started." -ForegroundColor Green
+    Write-Host "Conversion started." -ForegroundColor Green
     $svgFiles = Get-ChildItem -Path $path -Filter *.svg
     if ($svgFiles.Count -eq 0) {
-        Write-Information "No SVG files found." -ForegroundColor Yellow
+        Write-Host "No SVG files found." -ForegroundColor Yellow
         return
     }
     $iconDir = New-IconDirectory
@@ -97,11 +97,11 @@ function Convert-FolderSvgToReact {
             $componentContent = Convert-ComponentContent -svgContent $convertedContent -componentName $componentName
             $outputPath = Join-Path -Path $iconDir -ChildPath "$componentName.tsx"
             Set-Content -Path $outputPath -Value $componentContent
-            Write-Information "Successfully converted $($file.Name)" -ForegroundColor Green
+            Write-Host "Successfully converted $($file.Name)" -ForegroundColor Green
         }
         catch {
-            Write-Information "Failed to convert $($file.Name): $_" -ForegroundColor Red
+            Write-Host "Failed to convert $($file.Name): $_" -ForegroundColor Red
         }
     }
-    Write-Information "Conversion ended." -ForegroundColor Green
+    Write-Host "Conversion ended." -ForegroundColor Green
 }

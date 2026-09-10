@@ -16,7 +16,7 @@
         "ConvertTo-Icon"
         "New-RandomColorGridImage"
         "Update-WingetPackage"
-        "Update-GitRepositories"
+        "Update-GitRepository"
         "Invoke-GitStatusCheck"
     )
     CmdletsToExport      = @()

@@ -139,7 +139,7 @@ function Compare-Directory {
     $dir2 = (Resolve-Path $DestinationPath).Path
     Write-Verbose "Source Root: $dir1"
     Write-Verbose "Destination Root: $dir2"
-    Write-Information "Scanning folders recursively...`n" -ForegroundColor Cyan
+    Write-Host "Scanning folders recursively...`n" -ForegroundColor Cyan
     # 1. Get all relative file paths from both directories
     $files1 = Get-ChildItem -Path $dir1 -File -Recurse | ForEach-Object { $_.FullName.Substring($dir1.Length + 1) }
     $files2 = Get-ChildItem -Path $dir2 -File -Recurse | ForEach-Object { $_.FullName.Substring($dir2.Length + 1) }
@@ -148,12 +148,12 @@ function Compare-Directory {
     $missingIn2 = $structuralDiff | Where-Object { $_.SideIndicator -eq '<=' } | Select-Object -ExpandProperty InputObject
     $missingIn1 = $structuralDiff | Where-Object { $_.SideIndicator -eq '=>' } | Select-Object -ExpandProperty InputObject
     if ($missingIn2) {
-        Write-Information "--- FILES ONLY IN SOURCE ---" -ForegroundColor Red
+        Write-Host "--- FILES ONLY IN SOURCE ---" -ForegroundColor Red
         $missingIn2 | ForEach-Object { Write-Information "Missing in Destination: $_" }
         Write-Information ""
     }
     if ($missingIn1) {
-        Write-Information "--- FILES ONLY IN DESTINATION ---" -ForegroundColor Red
+        Write-Host "--- FILES ONLY IN DESTINATION ---" -ForegroundColor Red
         $missingIn1 | ForEach-Object { Write-Information "Missing in Source: $_" }
         Write-Information ""
     }
@@ -168,7 +168,7 @@ function Compare-Directory {
         $hash2 = (Get-FileHash $path2).Hash
         if ($hash1 -ne $hash2) {
             # Content mismatch is important, so we always show it
-            Write-Information "DIFFERENT CONTENT: $relPath" -ForegroundColor Yellow
+            Write-Host "DIFFERENT CONTENT: $relPath" -ForegroundColor Yellow
             $differencesFound++
         }
         else {
@@ -177,11 +177,11 @@ function Compare-Directory {
         }
     }
     # Summary
-    Write-Information "`nComparison complete." -ForegroundColor Cyan
+    Write-Host "`nComparison complete." -ForegroundColor Cyan
     if ($missingIn1 -or $missingIn2 -or $differencesFound -gt 0) {
-        Write-Information "Folders are NOT identical." -ForegroundColor Yellow
+        Write-Host "Folders are NOT identical." -ForegroundColor Yellow
     }
     else {
-        Write-Information "Folders are completely identical!" -ForegroundColor Green
+        Write-Host "Folders are completely identical!" -ForegroundColor Green
     }
 }

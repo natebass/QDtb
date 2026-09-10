@@ -95,7 +95,7 @@ function Convert-ToJpeg {
     Process {
         # Summary of imaging APIs: https://docs.microsoft.com/en-us/windows/uwp/audio-video-camera/imaging
         foreach ($file in $Files) {
-            Write-Information $file -NoNewline
+            Write-Host $file -NoNewline
             try {
                 try {
                     # Get SoftwareBitmap from input file

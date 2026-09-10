@@ -40,6 +40,28 @@ function Read-ClaudeCronCrontab {
 
 <#
     .SYNOPSIS
+    Replaces the current user's crontab with the given content.
+
+    .DESCRIPTION
+    A named wrapper around 'crontab -' rather than a bare pipe at each call site, so the
+    tests can substitute it and assert on exactly what would be installed without a real
+    crontab being involved at any point.
+#>
+function Write-ClaudeCronCrontab {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',
+        Justification = 'Internal helper; the exported command that calls it declares ShouldProcess.')]
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [string]$Content
+    )
+    $Content | & crontab -
+    if ($LASTEXITCODE -ne 0) { throw "crontab refused the new file (exit $LASTEXITCODE); your crontab is unchanged." }
+}
+
+<#
+    .SYNOPSIS
     Escapes the characters cron reads specially in a command.
 
     .DESCRIPTION
@@ -205,8 +227,7 @@ function Install-ClaudeCronSchedule {
         Write-Information $content -InformationAction Continue
         return
     }
-    $content | & crontab -
-    if ($LASTEXITCODE -ne 0) { throw "crontab refused the new file (exit $LASTEXITCODE); your crontab is unchanged." }
+    Write-ClaudeCronCrontab -Content $content
     Write-ClaudeCronLog -Level 'INFO' -Message "Installed crontab entry: $Cron ($preserved existing line(s) preserved)."
     return Get-ClaudeCronSchedule
 }
@@ -236,8 +257,7 @@ function Uninstall-ClaudeCronSchedule {
         return
     }
     if (-not $PSCmdlet.ShouldProcess('crontab', 'Remove claude-cron block')) { return }
-    (($kept -join "`n") + "`n") | & crontab -
-    if ($LASTEXITCODE -ne 0) { throw "crontab refused the new file (exit $LASTEXITCODE); your crontab is unchanged." }
+    Write-ClaudeCronCrontab -Content (($kept -join "`n") + "`n")
     Write-ClaudeCronLog -Level 'INFO' -Message "Removed the crontab entry ($($kept.Count) other line(s) kept)."
 }
 

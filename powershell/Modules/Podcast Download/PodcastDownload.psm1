@@ -5,7 +5,12 @@ $macroSettings = $ExecutionContext.SessionState.Module.PrivateData
 $script:DefaultPath = $macroSettings.DefaultDownloadPath
 $script:MaxDownloads = $macroSettings.MaxConcurrentDownloads
 
-# Load your functions next
-foreach ($file in (Get-ChildItem -Path "$PSScriptRoot\Source\Public\*.ps1" -Recurse)) {
-    . $file.FullName
+# Load your functions next. Private first: Save-RSSEpisode is built out of the helpers
+# in Source/Private, which this used to skip entirely.
+foreach ($scope in @('Private', 'Public')) {
+    $folder = Join-Path $PSScriptRoot 'Source' $scope
+    if (-not (Test-Path -LiteralPath $folder)) { continue }
+    foreach ($file in (Get-ChildItem -LiteralPath $folder -Filter '*.ps1' -File -Recurse -Exclude '*.Tests.ps1' | Sort-Object FullName)) {
+        . $file.FullName
+    }
 }
