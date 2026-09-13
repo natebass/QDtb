@@ -1,0 +1,18 @@
+
+# gitconfig
+[user]
+	name = Nate Bass
+	email = nw3455@gmail.com
+[filter "lfs"]
+	# clean = git-lfs clean -- %f
+	# smudge = git-lfs smudge -- %f
+	# process = git-lfs filter-process
+	# required = true
+[credential]
+	helper = osxkeychain
+[alias]
+	c = checkout
+	l = log --max-count=1000
+	r = reset
+[include]
+	path = "~/OneDrive/Documents/Emacs/Git/Mac Git Config.txt"
