@@ -9,6 +9,8 @@
 -- vim.opt.runtimepath:append("C:/Users/nateb/OneDrive/Documents/QDtb/Vim")
 -- path_addition = vim.fn.expand(";/home/nwb/Documents/QDtb/lua/?.lua;/home/nwb/Documents/QDtb/lua/?/init.lua")
 -- package.path = package.path .. path_addition
+-- dofile("C:/Users/nateb/OneDrive/Documents/ADtb/Vim/Windows.lua")
+-- when you explicitly need to re-run a script dynamically on demand or execute a Lua file sitting in a non-standard location outside of your Neovim runtimepath
 -- ↑ ----------------------- ↑ }}}
 -- Load leaders before any plugins or custom filetype scripts.
 vim.g.mapleader = vim.keycode("<space>")

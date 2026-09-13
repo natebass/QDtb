@@ -3,6 +3,10 @@
 local M = {}
 -- UI {{{
 -- vim.opt.guifont = "CaskaydiaCove NF:h12"
+-- vim.opt.guifont = 'Cascadia Code,Noto_Color_Emoji:h10'
+-- vim.opt.guifont = 'JetBrains Mono,Noto_Color_Emoji:h10'
+-- vim.opt.guifont = 'ComicShannsMono Nerd Font Mono,Noto_Color_Emoji:h11'
+
 vim.opt.guifont = "ComicShannsMono Nerd Font:h12"
 vim.o.linespace = 4
 vim.o.cmdheight = 0
