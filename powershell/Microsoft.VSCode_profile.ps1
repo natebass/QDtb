@@ -1,5 +1,6 @@
 <#
-Also check C:\Users\nateb\OneDrive\Documents\WindowsPowerShell\Microsoft.VSCode_profile.ps1
+Also check C:\Users\nateb\OneDrive\Documents\PowerShell\Microsoft.VSCode_profile.ps1
+https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_powershell_config?view=powershell-7.6
 #>
 
 function prompt { Write-RainbowPrompt }

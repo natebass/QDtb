@@ -1,0 +1,311 @@
+│                                                                                                                      │
+│  Interaction Summary                                                                                                 │
+│  Tool Calls:                 8 ( ✔ 8 ✖ 0 )                                                                           │
+│  Success Rate:               100.0%                                                                                  │
+│                                                                                                                      │
+│  Performance                                                                                                         │
+│  Wall Time:                  49m 29s                                                                                 │
+│  Agent Active:               4m 36s                                                                                  │
+│    » API Time:               4m 36s (99.9%)                                                                          │
+│    » Tool Time:              236ms (0.1%)                                                                            │
+│                                                                                                                      │
+│                                                                                                                      │
+│  Model Usage                  Reqs   Input Tokens  Output Tokens                                                     │
+│  ───────────────────────────────────────────────────────────────                                                     │
+│  gemini-2.5-pro                 10        216,720         22,922                                                     │
+│                                                                                                                      │
+│  Savings Highlight: 118,367 (54.6%) of input tokens were served from the cache, reducing costs.                      │
+│                                                                                                                      │
+│  » Tip: For a full token breakdown, run `/stats model`.
+
+
+write a powershell script that converts tailwind to regular css. it should be a cmdlet with two arguments, 1 a string of tailwind styles and 2 (optional) the name of the css class that it should be associated with. if no name is provided, then it should use the name "a". Use the most recent powershell 7 conventions. include a very descriptive comment at top of function.
+
+
+
+also include a test called TailwindToCSS.Tests.ps1. it should follow this format. extensively test the modules functionality with multiple tests.
+
+
+
+BeforeAll {
+
+    Get-ChildItem -Path ".\Modules\TailwindToCSS\Functions\Private\*.ps1" | ForEach-Object { . $_.FullName }
+
+    Get-ChildItem -Path ".\Modules\TailwindToCSS\Functions\Public\*.ps1" | ForEach-Object { . $_.FullName }
+
+}
+
+Describe 'General Tailwind to CSS tests' {
+
+    It 'Convert-TailwindToCSS should generate the correct class name.' {
+
+        $tailwindContent = 'pt-4'
+
+        $className = "my-class"
+
+        $componentContent = Convert-CTailwindToCSS -tailwindContent $tailwindContent -className $className
+
+        $componentContent | Should -Contain ".my-class"
+
+    }
+
+cover every single built-in tailwind option.
+
+Make sure to cover
+Core concepts
+Styling with utility classes
+Hover, focus, and other states
+Responsive design
+dark mode
+Colors
+Layout
+aspect-ratio
+columns
+break-after
+break-before
+break-inside
+box-decoration-break
+box-sizing
+display
+float
+clear
+isolation
+object-fit
+object-position
+overflow
+overscroll-behavior
+position
+top / right / bottom / left
+visibility
+z-index
+Flexbox & Grid
+flex-basis
+flex-direction
+flex-wrap
+flex
+flex-grow
+flex-shrink
+order
+grid-template-columns
+grid-column
+grid-template-rows
+grid-row
+grid-auto-flow
+grid-auto-columns
+grid-auto-rows
+gap
+justify-content
+justify-items
+justify-self
+align-content
+align-items
+align-self
+place-content
+place-items
+place-self
+Spacing
+padding
+margin
+Sizing
+width
+min-width
+max-width
+height
+min-height
+max-height
+Typography
+font-family
+font-size
+font-smoothing
+font-style
+font-weight
+font-stretch
+font-variant-numeric
+letter-spacing
+line-clamp
+line-height
+list-style-image
+list-style-position
+list-style-type
+text-align
+color
+text-decoration-line
+text-decoration-color
+text-decoration-style
+text-decoration-thickness
+text-underline-offset
+text-transform
+text-overflow
+text-wrap
+text-indent
+vertical-align
+white-space
+word-break
+overflow-wrap
+hyphens
+content
+Backgrounds
+background-attachment
+background-clip
+background-color
+background-image
+background-origin
+background-position
+background-repeat
+background-size
+Borders
+border-radius
+border-width
+border-color
+border-style
+outline-width
+outline-color
+outline-style
+outline-offset
+Effects
+box-shadow
+text-shadow
+opacity
+mix-blend-mode
+background-blend-mode
+mask-clip
+mask-composite
+mask-image
+mask-mode
+mask-origin
+mask-position
+mask-repeat
+mask-size
+mask-type
+Filters
+filter
+blur
+brightness
+contrast
+drop-shadow
+grayscale
+hue-rotate
+invert
+saturate
+sepia
+backdrop-filter
+blur
+brightness
+contrast
+grayscale
+hue-rotate
+invert
+opacity
+saturate
+sepia
+Tables
+border-collapse
+border-spacing
+table-layout
+caption-side
+Transitions & Animation
+transition-property
+transition-behavior
+transition-duration
+transition-timing-function
+transition-delay
+animation
+Transforms
+backface-visibility
+perspective
+perspective-origin
+rotate
+scale
+skew
+transform
+transform-origin
+transform-style
+translate
+Interactivity
+accent-color
+appearance
+caret-color
+color-scheme
+cursor
+field-sizing
+pointer-events
+resize
+scroll-behavior
+scroll-margin
+scroll-padding
+scroll-snap-align
+scroll-snap-stop
+scroll-snap-type
+touch-action
+user-select
+will-change
+SVG
+fill
+stroke
+stroke-width
+
+for things with numbers, like p-2, create a function that programmatically handles the value.
+
+here is an overview. do it for all things not just padding.
+🧮 Default Padding Scale
+Tailwind’s default spacing scale includes these values:
+
+p-0 through p-96 (in increments like 0.5, 1, 1.5, 2, 2.5, ..., 96)
+
+p-px for 1px padding
+
+Each number corresponds to a rem value based on the default scale:
+
+p-1 = 0.25rem (4px)
+
+p-2 = 0.5rem (8px)
+
+...
+
+p-96 = 24rem (384px)
+
+You can use these with any directional variant:
+
+pt-, pr-, pb-, pl- (top, right, bottom, left)
+
+px-, py- (horizontal, vertical)
+
+ps-, pe- (logical start/end)
+
+🛠️ Custom Values
+Tailwind also supports arbitrary values:
+
+p-[5px] → exactly 5px
+
+p-[2.75rem] → exactly 2.75rem
+
+p-[var(--my-padding)] → CSS variable
+
+p-(--my-padding) → shorthand for p-[var(--my-padding)]
+
+also make sure to include all values from sm to <number>xl
+
+🔤 Default text- Size Scale
+Class	Font Size	Line Height
+text-xs	0.75rem	1rem
+text-sm	0.875rem	1.25rem
+text-base	1rem	1.5rem
+text-lg	1.125rem	1.75rem
+text-xl	1.25rem	1.75rem
+text-2xl	1.5rem	2rem
+text-3xl	1.875rem	2.25rem
+text-4xl	2.25rem	2.5rem
+text-5xl	3rem	1
+text-6xl	3.75rem	1
+text-7xl	4.5rem	1
+text-8xl	6rem	1
+text-9xl	8rem	1
+
+📱 Tailwind's Default Breakpoint Range
+Prefix	Min Width	Typical Use
+sm:	640px	Small devices (e.g. phones in landscape)
+md:	768px	Medium devices (e.g. tablets)
+lg:	1024px	Large devices (e.g. laptops)
+xl:	1280px	Extra-large devices (e.g. desktops)
+2xl:	1536px	Very large screens (e.g. wide monitors)
+

@@ -1,0 +1,12 @@
+* Always add documentation at top of every function with this syntax.
+<#
+    .SYNOPSIS
+    Description of module
+#>
+* Never include inline comments.
+* Make code as compact as possible.
+* Only use approved powershell verbs as function names.
+* Always Start With CmdletBinding
+* End each file with a single blank line.
+* Avoid Using Semicolons (;) as Line Terminators
+* Use other PowerShell Practice and Style from https://poshcode.gitbook.io/powershell-practice-and-style
