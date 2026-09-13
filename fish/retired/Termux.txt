@@ -1,0 +1,3 @@
+
+# termux.properties
+back-key=escape

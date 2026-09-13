@@ -1,0 +1,4 @@
+export PATH=/Users/nwb/.dotnet/tools:$PATH
+export PATH=~/Library/Android/sdk/tools/bin:$PATH
+export GOOGLE_APPLICATION_CREDENTIALS="/Users/nwb/Documents/Past/Keep/nwb535-0b9000bb76e6.json"
+source /Users/nwb/OneDrive/Documents/Emacs/Unix Shell/my.zshrc.txt

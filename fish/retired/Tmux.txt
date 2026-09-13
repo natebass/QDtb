@@ -1,0 +1,5 @@
+
+# tmux.conf
+# set -g status-left ''
+# set -g status-right ''
+set -g status off
