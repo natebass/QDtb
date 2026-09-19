@@ -25,3 +25,56 @@ luac.out
 .DS_Store
 
 fish_variables
+
+# Emacs {{{
+# Byte-compiled files
+*.elc
+
+# Native compilation artifacts (Emacs 28+)
+/eln-cache/
+native-lisp/
+
+# Package manager installed directories
+/elpa/
+/straight/
+/elpaca/
+
+# Auto-save and backup files
+\#*\#
+.\#*
+
+# Transient & state data created during runtime
+/auto-save-list/
+/places
+/games/
+/url/
+/.extension/
+/var/
+/etc/
+/eshell/
+/tramp
+recentf
+
+# Custom settings written automatically by Emacs
+custom.el
+
+# Security / Keys
+gnupg/
+
+# Byte-compiled Lisp
+*.elc
+user-lisp/*.elc
+
+# Package manager assets
+elpa/
+eln-cache/
+native-lisp/
+
+# Auto-saves, backups, and lockfiles
+*~
+\#*\#
+.\#*
+auto-save-list/
+# }}}
+# Footer
+# vim:foldmethod=marker:foldlevel=1
