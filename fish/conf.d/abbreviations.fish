@@ -105,3 +105,39 @@ abbr --add qq 'exit'
 # ← go back  (mirrors alt-left)
 # → go forward (mirrors alt-right)
 # . and / — skipped (shell/path special chars, too error-prone as abbrs)
+
+# alias a=azure
+# alias b=brew
+# alias c=cat
+# alias dr=gdrive
+# alias e=vim
+# alias f=fish
+# alias g=git
+# alias h=history
+# alias j=printf
+# alias k=git
+# alias l=less
+# alias n=npm
+# alias o=open
+# alias p=polymer
+# alias s=powershell
+
+# chdir(){
+# 	mkdir $1; cd $_;
+# }
+# d(){
+# 	if [ $# -eq 0  ]; then
+# 		ls -F
+# 	else
+# 		builtin cd "$@" && ls -Ft
+# 	fi
+# }
+
+# alias sedtrim="sed -i '' -e '$ d' $1"
+
+# Never use rm -rf anymore!
+# alias rm=rm -i
+
+# Footer {{{
+# vim: ft=fish: fdm=marker: foldlevel=0
+# }}}

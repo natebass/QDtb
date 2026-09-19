@@ -13,6 +13,7 @@ vim.o.cmdheight = 0
 vim.o.laststatus = 3 -- Global statusline
 vim.o.winborder = "rounded"
 vim.o.title = true
+-- vim.opt.titlestring = "%t %(:%r%)%(:%m%) (%{expand('%:~:.:h')}) - Nvim"
 vim.o.ruler = false
 vim.o.showmode = false -- Redundant with statusline
 vim.o.number = false

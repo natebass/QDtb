@@ -1,20 +1,19 @@
-# Finds the git root for $PWD, cached so the walk up the tree runs once per directory.
-function __fish_find_git_root
+function __fish_find_git_root --description 'Find the git root of the current directory.'
     if set -q __fish_git_root_cache_pwd; and test "$__fish_git_root_cache_pwd" = "$PWD"
         test -n "$__fish_git_root_cache"; and echo $__fish_git_root_cache
         return
     end
 
-    set -l dir $PWD
-    while test -n "$dir"; and test "$dir" != /
-        # -e, not -d: a worktree or submodule has a .git file.
-        if test -e "$dir/.git"
-            set -g __fish_git_root_cache $dir
+    set -l directory $PWD
+    while test -n "$directory"; and test "$directory" != /
+        # Check for both files and directories named `.git` because git worktrees and submodules use a file instead of a directory.
+        if test -e "$directory/.git"
+            set -g __fish_git_root_cache $directory
             set -g __fish_git_root_cache_pwd $PWD
-            echo $dir
+            echo $directory
             return 0
         end
-        set dir (path dirname $dir)
+        set directory (path dirname $directory)
     end
 
     set -g __fish_git_root_cache ""
@@ -22,20 +21,18 @@ function __fish_find_git_root
     return 1
 end
 
-# True when any of the named marker files sits in the repo root or the current directory.
-function __fish_project_has --argument-names root
+function __fish_project_has --description 'Check for runtime files.' --argument-names root
     for dir in $root $PWD
-        for marker in $argv[2..]
-            test -f "$dir/$marker"; and return 0
+        for runtime_file in $argv[2..]
+            test -f "$dir/$runtime_file"; and return 0
         end
     end
     return 1
 end
 
 # Builds the runtime badges once per project and reuses them until the project changes.
-# Rendering these on every prompt costs a find(1) walk plus a `node -v` and `python -V`
-# spawn, which is most of what the prompt used to spend its time on.
-function __fish_project_segments
+# Rendering these on every prompt costs a find(1) walk plus `node -v` and `python -V`.
+function __fish_project_segments --description 'Build the runtime badges.'
     set -l git_root (__fish_find_git_root)
     test -z "$git_root"; and return
 
@@ -68,8 +65,7 @@ function __fish_project_segments
     echo -n $segments
 end
 
-# Red arrow when the last command failed, green when it succeeded.
-function __fish_get_arrow_color --argument-names code
+function __fish_get_arrow_color --description 'Success/failure arrow color.' --argument-names code
     if test -n "$code"; and test "$code" -ne 0
         set_color -o red
         return
@@ -77,10 +73,8 @@ function __fish_get_arrow_color --argument-names code
     set_color -o green
 end
 
-# Executed every time a new prompt is needed.
-function fish_prompt
-    # $status belongs to the last command only until something else runs, so it has to
-    # be captured before anything below touches it.
+function fish_prompt --description 'A minimal fish prompt with runtime badges.'
+    # $status changes after every command. Capture it immediately so subsequent lines do not overwrite it.
     set -l last_status $status
 
     set_color blue
