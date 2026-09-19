@@ -10,28 +10,32 @@
 # ← go back alt-left
 # → go forward alt-right
 # -------------
-abbr -a !! --function better_history_first
-abbr -a 2 --function better_history_second
-abbr -a 3 --function better_history_third
-
-abbr --add dotdot --regex '^\.\.+$' --function multicd
+abbr --add Q  'fdfind -tf'
 abbr --add q  'fastfetch --config ~/Downloads/a.jsonc --logo none'
+abbr --add W  'fdfind -a'
 abbr --add w  'exec fish'
+abbr --add E  'fdfind -tf -H'
 abbr --add e  'cdh'
+abbr --add R  'fdfind -td'
 abbr --add r  'uv run ruff format; uv run ruff check --fix; uv run ty check'
+abbr --add T  'fdfind -l'
 # abbr --add t  'uv sync'
 abbr --add t  'vp run test'
-
+# abbr --add A  'fdfind -tf -X rm -i'     # delete matched files (type pattern after... careful!)
 abbr --add A  'eza --color=always -l --git --hyperlink --header -T Documents/ | less -R'
 abbr --add a  'eza'
+abbr --add S  'fdfind -0 -tf | xargs -0 wc -l'
 abbr --add s  'pnpm i;'
+abbr --add D  'fdfind | tree --fromfile'
 abbr --add d  'git status'
 # abbr --add F  'uv run ruff check --fix; uv run ruff format;'
 abbr --add F  'pnpm lint:fix;'
-abbr --add f  'vp check --fix;'
+# abbr --add f  'vp check --fix;'
 abbr --add G  'eza -l --no-time --no-user --no-permissions **.txt'
 abbr --add g  'pnpm dev;'
+abbr --add Z  'git log --oneline -10'
 abbr --add z  'git push'
+abbr --add X  'git diff'
 abbr --add x  'lazygit'
 abbr --add C  'git remote -v'
 abbr --add c  'git pull'
@@ -43,26 +47,27 @@ abbr --add 1  'cd -'
 abbr --add 4  'history --max 3'
 abbr --add 5  'pnpm upgrade --latest'
 abbr --add 6  'uv sync --upgrade'
-#abbr --add 1  'git log --oneline -10'
-#abbr --add 2  'git diff'
-#abbr --add 3  'git switch'
-#abbr --add 4  'git switch -c'
-#abbr --add 5  'git stash'
-#### Right ###
+abbr --add Y  'git switch'
+abbr --add y  'git add -A; git commit -m'
+abbr --add U  'fdfind -e'
+abbr --add u  'fdfind -H'
+abbr --add I  'git switch -c'
+abbr --add i  'git stash'
+abbr --add O  'zoxide remove'
+abbr --add o  'zoxide add'
+abbr --add P  'prevd'
+abbr --add p  'nextd'
+abbr --add H  'fdfind -t d'
 abbr --add h  'git log --oneline -1'
-#abbr --add j  ''
+abbr --add J  'fdfind -p'
+abbr --add K  'pushd'
 abbr --add k  'pnpm i'
+abbr --add L  'zoxide query'
 abbr --add l  'openssl rand -base64'
 abbr --add - 'nvim'
-abbr --add y  'git add -A; git commit -m'
-abbr --add u  'fdfind -H'
-# abbr --add i  'zoxide remove'
-abbr --add o  'zoxide add'
-# abbr --add i  'prevd'
-# abbr --add o  'nextd'
-# abbr --add p  'pushd'
-abbr --add p  'zoxide query'
+abbr --add N  'fdfind -g'
 abbr --add n  'dirs'
+abbr --add M  'fdfind -H -I'
 abbr --add m  'popd'
 abbr --add ,  'pushd .'
 abbr --add 7  'jq'
@@ -70,74 +75,13 @@ abbr --add 8  'rg'
 abbr --add 9  'fzf'
 abbr --add 0  'openssl rand -hex'
 abbr --add '`' 'pwsh'
-
-
-# RIGHT SIDE (requires input - trailing space, cursor ready)
-# # U H J N M - right hand keys
-abbr --add U  'fdfind -e '           # by extension
-abbr --add H  'fdfind -t d '         # find directories
-abbr --add J  'fdfind -p '           # full path match
-abbr --add N  'fdfind -g '           # glob search
-abbr --add M  'fdfind -H -I '        # unrestricted (hidden + no-ignore)
-
-# # LEFT SIDE (immediate execution, just press enter)
-# # Q W E R T A S D F - left hand keys
-abbr --add Q  'fdfind -tf'           # list all files, current dir
-abbr --add W  'fdfind -a'            # list all, absolute paths
-abbr --add E  'fdfind -tf -H'        # all files including hidden
-abbr --add R  'fdfind -td'           # list all directories
-abbr --add T  'fdfind -l'            # list with details (like ls -l)
-# abbr --add A  'fdfind -tf -X rm -i'     # delete matched files (type pattern after... careful!)
-abbr --add S  'fdfind -0 -tf | xargs -0 wc -l'   # count lines in all files
-abbr --add D  'fdfind | tree --fromfile'          # show as tree
-
-
-
-
-
-abbr --add qq 'exit'
-
-
-# Features
-# interactive history picker
-# print history list
-# toggle last two dirs (builtin fish)
-# ← go back  (mirrors alt-left)
-# → go forward (mirrors alt-right)
-# . and / — skipped (shell/path special chars, too error-prone as abbrs)
-
-# alias a=azure
-# alias b=brew
-# alias c=cat
-# alias dr=gdrive
-# alias e=vim
-# alias f=fish
-# alias g=git
-# alias h=history
-# alias j=printf
-# alias k=git
-# alias l=less
-# alias n=npm
-# alias o=open
-# alias p=polymer
-# alias s=powershell
-
-# chdir(){
-# 	mkdir $1; cd $_;
-# }
-# d(){
-# 	if [ $# -eq 0  ]; then
-# 		ls -F
-# 	else
-# 		builtin cd "$@" && ls -Ft
-# 	fi
-# }
-
-# alias sedtrim="sed -i '' -e '$ d' $1"
-
-# Never use rm -rf anymore!
-# alias rm=rm -i
-
+abbr -a !! --function better_history_first
+abbr -a 2 --function better_history_second
+abbr -a 3 --function better_history_third
+abbr --add dotdot --regex '^\.\.+$' --function multicd
+alias qq 'exit'
+alias tmuxa 'tmux attach -t'
+alias tmuxn 'tmux new -s'
 # Footer {{{
 # vim: ft=fish: fdm=marker: foldlevel=0
 # }}}

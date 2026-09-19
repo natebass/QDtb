@@ -1,5 +1,4 @@
-
-function fish_title --description 'A title that uses the built in prompt_pwd to shorten the pathname and include and git branch'
+function fish_title --description 'A title that includes the shortened pathname, git branch and git remote.'
     set -l path (prompt_pwd)
 
     set -l command $argv[1]

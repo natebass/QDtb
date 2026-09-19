@@ -15,5 +15,3 @@
 #                       (JJJ| \UUU)
 #                        (UU)'
 #
-
-source "$HOME/.vite-plus/env.fish"
