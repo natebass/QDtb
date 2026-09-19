@@ -1,5 +1,5 @@
-local pj = require("../plugins.qdtb.package_json")
-local colorscheme_cycler = require("../plugins.qdtb.colorscheme_cycler")
+local pj = require("../plugins.QDtb.package_json")
+local colorscheme_cycler = require("../plugins.QDtb.colorscheme_cycler")
 vim.cmd.colorscheme("default")
 if type(colorscheme_cycler) == "table" and colorscheme_cycler.init_colorschemes then
 	colorscheme_cycler.init_colorschemes()

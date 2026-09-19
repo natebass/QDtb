@@ -18,10 +18,10 @@ end
 --    'lua.core.keymaps',
 --    'lua.core.options',
 --    'lua.core.other',
---    'lua.plugins.qdtb.colorscheme_cycler',
---    'lua.plugins.qdtb.package_json',
---    'lua.plugins.qdtb.window_title',
---    'lua.plugins.qdtb.autosave',
+--    'lua.plugins.QDtb.colorscheme_cycler',
+--    'lua.plugins.QDtb.package_json',
+--    'lua.plugins.QDtb.window_title',
+--    'lua.plugins.QDtb.autosave',
 --    'lua.plugins.session_manager.session_manager',
 --  }
 --  for _, mod in ipairs(modules) do

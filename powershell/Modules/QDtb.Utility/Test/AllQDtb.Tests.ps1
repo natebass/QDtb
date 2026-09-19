@@ -18,7 +18,7 @@ BeforeAll {
     $script:ModuleRoot = Split-Path -Parent $PSScriptRoot
     Import-Module (Join-Path (Split-Path -Parent (Split-Path -Parent $script:ModuleRoot)) 'Tests/TestSandbox.psm1') -Force
     Import-Module (Join-Path $script:ModuleRoot 'QDtb.Utility.psd1') -Force
-    $script:Sandbox = New-PesterSandbox -Name 'qdtb-utility'
+    $script:Sandbox = New-PesterSandbox -Name 'QDtb-utility'
 }
 
 AfterAll {

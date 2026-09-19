@@ -72,14 +72,14 @@ claude
 Import-Module ClaudeCron
 
 # Queue work for whenever quota is next available.
-Add-ClaudeCronPrompt 'Add Pester tests for QDtb.SvgToReact' -Name svg-tests -WorkingDirectory ~/src/qdtb
+Add-ClaudeCronPrompt 'Add Pester tests for QDtb.SvgToReact' -Name svg-tests -WorkingDirectory ~/src/QDtb
 
 # Run something at a specific time tonight.
 Add-ClaudeCronPrompt 'Write release notes from the last 20 commits' -At '23:30'
 
 # Repeat on an interval, or on a cron expression.
 Add-ClaudeCronPrompt 'Triage new GitHub issues' -Cron '0 8 * * 1-5'
-Add-ClaudeCronCommand 'git -C ~/src/qdtb pull --ff-only' -Every 1h
+Add-ClaudeCronCommand 'git -C ~/src/QDtb pull --ff-only' -Every 1h
 
 # See what is queued, and what the queue is waiting on.
 Get-ClaudeCronJob | Format-Table Id, Name, Status, RunAfter, RunCount

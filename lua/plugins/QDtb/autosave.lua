@@ -87,8 +87,8 @@ local augroup = vim.api.nvim_create_augroup("QDtbAutosave", { clear = true })
 vim.api.nvim_create_autocmd({ "FocusLost", "VimLeavePre" }, {
 	group = augroup,
 	callback = function()
-		-- Set vim.g.qdtb_autosave to false to turn autosaving off for the session.
-		if vim.g.qdtb_autosave == false then
+		-- Set vim.g.QDtb_autosave to false to turn autosaving off for the session.
+		if vim.g.QDtb_autosave == false then
 			return
 		end
 		M.save_all()
