@@ -24,3 +24,4 @@ if (Test-Path $OutputIco) {
 else {
     Write-Host "Conversion failed. Please check your ImageMagick installation and file paths." -ForegroundColor Red
 }
+

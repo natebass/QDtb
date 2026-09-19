@@ -38,8 +38,8 @@ function Get-FileLineEndingTally {
     $topLevelFiles = Get-ChildItem -Path $Path -File -ErrorAction SilentlyContinue
 
     $subFiles = Get-ChildItem -Path $Path -Directory -ErrorAction SilentlyContinue |
-    Where-Object { $_.Name -notin $ExcludedDirectories } |
-    Get-ChildItem -Recurse -File -ErrorAction SilentlyContinue
+        Where-Object { $_.Name -notin $ExcludedDirectories } |
+        Get-ChildItem -Recurse -File -ErrorAction SilentlyContinue
 
     ($topLevelFiles + $subFiles) | ForEach-Object {
         try {

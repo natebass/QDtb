@@ -367,3 +367,4 @@ function Get-ClaudeCronWorkerPid {
     if (-not (Test-ClaudeCronLockAlive -Content $content)) { return $null }
     try { return [int]($content | ConvertFrom-Json).Pid } catch { return $content.Trim() }
 }
+

@@ -1,5 +1,4 @@
-
-vim.opt.guifont = 'Cascadia Code:h11.5'
+vim.opt.guifont = "Cascadia Code:h11.5"
 vim.o.linespace = 4
 vim.o.cmdheight = 0
 vim.o.laststatus = 0
@@ -8,17 +7,17 @@ vim.o.title = true
 vim.o.confirm = true
 vim.o.number = false
 vim.o.cursorline = false
-vim.o.guicursor = 'n-v-c-sm:hor10,i-ci-ve:ver25,r-cr-o:block'
-vim.o.winborder = 'rounded'
-vim.opt.tabstop = 4     -- Number of visual spaces per TAB
+vim.o.guicursor = "n-v-c-sm:hor10,i-ci-ve:ver25,r-cr-o:block"
+vim.o.winborder = "rounded"
+vim.opt.tabstop = 4 -- Number of visual spaces per TAB
 vim.opt.softtabstop = 4 -- Number of spaces inserted when pressing TAB
-vim.opt.shiftwidth = 4  -- Number of spaces used for autoindent
+vim.opt.shiftwidth = 4 -- Number of spaces used for autoindent
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.undofile = true
 vim.opt.swapfile = false
-vim.opt.formatoptions:remove({ 'c', 'r', 'o' })
-vim.opt.signcolumn = 'yes'
+vim.opt.formatoptions:remove({ "c", "r", "o" })
+vim.opt.signcolumn = "yes"
 -- vim.o.termguicolors = true
 -- vim.opt.foldmethod = 'marker'
 -- vim.opt.foldlevel = 1

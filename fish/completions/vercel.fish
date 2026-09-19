@@ -7,13 +7,13 @@ complete -c vercel -e
 complete -c vc -e
 
 for command in $vercel_basic_commands
-    complete -c vercel -n '__fish_use_subcommand' -a $command -f
-    complete -c vc -n '__fish_use_subcommand' -a $command -f
+    complete -c vercel -n __fish_use_subcommand -a $command -f
+    complete -c vc -n __fish_use_subcommand -a $command -f
 end
 
 for command in $vercel_advanced_commands
-    complete -c vercel -n '__fish_use_subcommand' -a $command -f
-    complete -c vc -n '__fish_use_subcommand' -a $command -f
+    complete -c vercel -n __fish_use_subcommand -a $command -f
+    complete -c vc -n __fish_use_subcommand -a $command -f
 end
 
 for command in $vercel_basic_commands $vercel_advanced_commands
@@ -22,8 +22,8 @@ for command in $vercel_basic_commands $vercel_advanced_commands
 end
 
 for command in vercel vc
-    complete -c $command -n '__fish_use_subcommand' -l help -s h -d 'Output usage information'
-    complete -c $command -n '__fish_use_subcommand' -l version -s v -d 'Output the version number'
+    complete -c $command -n __fish_use_subcommand -l help -s h -d 'Output usage information'
+    complete -c $command -n __fish_use_subcommand -l version -s v -d 'Output the version number'
     complete -c $command -l cwd -r -d 'Current working directory'
     complete -c $command -l local-config -s A -r -F -d 'Path to the local vercel.json file'
     complete -c $command -l global-config -s Q -r -a '(__fish_complete_directories)' -d 'Path to the global .vercel directory'

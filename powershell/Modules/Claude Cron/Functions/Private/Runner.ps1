@@ -448,3 +448,4 @@ function Exit-ClaudeCronLock {
     # Only ever release a lock this process actually owns.
     if ($ownerPid -eq $PID) { Remove-Item -LiteralPath $lockFile -Force -ErrorAction SilentlyContinue }
 }
+

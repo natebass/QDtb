@@ -1,4 +1,4 @@
-﻿
+
 
 function Start-DocStation {
     [CmdletBinding(SupportsShouldProcess = $true)]
@@ -16,4 +16,5 @@ function Start-DocStation {
     }
     return $false
 }
+
 

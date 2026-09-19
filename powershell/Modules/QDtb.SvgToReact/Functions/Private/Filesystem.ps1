@@ -41,3 +41,4 @@ function CreateIndexFile {
         Write-ModuleLog -Level "ERROR" -Message "Error creating index file: $_"
     }
 }
+

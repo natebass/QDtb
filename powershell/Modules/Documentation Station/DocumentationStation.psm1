@@ -13,3 +13,4 @@ foreach ($folder in @('Source', 'Source/Feature/PSReadLine')) {
         . $functionFile.FullName
     }
 }
+

@@ -59,3 +59,4 @@ Describe 'Start-DocStation' {
         Start-DocStation -Confirm:$false | Should -BeTrue
     }
 }
+

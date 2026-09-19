@@ -1,4 +1,4 @@
-﻿<#
+<#
     .SYNOPSIS
         Writes 3 right chevrons (>>>) in rainbow colors.
 #>
@@ -36,8 +36,9 @@ function Write-ColorTable {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
     param()
     $colors = [enum]::GetValues([System.ConsoleColor])
-    Foreach ($bgcolor in $colors) {
-        Foreach ($fgcolor in $colors) { Write-Host "$fgcolor|"  -ForegroundColor $fgcolor -BackgroundColor $bgcolor -NoNewLine }
+    foreach ($bgcolor in $colors) {
+        foreach ($fgcolor in $colors) { Write-Host "$fgcolor|"  -ForegroundColor $fgcolor -BackgroundColor $bgcolor -NoNewline }
         Write-Host " on $bgcolor"
     }
 }
+

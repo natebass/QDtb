@@ -218,3 +218,4 @@ function Get-ClaudeCronFollowUp {
     if ($Job.IntervalSeconds) { return $From.AddSeconds([double]$Job.IntervalSeconds) }
     return $null
 }
+

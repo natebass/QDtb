@@ -17,3 +17,4 @@ function Write-ModuleLog {
     Add-Content -Path $logFile -Value $logMessage
     if ($Level -eq "ERROR") { Write-Error $Message } else { Write-Output $Message }
 }
+

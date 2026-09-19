@@ -68,7 +68,7 @@ function Get-FileLineEndingTally_New {
     $topLevelFiles = Get-ChildItem -Path $Path -File -ErrorAction SilentlyContinue
     
     $dirsToSearch = Get-ChildItem -Path $Path -Directory -ErrorAction SilentlyContinue | 
-    Where-Object { $_.Name -notin $ExcludedDirectories }
+        Where-Object { $_.Name -notin $ExcludedDirectories }
     
     $subFiles = $dirsToSearch | Get-ChildItem -Recurse -File -ErrorAction SilentlyContinue
     
@@ -149,3 +149,4 @@ if ($oldBenchmark.TotalSeconds -gt 0) {
 else {
     Write-Host "`nResult: Both methods were too fast to compare meaningfully." -ForegroundColor White
 }
+

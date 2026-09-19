@@ -321,3 +321,4 @@ function Write-ClaudeCronHistory {
         Write-ClaudeCronLog -Level 'WARN' -Message "Could not append to history.jsonl: $($_.Exception.Message)"
     }
 }
+

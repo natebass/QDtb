@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
 Syncs a forked Git repository with its upstream, handling merge conflicts.
 .EXAMPLE
@@ -84,7 +84,7 @@ function Start-MyProject {
             Pop-Location
         }
     }
-    push-location $repo
+    Push-Location $repo
     Read-Host "Press Enter to exit"
 }
 <#
@@ -307,7 +307,7 @@ function Invoke-GitStatusCheck {
         }
         if ($fsDepth -ge 2) {
             $candidates += Get-ChildItem -LiteralPath $Root -Directory -ErrorAction SilentlyContinue |
-            Get-ChildItem -Directory -ErrorAction SilentlyContinue
+                Get-ChildItem -Directory -ErrorAction SilentlyContinue
         }
 
         # Return only those that contain a .git entry
@@ -525,3 +525,4 @@ function Invoke-GitStatusCheck {
     # Return the data for piping
     return $results
 }
+

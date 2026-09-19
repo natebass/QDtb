@@ -13,3 +13,4 @@ foreach ($scope in @('Private', 'Public')) {
         . $functionFile.FullName
     }
 }
+

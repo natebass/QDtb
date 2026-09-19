@@ -110,3 +110,4 @@ if (-not $SkipAnalyzer) {
 
 if ($leaks) { throw "Tests are not hermetic: they changed $($leaks -join ', ')." }
 if ($results.FailedCount -gt 0) { throw "$($results.FailedCount) test(s) failed." }
+

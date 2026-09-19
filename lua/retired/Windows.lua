@@ -1,5 +1,5 @@
-vim.opt.runtimepath:append('C:/Users/nateb/OneDrive/Documents/ADtb/Vim')
-require('config')
+vim.opt.runtimepath:append("C:/Users/nateb/OneDrive/Documents/ADtb/Vim")
+require("config")
 local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
 -- later(function()
 -- 	add({ source = 'neovim/nvim-lspconfig' })
@@ -42,20 +42,20 @@ local add, now, later = MiniDeps.add, MiniDeps.now, MiniDeps.later
 -- 	})
 -- end)
 vim.g.startify_bookmarks = {
-	{ w = 'C:/Users/nateb/OneDrive/Documents/Adtb/Vim/Windows.lua' },
-	{ r = 'C:/Users/nateb/OneDrive/Documents/Adtb/Vim/lua/config.lua' },
-	{ s = 'C:/Users/nateb/OneDrive/Documents/Adtb/Vim/lua/plugins/session_manager/session_manager.lua' },
-	{ f = 'C:/Users/nateb/OneDrive/Documents/Adtb/Vim/lua/core/keymaps.lua' },
-	{ W = 'C:/Users/nateb/AppData/Local/nvim/init.lua' },
-	{ l = 'C:/Users/nateb/OneDrive/Documents/Adtb/IntelliJ/Windows IntelliJ.txt' },
-	{ p = 'C:/Users/nateb/OneDrive/Documents/PowerShell/Microsoft.Powershell_profile.ps1' },
+	{ w = "C:/Users/nateb/OneDrive/Documents/Adtb/Vim/Windows.lua" },
+	{ r = "C:/Users/nateb/OneDrive/Documents/Adtb/Vim/lua/config.lua" },
+	{ s = "C:/Users/nateb/OneDrive/Documents/Adtb/Vim/lua/plugins/session_manager/session_manager.lua" },
+	{ f = "C:/Users/nateb/OneDrive/Documents/Adtb/Vim/lua/core/keymaps.lua" },
+	{ W = "C:/Users/nateb/AppData/Local/nvim/init.lua" },
+	{ l = "C:/Users/nateb/OneDrive/Documents/Adtb/IntelliJ/Windows IntelliJ.txt" },
+	{ p = "C:/Users/nateb/OneDrive/Documents/PowerShell/Microsoft.Powershell_profile.ps1" },
 }
 vim.api.nvim_create_autocmd("VimEnter", {
-  callback = function()
-    if vim.fn.argc() == 0 then
-        vim.cmd("cd C:/Users/nateb/OneDrive/Documents/ADtb/Vim")
-    end
-  end,
+	callback = function()
+		if vim.fn.argc() == 0 then
+			vim.cmd("cd C:/Users/nateb/OneDrive/Documents/ADtb/Vim")
+		end
+	end,
 })
 -- -- --- Custom Commands ---
 -- -- Define custom commands that appear in Startify.

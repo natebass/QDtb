@@ -1,4 +1,4 @@
-﻿
+
 <#
 .SYNOPSIS
     Converts WebP images to PNG format.
@@ -90,3 +90,4 @@ function Edit-LinuxMintIconCopyQ {
         convert -resize "${size}x${size}" -background none "$input_file" "$output_file"
     }
 }
+

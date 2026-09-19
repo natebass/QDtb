@@ -1,4 +1,4 @@
-﻿<#
+<#
     Pester tests for QDtb.Utility.
 
     Hermetic, and this suite is the reason the sandbox exists. It used to call
@@ -154,3 +154,4 @@ Describe 'Sync-Fork' {
         Should -Invoke -ModuleName QDtb.Utility git -ParameterFilter { $args -contains 'fetch' } -Times 1 -Exactly
     }
 }
+

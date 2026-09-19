@@ -1,4 +1,4 @@
-﻿function Update-WingetPackage {
+function Update-WingetPackage {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param (
         [string]$PackageId,
@@ -392,3 +392,4 @@ function ConvertTo-Icon {
         Write-Information "DEBUG: Function finished (finally block)."
     }
 }
+

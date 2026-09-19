@@ -117,3 +117,4 @@ function Set-ClaudeCronConfig {
     $script:ClaudeCronLogMaxMB = $null
     return Get-ClaudeCronConfig
 }
+

@@ -49,10 +49,10 @@ function Convert-TailwindToCSS {
 
     begin {
         # Find and source helper functions from the module's private directory.
-#        $privateFunctionsPath = Join-Path -Path $PSScriptRoot -ChildPath '..\\Private'
-#        Get-ChildItem -Path $privateFunctionsPath -Filter '*.ps1' | ForEach-Object {
-#            . $_.FullName
-#        }
+        #        $privateFunctionsPath = Join-Path -Path $PSScriptRoot -ChildPath '..\\Private'
+        #        Get-ChildItem -Path $privateFunctionsPath -Filter '*.ps1' | ForEach-Object {
+        #            . $_.FullName
+        #        }
 
         # Load the comprehensive Tailwind data map.
         $tailwindMap = Get-TailwindMap

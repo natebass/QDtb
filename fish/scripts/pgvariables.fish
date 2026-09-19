@@ -47,11 +47,11 @@ read -P "Enter PGPORT [5432]: " input_port
 
 # 3. Apply defaults if optional fields were left blank
 if test -z "$input_host"
-    set input_host "localhost"
+    set input_host localhost
 end
 
 if test -z "$input_port"
-    set input_port "5432"
+    set input_port 5432
 end
 
 # 4. Export globally to the current shell environment

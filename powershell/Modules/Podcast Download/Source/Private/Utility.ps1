@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Downloads a podcast episode and saves it to a specified folder.
 
@@ -45,7 +45,7 @@ function Convert-ToJpeg {
     # ConvertTo-Jpeg - Converts RAW (and other) image files to the widely-supported JPEG format
     # https://github.com/DavidAnson/ConvertTo-Jpeg
 
-    Param (
+    param (
         [Parameter(
             Mandatory = $true,
             Position = 1,
@@ -70,19 +70,19 @@ function Convert-ToJpeg {
         $RemoveOriginalExtension
     )
 
-    Begin {
+    begin {
         # Technique for await-ing WinRT APIs: https://fleexlab.blogspot.com/2018/02/using-winrts-iasyncoperation-in.html
         Add-Type -AssemblyName System.Runtime.WindowsRuntime
         $runtimeMethods = [System.WindowsRuntimeSystemExtensions].GetMethods()
         $asTaskGeneric = ($runtimeMethods | Where-Object { $_.Name -eq 'AsTask' -and $_.GetParameters().Count -eq 1 -and $_.GetParameters()[0].ParameterType.Name -eq 'IAsyncOperation`1' })[0]
-        Function AwaitOperation ($WinRtTask, $ResultType) {
+        function AwaitOperation ($WinRtTask, $ResultType) {
             $asTaskSpecific = $asTaskGeneric.MakeGenericMethod($ResultType)
             $netTask = $asTaskSpecific.Invoke($null, @($WinRtTask))
             $netTask.Wait() | Out-Null
             $netTask.Result
         }
         $asTask = ($runtimeMethods | Where-Object { $_.Name -eq 'AsTask' -and $_.GetParameters().Count -eq 1 -and $_.GetParameters()[0].ParameterType.Name -eq 'IAsyncAction' })[0]
-        Function AwaitAction ($WinRtTask) {
+        function AwaitAction ($WinRtTask) {
             $netTask = $asTask.Invoke($null, @($WinRtTask))
             $netTask.Wait() | Out-Null
         }
@@ -92,7 +92,7 @@ function Convert-ToJpeg {
         [Windows.Graphics.Imaging.BitmapDecoder, Windows.Graphics, ContentType = WindowsRuntime] | Out-Null
     }
 
-    Process {
+    process {
         # Summary of imaging APIs: https://docs.microsoft.com/en-us/windows/uwp/audio-video-camera/imaging
         foreach ($file in $Files) {
             Write-Host $file -NoNewline
@@ -159,3 +159,4 @@ function Convert-ToJpeg {
         }
     }
 }
+

@@ -41,7 +41,7 @@ Describe 'Comprehensive Tailwind to CSS Conversion' {
             $css | Should -Be ".panel {`n    width: 300px;`n}"
         }
 
-         It 'should handle arbitrary height with css variable' {
+        It 'should handle arbitrary height with css variable' {
             $css = Convert-TailwindToCSS -TailwindContent 'h-[var(--header-height)]' -ClassName 'content'
             $css | Should -Be ".content {`n    height: var(--header-height);`n}"
         }
@@ -117,3 +117,4 @@ Describe 'Comprehensive Tailwind to CSS Conversion' {
         }
     }
 }
+

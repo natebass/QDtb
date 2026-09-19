@@ -1,4 +1,4 @@
-﻿<#
+<#
 ✏️ Learn
 Invoke-Pester -Container (New-PesterContainer -ScriptBlock { Describe "Test" { It "Pass" { $true | Should -Be $true } } }) -Output None
 
@@ -32,3 +32,4 @@ if (Test-Path $nvimModulePath) {
 /    \ .-'_/____\___
     .-'  :       fsc:
 #>
+

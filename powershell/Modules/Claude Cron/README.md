@@ -119,24 +119,24 @@ that it is skipping, and exits.
 
 ## Command reference
 
-| Command | What it does |
-| --- | --- |
-| `Add-ClaudeCronPrompt` | Queue a Claude prompt. `-At`, `-Every`, `-Cron`, `-Model`, `-WorkingDirectory`, `-Priority`, `-MaxRuns`, `-ClaudeArgs` |
-| `Add-ClaudeCronCommand` | Queue a shell/PowerShell command. Same scheduling switches, plus `-Shell pwsh\|sh` |
-| `Get-ClaudeCronJob` | List jobs. Filter with a name/id, `-Status`, or `-Due` |
-| `Set-ClaudeCronJob` | Change a job in place: reschedule, re-prioritise, `-Enable`, `-Disable` |
-| `Remove-ClaudeCronJob` | Delete a job and its log |
-| `Clear-ClaudeCronQueue` | Drop finished jobs (default `Done` + `Failed`), or `-All` |
-| `Get-ClaudeCronLog` | Show a job's captured output, or the module log with no argument. `-Tail`, `-Wait` |
-| `Invoke-ClaudeCronQueue` | Run everything that is due. `-Limit`, `-Identity`, `-Force` |
-| `Start-ClaudeCronWorker` | Poll the queue in the foreground until Ctrl+C |
-| `Get-ClaudeCronStatus` | Counts by state, quota block, next run, installed schedulers |
-| `Get-ClaudeCronQuota` / `Set-ClaudeCronQuota` / `Clear-ClaudeCronQuota` | Inspect, set or lift the quota pause |
-| `Get-ClaudeCronConfig` / `Set-ClaudeCronConfig` | Read and write settings |
-| `Install-ClaudeCronSchedule` / `Uninstall-ClaudeCronSchedule` | Manage the crontab entry |
-| `Install-ClaudeCronTimer` / `Uninstall-ClaudeCronTimer` | Manage the systemd user timer |
-| `Get-ClaudeCronSchedule` | Report which schedulers are installed |
-| `Get-ClaudeCronDrainCommand` | The exact command line a scheduler should run |
+| Command                                                                 | What it does                                                                                                           |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `Add-ClaudeCronPrompt`                                                  | Queue a Claude prompt. `-At`, `-Every`, `-Cron`, `-Model`, `-WorkingDirectory`, `-Priority`, `-MaxRuns`, `-ClaudeArgs` |
+| `Add-ClaudeCronCommand`                                                 | Queue a shell/PowerShell command. Same scheduling switches, plus `-Shell pwsh\|sh`                                     |
+| `Get-ClaudeCronJob`                                                     | List jobs. Filter with a name/id, `-Status`, or `-Due`                                                                 |
+| `Set-ClaudeCronJob`                                                     | Change a job in place: reschedule, re-prioritise, `-Enable`, `-Disable`                                                |
+| `Remove-ClaudeCronJob`                                                  | Delete a job and its log                                                                                               |
+| `Clear-ClaudeCronQueue`                                                 | Drop finished jobs (default `Done` + `Failed`), or `-All`                                                              |
+| `Get-ClaudeCronLog`                                                     | Show a job's captured output, or the module log with no argument. `-Tail`, `-Wait`                                     |
+| `Invoke-ClaudeCronQueue`                                                | Run everything that is due. `-Limit`, `-Identity`, `-Force`                                                            |
+| `Start-ClaudeCronWorker`                                                | Poll the queue in the foreground until Ctrl+C                                                                          |
+| `Get-ClaudeCronStatus`                                                  | Counts by state, quota block, next run, installed schedulers                                                           |
+| `Get-ClaudeCronQuota` / `Set-ClaudeCronQuota` / `Clear-ClaudeCronQuota` | Inspect, set or lift the quota pause                                                                                   |
+| `Get-ClaudeCronConfig` / `Set-ClaudeCronConfig`                         | Read and write settings                                                                                                |
+| `Install-ClaudeCronSchedule` / `Uninstall-ClaudeCronSchedule`           | Manage the crontab entry                                                                                               |
+| `Install-ClaudeCronTimer` / `Uninstall-ClaudeCronTimer`                 | Manage the systemd user timer                                                                                          |
+| `Get-ClaudeCronSchedule`                                                | Report which schedulers are installed                                                                                  |
+| `Get-ClaudeCronDrainCommand`                                            | The exact command line a scheduler should run                                                                          |
 
 Every command has comment-based help: `Get-Help Add-ClaudeCronPrompt -Full`.
 
@@ -147,18 +147,18 @@ see the crontab or unit file that would be written before writing it.
 
 `Set-ClaudeCronConfig` writes `~/.config/claude-cron/config.json`.
 
-| Setting | Default | Notes |
-| --- | --- | --- |
-| `ClaudeCommand` | `claude` | Set this to an absolute path for scheduled runs |
-| `DefaultClaudeArgs` | `--print --permission-mode auto` | What makes an unattended run possible |
-| `DefaultModel` | *(empty)* | Passed as `--model` when set |
-| `DefaultWorkingDirectory` | `~/Desktop` | Per-job `-WorkingDirectory` overrides it |
-| `PollSeconds` | `300` | How often `Start-ClaudeCronWorker` drains |
-| `QuotaResetHours` | `5` | Fallback pause when the CLI reports no reset time |
-| `MaxAttempts` | `3` | Retries before a job is marked `Failed` |
-| `JobTimeoutMinutes` | `60` | Longer runs are killed and recorded as exit 124 |
-| `NotifyCommand` | *(empty)* | e.g. `notify-send "{title}" "{message}"` |
-| `MaxLogSizeMB` | `5` | `claude-cron.log` rotates to `.log.1` past this; `0` disables |
+| Setting                   | Default                          | Notes                                                         |
+| ------------------------- | -------------------------------- | ------------------------------------------------------------- |
+| `ClaudeCommand`           | `claude`                         | Set this to an absolute path for scheduled runs               |
+| `DefaultClaudeArgs`       | `--print --permission-mode auto` | What makes an unattended run possible                         |
+| `DefaultModel`            | _(empty)_                        | Passed as `--model` when set                                  |
+| `DefaultWorkingDirectory` | `~/Desktop`                      | Per-job `-WorkingDirectory` overrides it                      |
+| `PollSeconds`             | `300`                            | How often `Start-ClaudeCronWorker` drains                     |
+| `QuotaResetHours`         | `5`                              | Fallback pause when the CLI reports no reset time             |
+| `MaxAttempts`             | `3`                              | Retries before a job is marked `Failed`                       |
+| `JobTimeoutMinutes`       | `60`                             | Longer runs are killed and recorded as exit 124               |
+| `NotifyCommand`           | _(empty)_                        | e.g. `notify-send "{title}" "{message}"`                      |
+| `MaxLogSizeMB`            | `5`                              | `claude-cron.log` rotates to `.log.1` past this; `0` disables |
 
 `{title}` and `{message}` are handed to the shell as arguments rather than pasted into
 the command, so a job name or an error message containing `$(...)`, backticks or `&` is
@@ -385,16 +385,16 @@ both take standard five-field expressions, parsed by this module:
 `8-18/2` every second value in a range. The macros `@hourly`, `@daily`, `@midnight`,
 `@weekly`, `@monthly` and `@yearly` also work.
 
-| Expression | Meaning |
-| --- | --- |
-| `*/10 * * * *` | every 10 minutes |
-| `0 * * * *` | on the hour |
-| `0 8 * * 1-5` | 08:00 on weekdays |
-| `30 6,18 * * *` | 06:30 and 18:30 |
-| `0 3 1 * *` | 03:00 on the 1st of each month |
-| `0 0 * * 0` | midnight on Sunday |
+| Expression      | Meaning                        |
+| --------------- | ------------------------------ |
+| `*/10 * * * *`  | every 10 minutes               |
+| `0 * * * *`     | on the hour                    |
+| `0 8 * * 1-5`   | 08:00 on weekdays              |
+| `30 6,18 * * *` | 06:30 and 18:30                |
+| `0 3 1 * *`     | 03:00 on the 1st of each month |
+| `0 0 * * 0`     | midnight on Sunday             |
 
-As in standard cron, when *both* day-of-month and day-of-week are restricted, a day
+As in standard cron, when _both_ day-of-month and day-of-week are restricted, a day
 matching **either** one is a match.
 
 To check what an expression will do without queueing anything:
@@ -447,14 +447,14 @@ before trusting an overnight queue.
 
 **Menu → System Settings → Power Management**
 
-- *On AC power* → **Turn off the screen when inactive for**: your preference, this is
+- _On AC power_ → **Turn off the screen when inactive for**: your preference, this is
   only the display.
-- *On AC power* → **Suspend when inactive for**: **Never**. This is the one that matters.
-- Set the same under *On battery* if the machine runs on battery overnight.
+- _On AC power_ → **Suspend when inactive for**: **Never**. This is the one that matters.
+- Set the same under _On battery_ if the machine runs on battery overnight.
 - **When the lid is closed**: **Do nothing** on a laptop that lives on a desk.
 
-**Menu → System Settings → Screensaver** → turn off *Lock the computer when put to
-sleep* if a locked session gets in your way; locking itself does not stop cron.
+**Menu → System Settings → Screensaver** → turn off _Lock the computer when put to
+sleep_ if a locked session gets in your way; locking itself does not stop cron.
 
 MATE and Xfce editions have the same settings under **Power Management**; the wording is
 close enough to follow.

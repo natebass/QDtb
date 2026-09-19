@@ -1,8 +1,8 @@
 vim.g.startify_lists = {
-	{ type = 'sessions',           header = { ' Sessions' } },
-	{ type = 'dir',                header = { ' Recent in Current Directory (' .. vim.fn.getcwd() .. ')' } },
-	{ type = 'files',              header = { ' Recently Opened' } },
-	{ type = 'commands',           header = { ' Custom Commands' } },
+	{ type = "sessions", header = { " Sessions" } },
+	{ type = "dir", header = { " Recent in Current Directory (" .. vim.fn.getcwd() .. ")" } },
+	{ type = "files", header = { " Recently Opened" } },
+	{ type = "commands", header = { " Custom Commands" } },
 	-- Example of a custom function to list git modified files
 	-- This uses a Lua function directly, which is the correct way for dynamic lists in Lua.
 	-- {
@@ -32,15 +32,15 @@ vim.g.startify_lists = {
 	--   end,
 	--   header = { ' Git Untracked Files' }
 	-- },
-	{ type = 'bookmarks',          header = { ' Bookmarks' } },
+	{ type = "bookmarks", header = { " Bookmarks" } },
 }
 -- --- Session Management ---
 -- Enable session saving on exit.
 -- Requires `mhinz/vim-session` or similar for full functionality if you want
 -- to persist sessions outside of Startify's basic handling.
 -- Startify integrates with `:mksession` by default.
-vim.g.startify_session_dir = vim.fn.stdpath('data') .. '/sessions'
-vim.g.startify_session_autoload = 1     -- Load session if one exists in the current directory
+vim.g.startify_session_dir = vim.fn.stdpath("data") .. "/sessions"
+vim.g.startify_session_autoload = 1 -- Load session if one exists in the current directory
 vim.g.startify_session_delete_entry = 1 -- Delete sessions when the project directory is removed
 vim.g.startify_enable_special = 0
 -- vim.g.startify_files_number = 10
@@ -49,13 +49,13 @@ vim.g.startify_custom_header = {}
 -- --- Highlighting ---
 -- You can customize the highlighting of different Startify elements.
 -- These are Vim highlight group names.
-vim.cmd [[highlight link StartifyHeader Normal]]
-vim.cmd [[highlight link StartifySection Header]] -- Or another highlight group
-vim.cmd [[highlight link StartifyFile Comment]]
-vim.cmd [[highlight link StartifyBracket Normal]]
-vim.cmd [[highlight link StartifyNumber Comment]]
-vim.cmd [[highlight link StartifyPath Comment]]
-vim.cmd [[highlight link StartifySelect Normal]]
+vim.cmd([[highlight link StartifyHeader Normal]])
+vim.cmd([[highlight link StartifySection Header]]) -- Or another highlight group
+vim.cmd([[highlight link StartifyFile Comment]])
+vim.cmd([[highlight link StartifyBracket Normal]])
+vim.cmd([[highlight link StartifyNumber Comment]])
+vim.cmd([[highlight link StartifyPath Comment]])
+vim.cmd([[highlight link StartifySelect Normal]])
 -- You might want to define custom highlight groups if your colorscheme doesn't have them
 -- For example:
 -- vim.api.nvim_set_hl(0, 'StartifyHeader', { fg = '#8be9fd', bg = 'NONE', bold = true })

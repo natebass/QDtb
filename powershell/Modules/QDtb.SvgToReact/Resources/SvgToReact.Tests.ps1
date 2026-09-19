@@ -151,3 +151,4 @@ Describe 'Convert-FolderSvgToReact' {
         Test-Path -LiteralPath (Join-Path $script:WorkDir 'icon') | Should -BeFalse
     }
 }
+

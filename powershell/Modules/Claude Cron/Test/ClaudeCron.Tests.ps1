@@ -497,10 +497,10 @@ Describe 'Crontab handling' -Skip:$IsWindows {
     It 'replaces its own previous block instead of stacking a second one' {
         Mock -ModuleName ClaudeCron Read-ClaudeCronCrontab {
             @('0 5 * * * /usr/local/bin/backup.sh',
-              '# >>> claude-cron >>>',
-              'PATH=/old',
-              '*/30 * * * * old-drain-command',
-              '# <<< claude-cron <<<')
+                '# >>> claude-cron >>>',
+                'PATH=/old',
+                '*/30 * * * * old-drain-command',
+                '# <<< claude-cron <<<')
         }
         Install-ClaudeCronSchedule -Cron '*/10 * * * *' -Confirm:$false | Out-Null
 
@@ -522,10 +522,10 @@ Describe 'Crontab handling' -Skip:$IsWindows {
     It 'removes only its own block on uninstall' {
         Mock -ModuleName ClaudeCron Read-ClaudeCronCrontab {
             @('0 5 * * * /usr/local/bin/backup.sh',
-              '# >>> claude-cron >>>',
-              '*/10 * * * * drain',
-              '# <<< claude-cron <<<',
-              '30 2 * * 0 /usr/bin/weekly')
+                '# >>> claude-cron >>>',
+                '*/10 * * * * drain',
+                '# <<< claude-cron <<<',
+                '30 2 * * 0 /usr/bin/weekly')
         }
         Uninstall-ClaudeCronSchedule -Confirm:$false
 
@@ -541,3 +541,4 @@ Describe 'Crontab handling' -Skip:$IsWindows {
         Should -Invoke -ModuleName ClaudeCron Write-ClaudeCronCrontab -Times 0 -Exactly
     }
 }
+

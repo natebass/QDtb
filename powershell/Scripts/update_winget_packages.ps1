@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Script to individually update all installed winget packages.
 
@@ -53,4 +53,5 @@ Update-WingetPackage -PackageId "JanDeDobbeleer.OhMyPosh" -PackageName "Oh My Po
 # Display completion message
 Write-Host "Package update process completed!" -ForegroundColor Green
 Write-Host "Note: AWS-related packages were skipped as requested." -ForegroundColor Yellow
+
 

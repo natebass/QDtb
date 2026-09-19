@@ -1,7 +1,7 @@
 # Define your payload as a PowerShell object
 $payload = @{
     status = "exampleValue"
-    nested     = @{
+    nested = @{
         status = "resolved_model"
         reason = 0
     }

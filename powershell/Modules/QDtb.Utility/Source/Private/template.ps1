@@ -1,4 +1,4 @@
-﻿
+
 <#
 React component file using template.
 .PARAMETER FileName
@@ -26,3 +26,4 @@ function Save-Sample {
         Write-Information "Template file not found at $templatePath"
     }
 }
+

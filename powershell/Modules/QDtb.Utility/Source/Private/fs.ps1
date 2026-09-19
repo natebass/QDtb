@@ -1,4 +1,4 @@
-﻿function Remove-File {
+function Remove-File {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param(
         [Parameter(Mandatory = $true)]
@@ -185,3 +185,4 @@ function Compare-Directory {
         Write-Host "Folders are completely identical!" -ForegroundColor Green
     }
 }
+

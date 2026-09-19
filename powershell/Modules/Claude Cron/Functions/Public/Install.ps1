@@ -382,3 +382,4 @@ function Uninstall-ClaudeCronTimer {
     }
     Write-ClaudeCronLog -Level 'INFO' -Message 'Removed the systemd user timer.'
 }
+

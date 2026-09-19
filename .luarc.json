@@ -1,8 +1,6 @@
 {
   "runtime.version": "LuaJIT",
-  "workspace.library": [
-    "${3rd}/luv/library"
-  ],
+  "workspace.library": ["${3rd}/luv/library"],
   "workspace.checkThirdParty": false,
   "diagnostics.globals": [
     "vim",

@@ -1,4 +1,4 @@
-﻿<#
+<#
     .SYNOPSIS
     Generates the content for a React component from SVG content.
 #>
@@ -105,3 +105,4 @@ function Convert-FolderSvgToReact {
     }
     Write-Host "Conversion ended." -ForegroundColor Green
 }
+

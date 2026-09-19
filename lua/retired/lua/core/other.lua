@@ -1,10 +1,9 @@
-
 -- Repeat command function in Lua
 local function RepeatCmd(cmd)
-  local n = vim.v.count > 0 and vim.v.count or 1
-  for _ = 1, n do
-    vim.cmd(cmd)
-  end
+	local n = vim.v.count > 0 and vim.v.count or 1
+	for _ = 1, n do
+		vim.cmd(cmd)
+	end
 end
 
 -- -- Reload function for all config modules

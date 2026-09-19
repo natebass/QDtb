@@ -5,13 +5,13 @@
 
 $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
 if (Test-Path($ChocolateyProfile)) {
-  Import-Module "$ChocolateyProfile"
+    Import-Module "$ChocolateyProfile"
 }
 
 function prompt { 
-  $path = Split-Path -Leaf (Get-Location)
-  Write-Host "`e]0;$path`a" -NoNewline
-  Write-RainbowPrompt
+    $path = Split-Path -Leaf (Get-Location)
+    Write-Host "`e]0;$path`a" -NoNewline
+    Write-RainbowPrompt
 }
 
 . "C:\Users\nateb\.vite-plus/env.ps1"
@@ -40,7 +40,7 @@ ___________|_|_
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 # Inlining the template into the profile shaves off ~10ms (25%).
 $script:__COREUTILS__ = [System.Collections.Generic.HashSet[string]]::new(
-    [string[]]@('arch','b2sum','base32','base64','basename','basenc','cat','cksum','comm','cp','csplit','cut','date','df','dirname','du','echo','env','expr','factor','false','find','fmt','fold','grep','head','hostname','join','la','link','ln','ls','md5sum','mkdir','mktemp','mv','nl','nproc','numfmt','od','paste','pathchk','pr','printenv','printf','ptx','pwd','readlink','realpath','rm','rmdir','seq','sha1sum','sha224sum','sha256sum','sha384sum','sha512sum','shuf','sleep','sort','split','stat','sum','tac','tail','tee','test','touch','tr','true','truncate','tsort','unexpand','uniq','unlink','uptime','wc','xargs','yes'),
+    [string[]]@('arch', 'b2sum', 'base32', 'base64', 'basename', 'basenc', 'cat', 'cksum', 'comm', 'cp', 'csplit', 'cut', 'date', 'df', 'dirname', 'du', 'echo', 'env', 'expr', 'factor', 'false', 'find', 'fmt', 'fold', 'grep', 'head', 'hostname', 'join', 'la', 'link', 'ln', 'ls', 'md5sum', 'mkdir', 'mktemp', 'mv', 'nl', 'nproc', 'numfmt', 'od', 'paste', 'pathchk', 'pr', 'printenv', 'printf', 'ptx', 'pwd', 'readlink', 'realpath', 'rm', 'rmdir', 'seq', 'sha1sum', 'sha224sum', 'sha256sum', 'sha384sum', 'sha512sum', 'shuf', 'sleep', 'sort', 'split', 'stat', 'sum', 'tac', 'tail', 'tee', 'test', 'touch', 'tr', 'true', 'truncate', 'tsort', 'unexpand', 'uniq', 'unlink', 'uptime', 'wc', 'xargs', 'yes'),
     [System.StringComparer]::OrdinalIgnoreCase
 )
 
@@ -237,3 +237,4 @@ function PSConsoleHostReadLine {
 }
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 # DO NOT MODIFY -- coreutils -- 60b36fc6-2d59-49df-be51-28dd2f4c3c9a
+

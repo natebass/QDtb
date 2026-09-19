@@ -7,14 +7,14 @@ function prompt { Write-RainbowPrompt }
 # fnm env --use-on-cd | Out-String | Invoke-Expression
 
 if ($IsWindows) {
-  $nvimModulePath = Join-Path $env:LOCALAPPDATA "nvim\powershell\Modules"
+    $nvimModulePath = Join-Path $env:LOCALAPPDATA "nvim\powershell\Modules"
 }
 else {
-  $nvimModulePath = "/home/nwb/.var/app/dev.neovide.neovide/config/nvim/powershell/Modules"
+    $nvimModulePath = "/home/nwb/.var/app/dev.neovide.neovide/config/nvim/powershell/Modules"
 }
 
 if (Test-Path $nvimModulePath) {
-  $env:PSModulePath = "$nvimModulePath$([System.IO.Path]::PathSeparator)$env:PSModulePath"
+    $env:PSModulePath = "$nvimModulePath$([System.IO.Path]::PathSeparator)$env:PSModulePath"
 }
 
 <#
@@ -31,3 +31,4 @@ if (Test-Path $nvimModulePath) {
   |@| |@|  | |
 ___________|_|_
 #>
+

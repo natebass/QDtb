@@ -1,4 +1,4 @@
-﻿@{
+@{
     RootModule        = 'PodcastDownload.psm1'
     ModuleVersion     = '0.0.1'
     Author            = "Nate Bass"
@@ -20,3 +20,4 @@
         }
     }
 }
+

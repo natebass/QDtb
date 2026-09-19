@@ -14,3 +14,4 @@ foreach ($scope in @('Private', 'Public')) {
         . $file.FullName
     }
 }
+
