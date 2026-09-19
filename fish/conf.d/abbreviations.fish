@@ -10,6 +10,10 @@
 # ← go back alt-left
 # → go forward alt-right
 # -------------
+abbr -a !! --function better_history_first
+abbr -a 2 --function better_history_second
+abbr -a 3 --function better_history_third
+
 abbr --add dotdot --regex '^\.\.+$' --function multicd
 abbr --add q  'fastfetch --config ~/Downloads/a.jsonc --logo none'
 abbr --add w  'exec fish'
