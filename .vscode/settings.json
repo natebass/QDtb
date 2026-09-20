@@ -1,1 +1,23 @@
-{}
+{
+    "cSpell.words": [
+        "Adtb",
+        "autocmd",
+        "Edsger",
+        "foldlevel",
+        "foldmethod",
+        "getcwd",
+        "Gitsigns",
+        "Hoare",
+        "innovcal",
+        "joinpath",
+        "Kernighan",
+        "keymaps",
+        "mhinz",
+        "mksession",
+        "nvim",
+        "Snepscheut",
+        "Spafford",
+        "startify",
+        "stdpath"
+    ]
+}
