@@ -15,13 +15,10 @@ vim.pack.add({
 	"https://github.com/Mofiqul/vscode.nvim",
 	"https://github.com/neovim/nvim-lspconfig",
 	"https://github.com/nvim-focus/focus.nvim",
-	"https://github.com/folke/zen-mode.nvim",
 	"https://github.com/pocco81/true-zen.nvim",
 	"https://github.com/github/copilot.vim",
 	"https://github.com/wakatime/vim-wakatime",
 	"https://github.com/folke/lazydev.nvim",
-	"https://github.com/Bilal2453/luvit-meta",
-	"https://github.com/folke/snacks.nvim",
 }, { load = false })
 
 local command_packages = {}

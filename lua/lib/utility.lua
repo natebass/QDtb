@@ -34,42 +34,6 @@ function M.wrap_text(text, limit)
 	return lines
 end
 
-function M.reload_config()
-	local modules = {
-		"Neovim",
-		"plugins.plugins_mini",
-		"plugins.plugins_other",
-		"core.all",
-		"core.autocmd",
-		"core.code_style",
-		"core.keymaps",
-		"core.options",
-		"core.other",
-		"plugins.QDtb.colorscheme_cycler",
-		"plugins.QDtb.package_json",
-		"plugins.QDtb.window_title",
-		"plugins.QDtb.autosave",
-		"plugins.session_manager.session_manager",
-	}
-
-	-- 1. Unload modules using correct require paths (no leading 'lua.')
-	for _, mod in ipairs(modules) do
-		package.loaded[mod] = nil
-	end
-
-	-- 2. Use vim.cmd.source with runtime pathing instead of hardcoded Windows OS paths
-	local ok, keymaps = pcall(require, "core.keymaps")
-	if ok and type(keymaps) == "table" and keymaps.setup then
-		keymaps.setup()
-		vim.notify("Reloaded and reapplied keymaps.", vim.log.levels.INFO)
-	else
-		-- Find and source the file dynamically relative to your stdpath('config')
-		local keymaps_path = vim.fn.stdpath("config") .. "/lua/core/keymaps.lua"
-		vim.cmd.source(keymaps_path)
-		vim.notify("Reloaded keymaps by sourcing file.", vim.log.levels.INFO)
-	end
-end
-
 -- Cached system detection.
 local sysname = vim.uv.os_uname().sysname
 

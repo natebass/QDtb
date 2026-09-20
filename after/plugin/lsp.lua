@@ -1,16 +1,15 @@
--- Create a user command :HelloPlugin
--- vim.api.nvim_create_user_command("HelloPlugin", function()
---     require("plugins/my_plugin").say_hello()
--- end, {})
+--- LSP support plugins.
+--- lua_ls itself is configured in lua/plugins/code_style/lua.lua; nvim-lspconfig
+--- only needs to be on the runtimepath (vim.pack does that with `load = false`)
+--- for vim.lsp.enable() to pick up its lsp/lua_ls.lua definition.
+--- @module "config.lsp"
 
 vim.cmd.packadd("lazydev.nvim")
-vim.cmd.packadd("luvit-meta")
 
 require("lazydev").setup({
 	library = {
-		-- Load luvit types when the `vim.uv` word is found
-		{ path = "luvit-meta/library", words = { "vim%.uv" } },
-		-- Load Snacks types if you use it
-		{ path = "snacks.nvim", words = { "Snacks" } },
+		-- Load the luv type definitions that ship with lua-language-server when
+		-- the `vim.uv` word is found. This replaces the archived luvit-meta plugin.
+		{ path = "${3rd}/luv/library", words = { "vim%.uv" } },
 	},
 })
