@@ -1,4 +1,6 @@
 --- Editor Options. Configures Neovim UI, editing behavior, search, and other core options.
+--- Targets Neovim 0.12+ exclusively: scalar options go through `vim.o`, and `vim.opt`
+--- is reserved for the list- and map-style options where its table interface earns its keep.
 --- @module "config.options"
 local M = {}
 -- UI {{{
@@ -12,10 +14,10 @@ vim.o.title = true
 vim.o.ruler = false
 vim.o.cursorline = true
 vim.o.guicursor = "n-v-c-sm:hor10,i-ci-ve:ver25,r-cr-o:block"
-vim.opt.colorcolumn = "+1"
-vim.opt.signcolumn = "yes"
-vim.opt.pumblend = 10
-vim.opt.pumheight = 10
+vim.o.colorcolumn = "+1"
+vim.o.signcolumn = "yes"
+vim.o.pumblend = 10
+vim.o.pumheight = 10
 vim.opt.fillchars = {
 	foldopen = "▾",
 	foldclose = "▸",
@@ -26,73 +28,60 @@ vim.opt.fillchars = {
 }
 -- }}}
 -- Editing {{{
-vim.opt.tabstop = 4
-vim.opt.softtabstop = 4
-vim.opt.shiftwidth = 4
-vim.opt.shiftround = true
-vim.opt.expandtab = true
-vim.opt.smartindent = true
-vim.opt.formatexpr = "v:lua.LazyVim.format.formatexpr()"
+vim.o.tabstop = 4
+vim.o.softtabstop = 4
+vim.o.shiftwidth = 4
+vim.o.shiftround = true
+vim.o.expandtab = true
+vim.o.smartindent = true
 vim.g.markdown_recommended_style = 0
 -- }}}
 -- Search {{{
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
-vim.opt.inccommand = "nosplit" -- Preview incremental substitute
-vim.opt.grepprg = "rg --vimgrep"
-vim.opt.grepformat = "%f:%l:%c:%m"
+vim.o.ignorecase = true
+vim.o.smartcase = true
+vim.o.inccommand = "nosplit" -- Preview incremental substitute
+vim.o.grepprg = "rg --vimgrep"
+vim.o.grepformat = "%f:%l:%c:%m"
 -- }}}
 -- Files {{{
-vim.opt.undofile = true
-vim.opt.undolevels = 10000
-vim.opt.swapfile = false
-vim.opt.autowrite = true
-vim.opt.confirm = true
+vim.o.undofile = true
+vim.o.undolevels = 10000
+vim.o.swapfile = false
+vim.o.autowrite = true
 -- }}}
 -- Clipboard: skip in SSH so OSC 52 works automatically {{{
-vim.opt.clipboard = vim.env.SSH_CONNECTION and "" or "unnamedplus"
+vim.o.clipboard = vim.env.SSH_CONNECTION and "" or "unnamedplus"
 -- }}}
 -- Folds {{{
-vim.opt.foldmethod = "marker"
-vim.opt.foldlevel = 99
-vim.opt.foldtext = ""
+vim.o.foldmethod = "marker"
+vim.o.foldlevel = 99
+vim.o.foldtext = ""
 -- }}}
 -- Scroll & layout {{{
-vim.opt.scrolloff = 4
-vim.opt.sidescrolloff = 8
-vim.opt.smoothscroll = true
-vim.opt.linebreak = true
-vim.opt.wrap = false
-vim.opt.splitbelow = true
-vim.opt.splitright = true
-vim.opt.splitkeep = "screen"
-vim.opt.winminwidth = 5
-vim.opt.virtualedit = "block" -- Allow cursor in blank space in visual block mode
+vim.o.scrolloff = 4
+vim.o.sidescrolloff = 8
+vim.o.smoothscroll = true
+vim.o.linebreak = true
+vim.o.wrap = false
+vim.o.splitbelow = true
+vim.o.splitright = true
+vim.o.splitkeep = "screen"
+vim.o.winminwidth = 5
+vim.o.virtualedit = "block" -- Allow cursor in blank space in visual block mode
 -- }}}
 -- Miscellaneous {{{
-vim.opt.conceallevel = 2 -- Hide bold/italic markers but not substitutions
-vim.opt.completeopt = "menu,menuone,noselect"
-vim.opt.mouse = "a"
-vim.opt.list = true -- Show invisible characters
-vim.opt.spelllang = { "en" }
-vim.opt.jumpoptions = "view"
-vim.opt.wildmode = "longest:full,full"
-vim.opt.timeoutlen = vim.g.vscode and 1000 or 300 -- Lower for faster which-key trigger
-vim.opt.updatetime = 200 -- Trigger CursorHold sooner
-vim.opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "globals", "skiprtp", "folds" }
-vim.opt.shortmess:append({ W = true, I = true, c = true, C = true })
-vim.opt.termguicolors = true
--- }}}
--- LazyVim {{{
-vim.g.autoformat = true
-vim.g.snacks_animate = true
-vim.g.lazyvim_picker = "auto"
-vim.g.lazyvim_cmp = "auto"
-vim.g.ai_cmp = true -- Use AI source in completion engine over inline suggestions
-vim.g.root_spec = { "lsp", { ".git", "lua" }, "cwd" }
-vim.g.root_lsp_ignore = { "copilot" }
-vim.g.deprecation_warnings = false
-vim.g.trouble_lualine = true -- Show document symbol location in lualine
+vim.o.conceallevel = 2 -- Hide bold/italic markers but not substitutions
+vim.o.completeopt = "menu,menuone,noselect"
+vim.o.mouse = "a"
+vim.o.list = true -- Show invisible characters
+vim.o.spelllang = "en"
+vim.o.jumpoptions = "view"
+vim.o.wildmode = "longest:full,full"
+vim.o.timeoutlen = 300 -- Lower for faster which-key trigger
+vim.o.updatetime = 200 -- Trigger CursorHold sooner
+vim.o.sessionoptions = "buffers,curdir,tabpages,winsize,help,globals,skiprtp,folds"
+vim.o.shortmess = vim.o.shortmess .. "WIcC"
+vim.o.termguicolors = true
 -- }}}
 
 if vim.g.neovide then
