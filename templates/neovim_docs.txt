@@ -1,0 +1,185 @@
+
+
+
+
+
+
+
+
+
+
+-- -- Define an autocommand group to manage our autocommands
+-- vim.api.nvim_create_augroup('NpmProjectDetector', { clear = true })
+--
+-- -- Create an autocommand that runs on BufReadPost for common web file types
+-- vim.api.nvim_create_autocmd('BufReadPost', {
+--     group = 'NpmProjectDetector',
+--     pattern = {
+--         '*.html', '*.htm', '*.css', '*.js', '*.jsx', '*.ts', '*.tsx', '*.json',
+--         '*.vue', '*.svelte', '*.less', '*.scss', '*.sass',
+--     },
+--     callback = M.check_npm_project,
+--     desc = 'Check if the opened file is inside an NPM project',
+-- })
+
+
+-- vim.api.nvim_create_autocmd('FileType', {
+-- 	pattern = { 'lua', 'typescript', 'tsx', 'ts', 'tsx', 'javascript', 'js' },
+-- 	callback = function()
+-- 		vim.treesitter.start()
+-- 	end,
+-- })
+-- Optional: Add a message when the autosave module is loaded
+-- vim.notify('Qdtb autosave module loaded.', vim.log.levels.INFO)
+
+
+
+
+mini.files now sets use_as_default_explorer = true but is set up after VimEnter. Running nvim <dir> may open netrw first, because the hijack isn't registered until the deferred setup runs. If that happens, move mini.files out of the deferred block.
+
+-- You might want to define custom highlight groups if your colorscheme doesn't have them
+-- For example:
+-- vim.api.nvim_set_hl(0, 'StartifyHeader', { fg = '#8be9fd', bg = 'NONE', bold = true })
+-- vim.api.nvim_set_hl(0, 'StartifySection', { fg = '#bd93f9', bg = 'NONE', bold = true })
+
+
+
+
+
+
+-- vim.cmd [[
+--   function! NextClosedFold(dir)
+--     let cmd = 'norm!z'..a:dir
+--     let view = winsaveview()
+--     let [l0, l, open] = [0, view.lnum, 1]
+--     while l != l0 && open
+--         exe cmd
+--         let [l0, l] = [l, line('.')]
+--         let open = foldclosed(l) < 0
+--     endwhile
+--     if open
+--         call winrestview(view)
+--     endif
+--   endfunction
+-- ]]
+old syntax
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Lua ✏️
+-- Ctrl+Down = } and for up
+-- /var/lib/flatpak/exports/bin/dev.neovide.neovide
+-- help lua-guide-mappings
+-- put =expand("%:p")
+-- w|source %
+-- vim.opt.runtimepath:append("C:/Users/nateb/OneDrive/Documents/QDtb/Vim")
+-- path_addition = vim.fn.expand(";/home/nwb/Documents/QDtb/lua/?.lua;/home/nwb/Documents/QDtb/lua/?/init.lua")
+-- package.path = package.path .. path_addition
+-- dofile("C:/Users/nateb/OneDrive/Documents/ADtb/Vim/Windows.lua")
+-- when you explicitly need to re-run a script dynamically on demand or execute a Lua file sitting in a non-standard location outside of your Neovim runtimepath
+
+
+
+
+
+
+
+
+
+
+
+
+local package_json_path = "C:\\Users\\nateb\\Source\\Repos\\be-gccpilot03-py\\frontend\\package.json"
+local package_json_dir = vim.fn.fnamemodify(package_json_path, ":h")
+map(
+	"n",
+	"<leader>P",
+	string.format(":e %s<CR>:cd %s<CR>:NERDTreeToggle<CR><c-w>l", package_json_path, package_json_dir),
+	{ desc = "Open Package JSON in NERDTree" }
+)
+
+
+
+vim.cmd.packadd("vague.nvim")
+vim.cmd.packadd("leap.nvim")
+vim.cmd.packadd("focus.nvim")
+
+
+-- Colorscheme
+vim.cmd.colorscheme("vague")
+
+
+vim.keymap.set('n', 'K', vim.lsp.buf.hover, { desc = 'LSP Hover Documentation' })
+
+
+
+
+-- TODO: Fix capital K not working.
+-- LazyVim's Keywordprg (Previously on <leader>K)
+-- map("n", "<leader>ck", "<cmd>norm! K<cr>", { desc = "Keywordprg" })
+
+
+
+
+
+-- vim.o.guifont = "ComicShannsMono Nerd Font:h12"
+-- vim.o.guifont = "CaskaydiaCove NF:h12"
+-- vim.o.guifont = 'Cascadia Code,Noto_Color_Emoji:h10'
+-- vim.o.guifont = 'JetBrains Mono,Noto_Color_Emoji:h10'
+-- vim.o.guifont = 'ComicShannsMono Nerd Font Mono,Noto_Color_Emoji:h11'
+-- vim.o.formatoptions = "jcroqlnt"
+-- vim.o.foldmethod = "indent"
+-- vim.o.titlestring = "%t %(:%r%)%(:%m%) (%{expand('%:~:.:h')}) - Nvim"
+-- vim.o.runtimepath:append("C:/Users/nateb/OneDrive/Documents/ADtb/Vim")
+-- Check /home/nwb/Desktop/config/nvim/init.lua
+-- vim.cmd([[
+--   autocmd! bufwritepost *nippets.json,*.vim,*.lua source /home/nwb/.config/nvim/init.lua
+-- ]])
+
+
+
+
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "*",
+	callback = function()
+		vim.opt_local.formatoptions:remove({ "r", "o" })
+	end,
+	desc = "Remove option to automatically add a comment for all files.",
+})
+-- Format javascript on save.
+-- vim.api.nvim_create_autocmd('BufWritePost', {
+--     pattern = { '*.ts', '*.tsx', '*.js', '*.jsx', '*.mjs', '*.mts' }, -- Add more patterns as needed
+--     callback = function()
+--         vim.cmd([[silent !deno fmt ]] .. vim.fn.expand('%'))
+--     end
+-- })
+-- ...existing code...
+-- vim.api.nvim_create_autocmd('FileType', {
+-- 	pattern = { 'html', 'json' },
+-- 	callback = function()
+-- 		vim.opt_local.foldmethod = 'expr'
+-- 		vim.opt_local.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+-- 		-- You can still set foldcolumn, foldlevel, etc., as desired
+-- 	end,
+-- })
+-- -- Autocmd to reload config on save
+-- vim.api.nvim_create_autocmd('BufWritePost', {
+-- 	pattern = '*.lua',
+-- 	callback = function()
+-- 		vim.notify('Reloading config...')
+-- 		ReloadConfig()
+-- 	end,
+-- })
+-- vim:foldmethod=marker:foldlevel=1:ft=vim

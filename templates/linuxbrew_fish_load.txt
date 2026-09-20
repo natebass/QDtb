@@ -1,0 +1,86 @@
+
+
+# Features
+# interactive history picker
+# print history list
+# toggle last two dirs (builtin fish)
+# ← go back  (mirrors alt-left)
+# → go forward (mirrors alt-right)
+# . and / — skipped (shell/path special chars, too error-prone as abbrs)
+
+# alias a=azure
+# alias b=brew
+# alias c=cat
+# alias dr=gdrive
+# alias e=vim
+# alias f=fish
+# alias g=git
+# alias h=history
+# alias j=printf
+# alias k=git
+# alias l=less
+# alias n=npm
+# alias o=open
+# alias p=polymer
+# alias s=powershell
+
+# chdir(){
+# 	mkdir $1; cd $_;
+# }
+# d(){
+# 	if [ $# -eq 0  ]; then
+# 		ls -F
+# 	else
+# 		builtin cd "$@" && ls -Ft
+# 	fi
+# }
+
+
+# Never use rm -rf anymore!
+# alias rm=rm -i
+# alias sedtrim "sed -i '' -e '$ d' $1"
+
+
+# Initialize Homebrew
+# if test -d /home/linuxbrew/.linuxbrew/bin
+#     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv fish)"
+
+#     # Completions
+#     set -l brew_prefix (brew --prefix)
+#     if test -d "$brew_prefix/share/fish/completions"
+#         set -p fish_complete_path "$brew_prefix/share/fish/completions"
+#     end
+#     if test -d "$brew_prefix/share/fish/vendor_completions.d"
+#         set -p fish_complete_path "$brew_prefix/share/fish/vendor_completions.d"
+#     end
+# end
+
+# Save ~20ms
+# if test -d /home/linuxbrew/.linuxbrew/bin
+#     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv fish)"
+
+#     # Completions (uses $HOMEBREW_PREFIX set by brew shellenv)
+#     if test -d "$HOMEBREW_PREFIX/share/fish/completions"
+#         set -p fish_complete_path "$HOMEBREW_PREFIX/share/fish/completions"
+#     end
+
+#     if test -d "$HOMEBREW_PREFIX/share/fish/vendor_completions.d"
+#         set -p fish_complete_path "$HOMEBREW_PREFIX/share/fish/vendor_completions.d"
+#     end
+# end
+
+# Fast static Homebrew initialization (~0ms)
+if test -d /home/linuxbrew/.linuxbrew
+    set -gx HOMEBREW_PREFIX "/home/linuxbrew/.linuxbrew"
+    set -gx HOMEBREW_CELLAR "/home/linuxbrew/.linuxbrew/Cellar"
+    set -gx HOMEBREW_REPOSITORY "/home/linuxbrew/.linuxbrew/Homebrew"
+    fish_add_path -g /home/linuxbrew/.linuxbrew/bin /home/linuxbrew/.linuxbrew/sbin
+
+    # Completions
+    if test -d "$HOMEBREW_PREFIX/share/fish/completions"
+        set -p fish_complete_path "$HOMEBREW_PREFIX/share/fish/completions"
+    end
+    if test -d "$HOMEBREW_PREFIX/share/fish/vendor_completions.d"
+        set -p fish_complete_path "$HOMEBREW_PREFIX/share/fish/vendor_completions.d"
+    end
+end
