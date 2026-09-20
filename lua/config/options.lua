@@ -2,25 +2,18 @@
 --- @module "config.options"
 local M = {}
 -- UI {{{
--- vim.opt.guifont = "CaskaydiaCove NF:h12"
--- vim.opt.guifont = 'Cascadia Code,Noto_Color_Emoji:h10'
--- vim.opt.guifont = 'JetBrains Mono,Noto_Color_Emoji:h10'
--- vim.opt.guifont = 'ComicShannsMono Nerd Font Mono,Noto_Color_Emoji:h11'
-
-vim.opt.guifont = "ComicShannsMono Nerd Font:h12"
+vim.o.confirm = true
+vim.o.number = false
 vim.o.linespace = 4
 vim.o.cmdheight = 0
-vim.o.laststatus = 3 -- Global statusline
+vim.o.laststatus = 3
 vim.o.winborder = "rounded"
 vim.o.title = true
--- vim.opt.titlestring = "%t %(:%r%)%(:%m%) (%{expand('%:~:.:h')}) - Nvim"
 vim.o.ruler = false
-vim.o.showmode = false -- Redundant with statusline
-vim.o.number = false
 vim.o.cursorline = true
 vim.o.guicursor = "n-v-c-sm:hor10,i-ci-ve:ver25,r-cr-o:block"
-vim.opt.colorcolumn = "+1" -- Highlight one column past 'textwidth'
-vim.opt.signcolumn = "yes" -- Always show; prevents text shift
+vim.opt.colorcolumn = "+1"
+vim.opt.signcolumn = "yes"
 vim.opt.pumblend = 10
 vim.opt.pumheight = 10
 vim.opt.fillchars = {
@@ -31,7 +24,6 @@ vim.opt.fillchars = {
 	diff = "╱",
 	eob = " ",
 }
-vim.g.neovide_hide_mouse_when_typing = true
 -- }}}
 -- Editing {{{
 vim.opt.tabstop = 4
@@ -40,7 +32,6 @@ vim.opt.shiftwidth = 4
 vim.opt.shiftround = true
 vim.opt.expandtab = true
 vim.opt.smartindent = true
-vim.opt.formatoptions = "jcroqlnt"
 vim.opt.formatexpr = "v:lua.LazyVim.format.formatexpr()"
 vim.g.markdown_recommended_style = 0
 -- }}}
@@ -62,7 +53,7 @@ vim.opt.confirm = true
 vim.opt.clipboard = vim.env.SSH_CONNECTION and "" or "unnamedplus"
 -- }}}
 -- Folds {{{
-vim.opt.foldmethod = "indent"
+vim.opt.foldmethod = "marker"
 vim.opt.foldlevel = 99
 vim.opt.foldtext = ""
 -- }}}
@@ -103,6 +94,16 @@ vim.g.root_lsp_ignore = { "copilot" }
 vim.g.deprecation_warnings = false
 vim.g.trouble_lualine = true -- Show document symbol location in lualine
 -- }}}
+
+if vim.g.neovide then
+	vim.o.guifont = "ComicShannsMono Nerd Font Mono,Noto_Color_Emoji:h12"
+	vim.o.linespace = 8
+	vim.g.neovide_hide_mouse_when_typing = true
+	-- set guioptions-=m  ' menu bar
+	-- set guioptions-=T  ' toolbar
+	-- set guioptions-=r  ' scrollbar
+	-- vim.print(vim.api.nvim_get_chan_info(vim.g.neovide_channel_id))
+end
 return M
 -- Footer
--- vim:foldmethod=marker:foldlevel=1
+-- vim:foldmethod=marker:foldlevel=0

@@ -1,6 +1,6 @@
 --- NPM Project Detection.
 --- Detects if the current file is within an NPM project by locating package.json.
---- @module plugins.QDtb.package_json
+--- @module "plugins.QDtb.package_json"
 
 -- Lua script for Neovim to detect if a file is within an NPM project.
 -- Place this code in your Neovim configuration (e.g., ~/.config/nvim/lua/your_module/init.lua)
@@ -47,6 +47,8 @@ function M.check_npm_project()
 	local npm_root = find_npm_project_root(current_dir, 10) -- Check up to 10 directories back
 	if npm_root then
 		vim.notify("NPM project detected at: " .. npm_root, vim.log.levels.INFO)
+		vim.g.npm_project_root = npm_root
+		vim.api.nvim_set_current_dir(npm_root)
 	else
 		vim.notify("Not inside an NPM project (or package.json not found within 10 parent dirs).", vim.log.levels.WARN)
 	end

@@ -1,7 +1,7 @@
 --- Mini.nvim Configuration.
 --- Sets up various mini.* plugins for UI, editing, and utility enhancements.
 --- Ensure mini.icons is setup early for other modules.
---- @module config.mini
+--- @module "config.mini"
 
 require("mini.notify").setup()
 vim.notify = require("mini.notify").make_notify()
@@ -58,6 +58,8 @@ local function setup_deferred_modules()
 	local miniclue = require("mini.clue")
 	miniclue.setup({
 		triggers = {
+			{ mode = "n", keys = "<Leader>" },
+			{ mode = "x", keys = "<Leader>" },
 			{ mode = "i", keys = "<C-x>" },
 			{ mode = "n", keys = "g" },
 			{ mode = "x", keys = "g" },
@@ -160,10 +162,12 @@ vim.api.nvim_create_autocmd("User", {
 	desc = "Escape key closes the MiniFiles buffer.",
 })
 -- ── Other ─────────────────────────────────────────────────────────────
+-- now(function() require('mini.statusline').setup() end)
+-- now(function() require('mini.tabline').setup() end)
 -- mini.doc, mini.fuzzy, mini.test are dev/authoring tools
 -- only enable if you're building plugins
 -- require("mini.doc").setup()
 -- require("mini.fuzzy").setup()
 -- require("mini.test").setup()
 -- Footer
--- vim:foldmethod=marker:foldlevel=2
+-- vim:foldmethod=marker:foldlevel=0

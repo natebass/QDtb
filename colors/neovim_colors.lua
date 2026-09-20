@@ -1,5 +1,5 @@
 --- colors.neovim_colors module.
---- @module colors.neovim_colors
+--- @module "colors.neovim_colors"
 
 -- Code for tweaking new default Neovim color scheme for PR #?????
 -- It defines an overall look based on a handful of hyperparameters.

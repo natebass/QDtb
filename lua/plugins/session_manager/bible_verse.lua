@@ -1,5 +1,5 @@
 --- Bible Verses. Randomly selected Bible verses for the Startify custom header.
---- @module plugins.session_manager.bible_verse
+--- @module "plugins.session_manager.bible_verse"
 
 local utility = require("lib.utility")
 

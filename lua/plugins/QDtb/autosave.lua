@@ -1,6 +1,6 @@
 --- Autosave Configuration.
 --- Writes modified file buffers when Neovim loses focus or is about to exit.
---- @module plugins.QDtb.autosave
+--- @module "plugins.QDtb.autosave"
 
 local M = {}
 

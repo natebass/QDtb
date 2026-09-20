@@ -1,10 +1,11 @@
 --- Configure Startify for session management, custom headers, and bookmarks.
 --- @module "plugins.session_manager.session_manager"
+local utils = require("lib.utility")
 local g = vim.g
 -- General Settings {{{
-g.startify_enable_special = 0 -- Disable the default special buffers (help, intro, etc.).
-g.startify_files_number = 10 -- Number of recent files to display.
-g.startify_change_to_dir = 0 -- Don't change the current working directory to the project directory.
+g.startify_enable_special = 0
+g.startify_files_number = 10
+g.startify_change_to_dir = 0
 g.startify_custom_header = require("plugins.session_manager.bible_verse").quotes()
 g.startify_custom_footer = require("plugins.session_manager.algorithm_quote").quotes()
 -- Custom Commands {{{
@@ -85,22 +86,40 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 --- }}}
 -- Bookmarks {{{
-vim.g.startify_bookmarks = {
-	{ R = vim.fn.expand("~/Source/Repos") },
-	{ r = "/home/nwb/.var/app/dev.neovide.neovide/config/nvim/init.lua" },
-	{ w = "/home/nwb/.var/app/dev.neovide.neovide/config/nvim/init.lua" },
-	{ f = "/home/nwb/.var/app/dev.neovide.neovide/config/nvim/init.lua" },
-	{ d = "/home/nwb/.var/app/dev.neovide.neovide/config/nvim/init.lua" },
-	{ e = "/home/nwb/.var/app/dev.neovide.neovide/config/nvim/init.lua" },
-	{ s = "~/OneDrive/Documents/QDtb/Past/IntelliJ.txt" },
-	{ j = "~/Source/Repos/fe-innovcal-web/package.json" },
-	{ l = "~/OneDrive/Documents/QDtb/Past/Windows IntelliJ.txt" },
-	{ W = "~/OneDrive/Documents/QDtb/Windows.lua" },
-	{ t = "~/OneDrive/Documents/QDtb/Snippets.json" },
-	{ z = "~/OneDrive/Documents/QDtb/Abbreviations.lua" },
-	{ p = "~/OneDrive/Documents/PowerShell/Microsoft.Powershell_profile.ps1" },
-	{ x = "~/Source/Repos/" },
-}
+local e = vim.fn.expand
+local j = vim.fs.joinpath
+local c = e("~/.var/app/dev.neovide.neovide/config/nvim")
+if utils.is_windows then
+	vim.g.startify_bookmarks = {
+		{ R = e("~/Source/Repos") },
+		{ w = e("~/OneDrive/Documents/Adtb/Vim/Windows.lua") },
+		{ r = e("~/OneDrive/Documents/Adtb/Vim/lua/config/options.lua") },
+		{ s = e("~/OneDrive/Documents/Adtb/Vim/lua/plugins/session_manager/session_manager.lua") },
+		{ f = e("~/OneDrive/Documents/Adtb/Vim/lua/core/keymaps.lua") },
+		{ W = e("~/AppData/Local/nvim/init.lua") },
+		{ l = e("~/OneDrive/Documents/Adtb/IntelliJ/Windows IntelliJ.txt") },
+		{ p = e("~/OneDrive/Documents/PowerShell/Microsoft.Powershell_profile.ps1") },
+	}
+else
+	vim.g.startify_bookmarks = {
+		{ R = j(c, "powershell/Microsoft.VSCode_profile.ps1") },
+		{ r = j(c, "lua/config/options.lua") },
+		{ T = j(c, "powershell/Microsoft.PowerShell_profile.ps1") },
+		{ t = j(c, "init.lua") },
+		{ W = j(c, "snippets/Snippets.json") },
+		{ w = j(c, "lua/config/Unix.lua") },
+		{ f = j(c, "after/plugin/keymaps.lua") },
+		{ d = j(c, "fish/config.fish") },
+		{ E = e("~/Source/Repos") },
+		{ e = j(c, "lua/config/Emacs/Vim/Abbreviations.vim") },
+		{ s = j(c, "lua/config/Past/IntelliJ.txt") },
+		{ l = j(c, "lua/config/Past/Windows IntelliJ.txt") },
+		{ z = j(c, "lua/config/Abbreviations.lua") },
+		{ p = j(c, "powershell/Microsoft.PowerShell_profile.ps1") },
+		{ x = j(c, "lua/config/Source/Repos/") },
+		{ u = j(c, "lua/lib/utility.lua") },
+	}
+end
 -- }}}
 -- Footer
 -- vim:foldmethod=marker:foldlevel=1
