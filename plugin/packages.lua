@@ -24,14 +24,33 @@ vim.pack.add({
 	"https://github.com/folke/snacks.nvim",
 }, { load = false })
 
-local command_packages = {
-	Goyo = "goyo.vim",
-	Limelight = "limelight.vim",
-	NERDTree = "nerdtree",
-	NERDTreeToggle = "nerdtree",
-	Startify = "vim-startify",
-	TZNarrow = "true-zen.nvim",
-}
+local command_packages = {}
+
+--- Map every command a package defines to the package that defines it.
+local function map_commands(package, commands)
+	for _, command in ipairs(commands) do
+		command_packages[command] = package
+	end
+end
+
+map_commands("goyo.vim", { "Goyo" })
+map_commands("limelight.vim", { "Limelight" })
+map_commands("nerdtree", {
+	"NERDTree",
+	"NERDTreeClose",
+	"NERDTreeCWD",
+	"NERDTreeExplore",
+	"NERDTreeFind",
+	"NERDTreeFocus",
+	"NERDTreeFromBookmark",
+	"NERDTreeMirror",
+	"NERDTreeRefreshRoot",
+	"NERDTreeToggle",
+	"NERDTreeToggleVCS",
+	"NERDTreeVCS",
+})
+map_commands("true-zen.nvim", { "TZAtaraxis", "TZFocus", "TZMinimalist", "TZNarrow" })
+map_commands("vim-startify", { "SClose", "SDelete", "SLoad", "SSave", "Startify", "StartifyDebug" })
 
 vim.api.nvim_create_autocmd("CmdUndefined", {
 	pattern = vim.tbl_keys(command_packages),
