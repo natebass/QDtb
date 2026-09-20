@@ -43,9 +43,6 @@ Welcome to my personal Neovim configuration. It is partly based on [💤 lazy.nv
 - Neovim >= **0.12**
 - A [Nerd Font](https://www.nerdfonts.com/) **_(recommended)_**
 
-> [!WARNING]
-> Install with caution. This effects your Neovim configuration.
-
 ## Install
 
 Clone into `stdpath("config")`.
