@@ -9,17 +9,18 @@ g.startify_change_to_dir = 0
 g.startify_custom_header = require("plugins.session_manager.bible_verse").quotes()
 g.startify_custom_footer = require("plugins.session_manager.algorithm_quote").quotes()
 -- Custom Commands {{{
+local config_init = vim.fs.joinpath(vim.fn.stdpath("config"), "init.lua")
 g.startify_commands = {
 	{
-		["u"] = { "Update Plugins", "Lazy sync" },
-		["p"] = { "Packer Compile", "PackerCompile" },
+		["u"] = { "Update Plugins", "lua vim.pack.update()" },
+		["p"] = { "Plugin Status", "lua vim.print(vim.pack.get())" },
 	},
 	{
-		["e"] = { "Edit Neovim Config", "e ~/.config/nvim/init.lua" },
-		["s"] = { "Source Config", "source ~/.config/nvim/init.lua" },
+		["e"] = { "Edit Neovim Config", "edit " .. vim.fn.fnameescape(config_init) },
+		["s"] = { "Restart Neovim", "restart" },
 	},
 	{
-		["g"] = { "Git Status", "Gitsigns status_buffered" },
+		["g"] = { "Git Status", "Git status" },
 		["f"] = { "Find Files (Telescope)", "Telescope find_files" },
 	},
 }
@@ -87,7 +88,9 @@ vim.api.nvim_create_autocmd("FileType", {
 -- Bookmarks {{{
 local e = vim.fn.expand
 local j = vim.fs.joinpath
-local c = e("~/.var/app/dev.neovide.neovide/config/nvim")
+-- stdpath resolves to this directory under Neovide's flatpak XDG_CONFIG_HOME and to
+-- the plain ~/.config/nvim elsewhere, so the bookmarks follow the config that is running.
+local c = vim.fn.stdpath("config")
 if utils.is_windows then
 	vim.g.startify_bookmarks = {
 		{ R = e("~/Source/Repos") },
@@ -106,16 +109,16 @@ else
 		{ T = j(c, "powershell/Microsoft.PowerShell_profile.ps1") },
 		{ t = j(c, "init.lua") },
 		{ W = j(c, "snippets/Snippets.json") },
-		{ w = j(c, "lua/config/Unix.lua") },
+		{ w = j(c, "lua/config/unix.lua") },
 		{ f = j(c, "after/plugin/keymaps.lua") },
 		{ d = j(c, "fish/config.fish") },
 		{ E = e("~/Source/Repos") },
-		{ e = j(c, "lua/config/Emacs/Vim/Abbreviations.vim") },
-		{ s = j(c, "lua/config/Past/IntelliJ.txt") },
-		{ l = j(c, "lua/config/Past/Windows IntelliJ.txt") },
-		{ z = j(c, "lua/config/Abbreviations.lua") },
-		{ p = j(c, "powershell/Microsoft.PowerShell_profile.ps1") },
-		{ x = j(c, "lua/config/Source/Repos/") },
+		{ m = j(c, "after/plugin/mini.lua") },
+		{ s = j(c, "IntelliJ/ideavimrc.txt") },
+		{ l = j(c, "IntelliJ/windows.txt") },
+		{ z = j(c, "plugin/packages.lua") },
+		{ p = j(c, "lua/plugins/session_manager/session_manager.lua") },
+		{ x = j(c, "fish/conf.d/abbreviations.fish") },
 		{ u = j(c, "lua/lib/utility.lua") },
 	}
 end

@@ -1,6 +1,11 @@
 --- General utility functions and miscellaneous commands.
 --- @module "lib.utility"
 local M = {}
+
+-- Seed the RNG once, here, for every module that draws from it. hrtime() has
+-- nanosecond resolution, so two requires in the same second still differ.
+math.randomseed(vim.uv.hrtime() % 2 ^ 31)
+
 --- Repeats a Vim command a specified number of times.
 --- If no count is provided via `vim.v.count`, it executes the command once.
 --- @param cmd string The Vim command to repeat.

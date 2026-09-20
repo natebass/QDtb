@@ -3,8 +3,8 @@
 
 local utility = require("lib.utility")
 
--- Seed once at load so each session picks a different quote.
-math.randomseed(os.time())
+-- Seeding lives in lib.utility: os.time() has one-second resolution, so seeding here
+-- as well would reset the sequence and correlate this pick with the other quote module.
 
 local M = {}
 
