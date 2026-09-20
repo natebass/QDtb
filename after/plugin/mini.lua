@@ -3,48 +3,54 @@
 --- Ensure mini.icons is setup early for other modules.
 --- @module "config.mini"
 
+-- Startup-critical modules. These have to run before the first UI frame because they
+-- replace vim.notify, are a dependency of other modules, set options and mappings, or
+-- have to be in place before a session is read.
 require("mini.notify").setup()
 vim.notify = require("mini.notify").make_notify()
 require("mini.icons").setup()
 require("mini.sessions").setup({ autoread = true, autowrite = true })
-require("mini.align").setup()
-require("mini.move").setup({
-	mappings = {
-		left = "<M-h>",
-		right = "<M-l>",
-		down = "<M-j>",
-		up = "<M-k>",
-		line_left = "<M-h>",
-		line_right = "<M-l>",
-		line_down = "<M-j>",
-		line_up = "<M-k>",
-	},
-})
-require("mini.extra").setup()
-require("mini.misc").setup()
-require("mini.bracketed").setup()
-require("mini.bufremove").setup()
-require("mini.diff").setup({
-	view = { style = "sign", signs = { add = "+", change = "~", delete = "-" } },
-})
-require("mini.visits").setup()
-require("mini.map").setup()
-require("mini.git").setup()
-require("mini.completion").setup({
-	delay = { completion = 100, info = 300, signature = 50 },
-})
-require("mini.comment").setup()
-require("mini.pick").setup({
-	mappings = { choose_in_vsplit = "<C-CR>" },
-})
-require("mini.trailspace").setup()
-require("mini.cursorword").setup()
 require("mini.basics").setup({
 	options = { basic = true, extra_ui = true, win_borders = "default" },
 	mappings = { basic = true, option_toggle_prefix = [[\]], windows = true },
 	autocommands = { basic = true, relnum_in_visual_mode = true },
 })
+
+--- Everything below is reachable only through a keymap, a text object or a buffer event,
+--- so it is set up just after the first frame instead of blocking it.
 local function setup_deferred_modules()
+	require("mini.align").setup()
+	require("mini.move").setup({
+		mappings = {
+			left = "<M-h>",
+			right = "<M-l>",
+			down = "<M-j>",
+			up = "<M-k>",
+			line_left = "<M-h>",
+			line_right = "<M-l>",
+			line_down = "<M-j>",
+			line_up = "<M-k>",
+		},
+	})
+	require("mini.extra").setup()
+	require("mini.misc").setup()
+	require("mini.bracketed").setup()
+	require("mini.bufremove").setup()
+	require("mini.diff").setup({
+		view = { style = "sign", signs = { add = "+", change = "~", delete = "-" } },
+	})
+	require("mini.visits").setup()
+	require("mini.map").setup()
+	require("mini.git").setup()
+	require("mini.completion").setup({
+		delay = { completion = 100, info = 300, signature = 50 },
+	})
+	require("mini.comment").setup()
+	require("mini.pick").setup({
+		mappings = { choose_in_vsplit = "<C-CR>" },
+	})
+	require("mini.trailspace").setup()
+	require("mini.cursorword").setup()
 	require("mini.ai").setup({
 		n_lines = 500,
 	})
