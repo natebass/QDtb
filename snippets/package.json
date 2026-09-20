@@ -3,10 +3,11 @@
   "contributes": {
     "snippets": [
       {
-        "language": [
-          "css",
-          "scss"
-        ],
+        "language": "css",
+        "path": "./css.json"
+      },
+      {
+        "language": "scss",
         "path": "./css.json"
       }
     ]

@@ -38,7 +38,7 @@ local colors = require("mini.colors")
 
 -- Hyperparameters ============================================================
 -- REFERENCE LIGHTNESS VALUES
--- They are applied both to dark and light pallete, and indicate how far from
+-- They are applied both to dark and light palette, and indicate how far from
 -- corresponding edge (0 for dark and 100 for light) it should be.
 -- Level meaning for dark color scheme (reverse for light one):
 -- - Level 1 is background for floating windows.
@@ -435,7 +435,7 @@ local enable_colorscheme = function()
   hi('Conditional', { link = 'Statement' })
   hi('Repeat', { link = 'Statement' })
   hi('Label', { link = 'Statement' })
-  hi('Operator', { fg = nil, bg = nil }) -- seems too much to be bold for mostly singl-character words
+  hi('Operator', { fg = nil, bg = nil }) -- seems too much to be bold for mostly single-character words
   hi('Keyword', { link = 'Statement' })
   hi('Exception', { link = 'Statement' })
 

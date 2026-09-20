@@ -28,7 +28,7 @@ less_p.blue, less_p.blue_bg = fg, bg
 hues.apply_palette(less_p)
 vim.g.colors_name = "minigrey"
 
--- Tweak highlight groups for general usability (acounting for removed colors)
+-- Tweak highlight groups for general usability (accounting for removed colors)
 local hi = function(group, data)
 	vim.api.nvim_set_hl(0, group, data)
 end

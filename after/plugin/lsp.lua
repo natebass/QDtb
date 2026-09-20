@@ -32,7 +32,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 -- mini.completion used to open the signature float on its own after 50ms. Neovim 0.12 has
 -- no option for that: the only built-in entry point is the default <C-s> mapping in Insert
 -- mode (|i_CTRL-S|), which has to be pressed. Uncommenting the block below brings the old
--- behaviour back. It hooks the characters the server itself nominates as signature
+-- behavior back. It hooks the characters the server itself nominates as signature
 -- triggers -- lua_ls reports { "(", "," } -- and opens the same float <C-s> would.
 -- `focus = false` keeps the cursor in the buffer, and vim.schedule defers to after the
 -- character is actually inserted, because InsertCharPre fires beforehand and the server
