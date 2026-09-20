@@ -42,9 +42,6 @@ local function setup_deferred_modules()
 	require("mini.visits").setup()
 	require("mini.map").setup()
 	require("mini.git").setup()
-	require("mini.completion").setup({
-		delay = { completion = 100, info = 300, signature = 50 },
-	})
 	require("mini.comment").setup()
 	require("mini.pick").setup({
 		mappings = { choose_in_vsplit = "<C-CR>" },
