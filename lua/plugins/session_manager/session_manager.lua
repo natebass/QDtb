@@ -25,39 +25,38 @@ g.startify_commands = {
 }
 -- }}}
 -- List Order and Types {{{
+
+--- Builds a Startify list provider that runs `git` with the given arguments and
+--- returns one entry per reported file. Errors (no repository, no git) yield no entries.
+--- @param args string[] Arguments passed to git, without the leading "git".
+--- @return fun(): table[]
+local function git_files(args)
+	return function()
+		local result = vim.system(vim.list_extend({ "git" }, args), { text = true }):wait()
+		if result.code ~= 0 then
+			return {}
+		end
+		local files = {}
+		for line in (result.stdout or ""):gmatch("[^\n]+") do
+			if line:match("%S") then
+				table.insert(files, { line = line, path = line })
+			end
+		end
+		return files
+	end
+end
+
 g.startify_lists = {
 	{ type = "dir", header = { " Recent in Current Directory (" .. vim.fn.getcwd() .. ")" } },
 	{ type = "files", header = { " Recently Opened" } },
 	{ type = "sessions", header = { " Sessions" } },
 	{ type = "bookmarks", header = { " Bookmarks" } },
 	{ type = "commands", header = { " Custom Commands" } },
-	-- Example of a custom function to list git modified files
-	-- This uses a Lua function directly, which is the correct way for dynamic lists in Lua.
+	-- Dynamic lists backed by git. vim.system takes an argv list, so there is no shell
+	-- to quote against and no need to redirect stderr: it is captured separately.
+	{ type = git_files({ "ls-files", "-m" }), header = { " Git Modified Files" } },
 	{
-		type = function()
-			local output = vim.fn.system("git ls-files -m 2>/dev/null")
-			local files = {}
-			for line in string.gmatch(output, "([^\n]+)") do
-				if line:find("^%s*$") == nil then
-					table.insert(files, { line = line, path = line })
-				end
-			end
-			return files
-		end,
-		header = { " Git Modified Files" },
-	},
-	-- Example of a custom function to list git untracked files
-	{
-		type = function()
-			local output = vim.fn.system("git ls-files -o --exclude-standard 2>/dev/null")
-			local files = {}
-			for line in string.gmatch(output, "([^\n]+)") do
-				if line:find("^%s*$") == nil then
-					table.insert(files, { line = line, path = line })
-				end
-			end
-			return files
-		end,
+		type = git_files({ "ls-files", "-o", "--exclude-standard" }),
 		header = { " Git Untracked Files" },
 	},
 }

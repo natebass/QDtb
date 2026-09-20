@@ -82,7 +82,7 @@ function M.setup(user_opts)
 
 			-- Buffer-local keymap
 			if opts.enable_keymap then
-				vim.keymap.set("n", "<Tab>", "za", { buffer = args.buf, desc = "Toggle Fold" })
+				vim.keymap.set("n", "<Tab>", "za", { buf = args.buf, desc = "Toggle Fold" })
 			end
 		end,
 	})

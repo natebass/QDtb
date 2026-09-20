@@ -1,40 +1,34 @@
 --- Window Title Utility.
 --- Sets the terminal window title based on the active Neovim buffer and project.
+--- Note: 'title' already makes Neovim set the title through the terminal/GUI itself.
+--- This module is only needed for window managers that ignore that, and it requires xdotool.
 --- @module "plugins.QDtb.window_title"
 
 local M = {}
+
 --- Sets the terminal window title using xdotool.
---- Note: This assumes nvim is running in a terminal.
---- @function set_terminal_title
+--- The title is passed as an argv element, so no shell quoting is involved.
 --- @param title string The title to set.
 function M.set_terminal_title(title)
-	-- Escape single quotes for shell command safety
-	local escaped_title = title:gsub("'", "'\\''")
-	local cmd = string.format("xdotool getactivewindow set_window_title '%s'", escaped_title)
-	-- Or using wmctrl:
-	-- local cmd = string.format("wmctrl -F -r :ACTIVE: -T '%s'", escaped_title)
-	-- Execute the command asynchronously to avoid blocking Neovim
-	vim.fn.jobstart(cmd, {
-		on_exit = function(job_id, data, event)
-			if data ~= 0 then
-				-- Handle error, e.g., print to messages
-				-- print("Error setting window title: " .. data)
-			end
-		end,
-		-- If you need stdout/stderr for debugging, you can capture it:
-		-- stdout_callback = function(chan, data, event) print(table.concat(data)) end,
-		-- stderr_callback = function(chan, data, event) print(table.concat(data)) end,
-	})
+	if vim.fn.executable("xdotool") ~= 1 then
+		return
+	end
+	vim.system({ "xdotool", "getactivewindow", "set_window_title", title }, { text = true }, function(result)
+		if result.code ~= 0 then
+			local message = result.stderr ~= "" and result.stderr or ("exit code " .. result.code)
+			vim.schedule(function()
+				vim.notify("Could not set the window title: " .. message, vim.log.levels.DEBUG)
+			end)
+		end
+	end)
 end
+
 --- Sets the title based on the current buffer/project.
 --- Extracts the current buffer name and working directory name.
---- @function set_nvim_window_title
 function M.set_nvim_window_title()
-	-- Get current buffer name (if available)
 	local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":t")
-	-- Get current working directory name (project name)
 	local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
-	local title = ""
+	local title
 	if filename ~= "" then
 		title = string.format("%s - %s", filename, project_name)
 	else
@@ -45,4 +39,5 @@ function M.set_nvim_window_title()
 	end
 	M.set_terminal_title(title)
 end
+
 return M

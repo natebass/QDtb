@@ -70,11 +70,11 @@ function M.reload_config()
 	end
 end
 
--- Cached system detection
-local sysname = vim.uv and vim.uv.os_uname().sysname or vim.loop.os_uname().sysname
+-- Cached system detection.
+local sysname = vim.uv.os_uname().sysname
 
-M.is_windows = sysname:find("Windows") ~= nil or vim.fn.has("win32") == 1
-M.is_linux = sysname == "Linux" or vim.fn.has("unix") == 1 and not (sysname == "Darwin")
-M.is_mac = sysname == "Darwin" or vim.fn.has("mac") == 1
+M.is_windows = sysname == "Windows_NT"
+M.is_mac = sysname == "Darwin"
+M.is_linux = sysname == "Linux"
 
 return M
