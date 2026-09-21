@@ -1,15 +1,10 @@
 --- Mini.nvim Configuration.
 --- Sets up various mini.* plugins for UI, editing, and utility enhancements.
---- Ensure mini.icons is setup early for other modules.
 --- @module "config.mini"
-
--- Startup-critical modules. These have to run before the first UI frame because they
--- replace vim.notify, are a dependency of other modules, set options and mappings, or
--- have to be in place before a session is read.
 require("mini.notify").setup()
 vim.notify = require("mini.notify").make_notify()
 require("mini.icons").setup()
-require("mini.sessions").setup({ autoread = true, autowrite = true })
+require("mini.misc").setup_restore_cursor()
 require("mini.basics").setup({
 	options = { basic = true, extra_ui = true, win_borders = "default" },
 	mappings = { basic = true, option_toggle_prefix = [[\]], windows = true },
@@ -17,9 +12,6 @@ require("mini.basics").setup({
 })
 require("mini.statusline").setup()
 -- require('mini.tabline').setup()
-
---- Everything below is reachable only through a keymap, a text object or a buffer event,
---- so it is set up just after the first frame instead of blocking it.
 local function setup_deferred_modules()
 	require("mini.align").setup()
 	require("mini.move").setup({
@@ -88,6 +80,11 @@ local function setup_deferred_modules()
 			{ mode = "n", keys = "[]" },
 		},
 		clues = {
+			{
+				mode = "n",
+				keys = require("plugins.session_manager.sessions").prefix,
+				desc = "+Session",
+			},
 			miniclue.gen_clues.builtin_completion(),
 			miniclue.gen_clues.g(),
 			miniclue.gen_clues.marks(),
@@ -154,7 +151,6 @@ local function setup_deferred_modules()
 		},
 	})
 end
-
 vim.api.nvim_create_autocmd("VimEnter", {
 	once = true,
 	callback = function()
@@ -162,7 +158,6 @@ vim.api.nvim_create_autocmd("VimEnter", {
 	end,
 	desc = "Initialize nonessential mini modules after startup",
 })
-
 vim.api.nvim_create_autocmd("User", {
 	pattern = "MiniFilesBufferCreate",
 	callback = function(args)
@@ -174,7 +169,6 @@ vim.api.nvim_create_autocmd("User", {
 	desc = "Escape key closes the MiniFiles buffer.",
 })
 -- ── Other ─────────────────────────────────────────────────────────────
-
 -- mini.doc, mini.fuzzy, mini.test are dev/authoring tools
 -- only enable if you're building plugins
 -- require("mini.doc").setup()

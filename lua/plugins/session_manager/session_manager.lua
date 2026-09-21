@@ -1,6 +1,7 @@
 --- Configure Startify for session management, custom headers, and bookmarks.
 --- @module "plugins.session_manager.session_manager"
 local utils = require("lib.utility")
+local sessions = require("plugins.session_manager.sessions")
 local g = vim.g
 -- General Settings {{{
 g.startify_enable_special = 0
@@ -60,13 +61,13 @@ g.startify_lists = {
 	},
 }
 -- Session Management {{{
--- Enable session saving on exit.
--- Requires `mhinz/vim-session` or similar for full functionality if you want
--- to persist sessions outside of Startify's basic handling.
--- Startify integrates with `:mksession` by default.
-g.startify_session_dir = vim.fn.stdpath("data") .. "/sessions"
-g.startify_session_autoload = 1 -- Load session if one exists in the current directory
-g.startify_session_delete_entry = 1 -- Delete sessions when the project directory is removed
+g.startify_session_dir = vim.fs.joinpath(vim.fn.stdpath("data"), "session")
+sessions.ensure_dir()
+g.startify_session_persistence = 1
+g.startify_session_sort = 1
+g.startify_session_before_save = {
+	"lua require('plugins.session_manager.sessions').close_side_panels()",
+}
 -- }}}
 -- Highlighting {{{
 vim.cmd([[highlight link StartifyHeader Normal]])
@@ -78,16 +79,16 @@ vim.cmd([[highlight link StartifyPath Comment]])
 vim.cmd([[highlight link StartifySelect Normal]])
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "startify",
-	callback = function()
+	callback = function(args)
 		vim.opt_local.list = false
+		sessions.map_dashboard(args.buf)
 	end,
+	desc = "Startify dashboard appearance and session actions",
 })
 --- }}}
 -- Bookmarks {{{
 local e = vim.fn.expand
 local j = vim.fs.joinpath
--- stdpath resolves to this directory under Neovide's flatpak XDG_CONFIG_HOME and to
--- the plain ~/.config/nvim elsewhere, so the bookmarks follow the config that is running.
 local c = vim.fn.stdpath("config")
 if utils.is_windows then
 	vim.g.startify_bookmarks = {

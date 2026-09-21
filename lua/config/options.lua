@@ -53,6 +53,7 @@ vim.o.grepformat = "%f:%l:%c:%m"
 -- Files {{{
 vim.o.undofile = true
 vim.o.undolevels = 10000
+vim.o.shada = "!,'1000,<50,s10,h,r/tmp/,r/private/"
 vim.o.swapfile = false
 vim.o.autowrite = true
 -- }}}
