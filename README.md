@@ -27,11 +27,11 @@
 
 # QDtb Neovim configuration
 
-Welcome to my personal Neovim configuration. It is partly based on [💤 lazy.nvim](https://github.com/folke/lazy.nvim) and uses many [mini.nvim](https://github.com/nvim-mini/mini.nvim) plugins.
+Welcome to my personal Neovim configuration.
 
 ## ✨ Features
 
-- 💻 Continue where you left off. Save and resume sessions with **Session Manager**. It uses mhinz/startify and mhinz/session.
+- 💻 Continue where you left off. Save and resume sessions with **Session Manager**.
 
 ## Requirements
 
@@ -41,24 +41,6 @@ Welcome to my personal Neovim configuration. It is partly based on [💤 lazy.nv
 ## Install
 
 Clone into `stdpath("config")`.
-
-## Local data directory
-
-This project uses the native NVIM package manager.
-
-- `vim.pack.add(..., { load = false })` installs missing packages and uses
-  `nvim-pack-lock.json` without sourcing every optional plugin during
-  startup.
-- Packages are stored under `site/pack/core/opt/` and loaded only when needed
-  with Neovim's built-in `:packadd` command.
-- Command-oriented plugins are loaded when their command is first used
-  (`:NERDTree`, `:Goyo`, `:Limelight`, `:Startify`, and `:TZNarrow`).
-- Copilot loads on first Insert mode entry and WakaTime after `VimEnter`.
-- `mini.nvim` uses `vim.pack.add(..., { load = false }) to load immediately on startup.
-
-On startup, Neovim prompts to install the missing packages. 
-
-To update, run `:lua vim.pack.update()` and then `:w` in the resulting buffer to save changes to `nvim-pack-lock.json`.
 
 ## Resources
 
