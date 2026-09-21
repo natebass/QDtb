@@ -14,7 +14,6 @@ vim.api.nvim_create_autocmd("FileType", {
 --         vim.cmd([[silent !deno fmt ]] .. vim.fn.expand('%'))
 --     end
 -- })
-
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "*",
 	callback = function()

@@ -15,7 +15,7 @@ require("mini.basics").setup({
 	mappings = { basic = true, option_toggle_prefix = [[\]], windows = true },
 	autocommands = { basic = true, relnum_in_visual_mode = true },
 })
-require('mini.statusline').setup()
+require("mini.statusline").setup()
 -- require('mini.tabline').setup()
 
 --- Everything below is reachable only through a keymap, a text object or a buffer event,
@@ -55,10 +55,10 @@ local function setup_deferred_modules()
 	})
 	require("mini.jump").setup({
 		mappings = {
-			forward = 'l',
-			backward = 'm',
-			forward_till = 't',
-			backward_till = 'T',
+			forward = "l",
+			backward = "m",
+			forward_till = "t",
+			backward_till = "T",
 		},
 	})
 	require("mini.pairs").setup({

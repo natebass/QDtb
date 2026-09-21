@@ -68,11 +68,11 @@ map("n", "<leader>Y", "")
 map("n", "<leader>y", "<cmd>Telescope live_grep<CR>", { silent = true })
 map("n", "<leader>Z", "")
 map("n", "<leader>z", function()
-    local input = vim.fn.input("Help: ", "", "help")
-    if input ~= "" then
-        vim.cmd("help " .. input)
-        vim.cmd("only")
-    end
+	local input = vim.fn.input("Help: ", "", "help")
+	if input ~= "" then
+		vim.cmd("help " .. input)
+		vim.cmd("only")
+	end
 end, { desc = "Open help in single window" })
 map("n", "<leader>/", "<cmd>lua MiniPick.builtin.files()<CR>")
 -- }}}

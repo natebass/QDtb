@@ -1,13 +1,9 @@
 --- Bible Verses. Randomly selected Bible verses for the Startify custom header.
 --- @module "plugins.session_manager.bible_verse"
-
 local utility = require("lib.utility")
-
 -- Seeding lives in lib.utility: os.time() has one-second resolution, so seeding here
 -- as well would reset the sequence and correlate this pick with the other quote module.
-
 local M = {}
-
 -- Table of Bible verses
 -- Each entry is a table with 'text' and 'source'
 local bible_verses = {
@@ -52,21 +48,17 @@ local bible_verses = {
 		source = "1 Thessalonians 5:16-18",
 	},
 }
-
 --- Returns a randomly selected quote formatted for Startify's custom footer.
 --- @function quotes
 --- @return table A table of strings, each representing a line for the footer.
 function M.quotes()
 	-- Get a random index
 	local index = math.random(1, #bible_verses)
-
 	-- Get the selected quote
 	local selected_quote = bible_verses[index]
-
 	-- Format the quote as required by Startify's custom footer
 	local wrapped_lines = utility.wrap_text(selected_quote.text, 78)
 	table.insert(wrapped_lines, selected_quote.source)
-
 	-- Center the lines and add side padding
 	local columns = vim.o.columns
 	local centered_lines = {}
@@ -75,8 +67,6 @@ function M.quotes()
 		local padding_size = math.max(0, math.floor((columns - padded_line_width) / 2))
 		table.insert(centered_lines, string.rep(" ", padding_size) .. " " .. line)
 	end
-
 	return centered_lines
 end
-
 return M

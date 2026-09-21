@@ -1,11 +1,9 @@
 --- General utility functions and miscellaneous commands.
 --- @module "lib.utility"
 local M = {}
-
 -- Seed the RNG once, here, for every module that draws from it. hrtime() has
 -- nanosecond resolution, so two requires in the same second still differ.
 math.randomseed(vim.uv.hrtime() % 2 ^ 31)
-
 --- Repeats a Vim command a specified number of times.
 --- If no count is provided via `vim.v.count`, it executes the command once.
 --- @param cmd string The Vim command to repeat.
@@ -15,7 +13,6 @@ function M.RepeatCmd(cmd)
 		vim.cmd(cmd)
 	end
 end
-
 --- Wraps text to a maximum line width, breaking on whitespace.
 --- @param text string The text to wrap.
 --- @param limit number The maximum line width in characters.
@@ -38,12 +35,9 @@ function M.wrap_text(text, limit)
 	end
 	return lines
 end
-
 -- Cached system detection.
 local sysname = vim.uv.os_uname().sysname
-
 M.is_windows = sysname == "Windows_NT"
 M.is_mac = sysname == "Darwin"
 M.is_linux = sysname == "Linux"
-
 return M

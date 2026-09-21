@@ -26,7 +26,6 @@ g.startify_commands = {
 }
 -- }}}
 -- List Order and Types {{{
-
 --- Builds a Startify list provider that runs `git` with the given arguments and
 --- returns one entry per reported file. Errors (no repository, no git) yield no entries.
 --- @param args string[] Arguments passed to git, without the leading "git".
@@ -46,7 +45,6 @@ local function git_files(args)
 		return files
 	end
 end
-
 g.startify_lists = {
 	{ type = "dir", header = { " Recent in Current Directory (" .. vim.fn.getcwd() .. ")" } },
 	{ type = "files", header = { " Recently Opened" } },

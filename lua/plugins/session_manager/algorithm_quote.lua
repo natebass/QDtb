@@ -1,13 +1,9 @@
 --- Algorithm Quotes. Randomly select quote about algorithms for the Startify custom footer.
 --- @module "plugins.session_manager.algorithm_quote"
-
 local utility = require("lib.utility")
-
 -- Seeding lives in lib.utility: os.time() has one-second resolution, so seeding here
 -- as well would reset the sequence and correlate this pick with the other quote module.
-
 local M = {}
-
 -- Table of quotes about computer algorithms
 -- Each entry is a table with 'text' and 'source'
 local algorithm_quotes = {
@@ -52,30 +48,24 @@ local algorithm_quotes = {
 		source = "Brian W. Kernighan",
 	},
 }
-
 --- Returns a randomly selected quote formatted for Startify's custom footer.
 --- @function quotes
 --- @return table A table of strings, each representing a line for the footer.
 function M.quotes()
 	-- Get a random index
 	local index = math.random(1, #algorithm_quotes)
-
 	-- Get the selected quote
 	local selected_quote = algorithm_quotes[index]
-
 	-- Format the quote as required by Startify's custom footer
 	local limit = math.max(20, vim.o.columns - 2)
 	local text_with_quotes = '"' .. selected_quote.text .. '"'
 	local wrapped_lines = utility.wrap_text(text_with_quotes, limit)
-
 	local lines = { "" }
 	for _, line in ipairs(wrapped_lines) do
 		table.insert(lines, " " .. line)
 	end
 	table.insert(lines, " - " .. selected_quote.source)
 	table.insert(lines, "")
-
 	return lines
 end
-
 return M

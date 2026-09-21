@@ -26,5 +26,4 @@ function M.setup(user_opts)
 		fold_nav.setup(nav_opts)
 	end
 end
-
 return M

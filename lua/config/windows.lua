@@ -4,4 +4,4 @@ local M = {}
 vim.opt.runtimepath:append("C:/Users/nateb/OneDrive/Documents/ADtb/Vim")
 return M
 -- Footer
--- vim:foldmethod=marker:foldlevel=1
+-- vim:foldmethod=marker:foldlevel=0
