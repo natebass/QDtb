@@ -1,6 +1,4 @@
 --- Editor Options. Configures Neovim UI, editing behavior, search, and other core options.
---- Targets Neovim 0.12+ exclusively: scalar options go through `vim.o`, and `vim.opt`
---- is reserved for the list- and map-style options where its table interface earns its keep.
 --- @module "config.options"
 local M = {}
 -- UI {{{
@@ -20,6 +18,8 @@ vim.o.pumblend = 10
 vim.o.pumheight = 10
 -- Matches 'winborder' above so the completion menu is framed like every other float.
 vim.o.pumborder = "rounded"
+vim.o.list = false
+vim.o.listchars = "tab:  ,trail:-,nbsp:+"
 vim.opt.fillchars = {
 	foldopen = "▾",
 	foldclose = "▸",
@@ -34,7 +34,7 @@ vim.o.tabstop = 4
 vim.o.softtabstop = 4
 vim.o.shiftwidth = 4
 vim.o.shiftround = true
-vim.o.expandtab = true
+vim.o.expandtab = false
 vim.o.smartindent = true
 vim.g.markdown_recommended_style = 0
 -- }}}
@@ -95,7 +95,6 @@ vim.o.virtualedit = "block" -- Allow cursor in blank space in visual block mode
 -- Miscellaneous {{{
 vim.o.conceallevel = 2 -- Hide bold/italic markers but not substitutions
 vim.o.mouse = "a"
-vim.o.list = true -- Show invisible characters
 vim.o.spelllang = "en"
 vim.o.jumpoptions = "view"
 vim.o.wildmode = "longest:full,full"

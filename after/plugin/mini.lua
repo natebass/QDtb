@@ -15,6 +15,8 @@ require("mini.basics").setup({
 	mappings = { basic = true, option_toggle_prefix = [[\]], windows = true },
 	autocommands = { basic = true, relnum_in_visual_mode = true },
 })
+require('mini.statusline').setup()
+-- require('mini.tabline').setup()
 
 --- Everything below is reachable only through a keymap, a text object or a buffer event,
 --- so it is set up just after the first frame instead of blocking it.
@@ -51,7 +53,14 @@ local function setup_deferred_modules()
 	require("mini.ai").setup({
 		n_lines = 500,
 	})
-	require("mini.jump").setup()
+	require("mini.jump").setup({
+		mappings = {
+			forward = 'l',
+			backward = 'm',
+			forward_till = 't',
+			backward_till = 'T',
+		},
+	})
 	require("mini.pairs").setup({
 		mappings = {
 			['"'] = false,
@@ -141,7 +150,7 @@ local function setup_deferred_modules()
 	})
 	require("mini.jump2d").setup({
 		mappings = {
-			start_jumping = "A",
+			start_jumping = "v",
 		},
 	})
 end
@@ -165,8 +174,7 @@ vim.api.nvim_create_autocmd("User", {
 	desc = "Escape key closes the MiniFiles buffer.",
 })
 -- ── Other ─────────────────────────────────────────────────────────────
--- now(function() require('mini.statusline').setup() end)
--- now(function() require('mini.tabline').setup() end)
+
 -- mini.doc, mini.fuzzy, mini.test are dev/authoring tools
 -- only enable if you're building plugins
 -- require("mini.doc").setup()

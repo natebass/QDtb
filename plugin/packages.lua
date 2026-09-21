@@ -2,13 +2,13 @@
 
 vim.pack.add({
 	"https://github.com/echasnovski/mini.nvim",
+	{ src = "https://codeberg.org/andyg/leap.nvim", name = "leap.nvim" },
 }, { load = true })
 vim.pack.add({
 	"https://github.com/mhinz/vim-startify",
 	"https://github.com/vague2k/vague.nvim",
 	"https://github.com/nvim-lua/plenary.nvim",
 	"https://github.com/nvim-telescope/telescope.nvim",
-	{ src = "https://codeberg.org/andyg/leap.nvim", name = "leap.nvim" },
 	"https://github.com/preservim/nerdtree",
 	"https://github.com/junegunn/goyo.vim",
 	"https://github.com/junegunn/limelight.vim",

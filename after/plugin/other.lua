@@ -22,6 +22,11 @@ require("plugins.fold_this").setup({
 	},
 })
 require("telescope").setup({
+	defaults = {
+		mappings = {
+			i = { ["<Esc>"] = require("telescope.actions").close },
+		},
+	},
 	vimgrep_arguments = {
 		"rg",
 		"--color=never",
