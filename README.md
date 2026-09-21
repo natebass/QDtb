@@ -25,22 +25,40 @@
     </a>
 </p></div>
 
-# QDtb Neovim configuration
+# Que Dios te bendiga
 
-Welcome to my personal Neovim configuration.
+My dotfiles; primarily Neovim configuration.
 
 ## ✨ Features
 
-- 💻 Continue where you left off. Save and resume sessions with **Session Manager**.
+- 💻 Continue where you left off. Save and resume sessions with **Session Manager**. Based on mhinz/vim-startify.
 
 ## Requirements
 
 - Neovim >= **0.12**
 - A [Nerd Font](https://www.nerdfonts.com/) **_(recommended)_**
+- PowerShell **7.x**
+- Emacs >= **31**
 
 ## Install
 
-Clone into `stdpath("config")`.
+Clone into `stdpath("config")`. Start Neovim and it will prompt to install the required plugins.
+
+### Other
+
+You can symlink $XDG_CONFIG_HOME on Linux to link configurations other than Vim
+
+For Windows, edit the configuration files in thier default locations.
+
+See the installation guide for help.
+
+#### PowerShell
+
+Install-PSResource Pester PSScriptAnalyzer
+
+#### Emacs
+
+:package-install
 
 ## Resources
 
